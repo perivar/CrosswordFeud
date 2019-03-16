@@ -1,0 +1,9 @@
+version: '3.0'
+ 
+services:
+   crosswordfeud:
+     image: perivar/crosswordfeud
+     build:
+       context: .
+     ports:
+       - "80:80"
