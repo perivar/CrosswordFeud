@@ -1,3 +1,9 @@
 {
-  "cSpell.enabled": false
+  "cSpell.enabled": false,
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    { "language": "typescript", "autoFix": true },
+    { "language": "typescriptreact", "autoFix": true }
+  ]
 }

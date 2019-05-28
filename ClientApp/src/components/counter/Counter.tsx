@@ -22,7 +22,7 @@ export class Counter extends Component<{}, ILocalState> {
   render () {
     return (
       <div>
-        <h1>Counter</h1>
+        <h1>Counter - Test</h1>
 
         <p>This is a simple example of a React component.</p>
 
