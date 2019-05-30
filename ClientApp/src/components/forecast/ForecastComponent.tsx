@@ -4,6 +4,7 @@ import { IForecast, IForecastProps } from "./types";
 import "./ForecastComponent.scss";
 
 export default class ForecastComponent extends Component<IForecastProps> {
+
   public componentDidMount() {
     this.props.getForecasts();
   }

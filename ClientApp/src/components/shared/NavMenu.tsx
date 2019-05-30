@@ -42,6 +42,9 @@ export class NavMenu extends Component<{}, ILocalState> {
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/forecast">Fetch data</NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} className="text-dark" to="/login">Login</NavLink>
+                </NavItem>
               </ul>
             </Collapse>
           </Container>
