@@ -28,7 +28,7 @@ export default class HomeComponent extends React.Component<IHomeProps, any> {
                                 {
                                     user.deleting ? <em> - Deleting...</em>
                                         : user.deleteError ? <span className="error"> - ERROR: {user.deleteError}</span>
-                                            : <span> - <a onClick={this.handleDeleteUser(user.id)}>Delete</a></span>
+                                            : <span> - <button onClick={this.handleDeleteUser(user.id)}>Delete</button></span>
                                 }
                             </li>
                         )}

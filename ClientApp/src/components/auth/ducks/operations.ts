@@ -1,6 +1,6 @@
 import { IUser } from "../types";
 
-const config = { apiUrl: 'http://order.wazalo.com:8000' };
+const config = { apiUrl: process.env.REACT_APP_API };
 
 function authHeader(): Headers {
     // return authorization header with jwt token

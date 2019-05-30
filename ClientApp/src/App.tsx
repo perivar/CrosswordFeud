@@ -20,11 +20,8 @@ class App extends Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    // const { dispatch } = this.props;
-
     history.listen((location, action) => {
       // clear alert on location change
-      // dispatch(alertActions.clear());
       this.props.clearAlerts();
     });
   }
@@ -42,7 +39,8 @@ class App extends Component<any, any> {
           <div>
             <h1>Display when logged in</h1>
           </div>
-        }        <Router history={history} >
+        }
+        <Router history={history} >
           <div>
             <Layout>
               {/* <Route exact={true} path="/" component={Home} /> */}
@@ -69,7 +67,7 @@ function mapStateToProps(state: any) {
 // inject methods *and* dispatch
 const mapDispatchToProps = (dispatch: any) => {
   return {
-    dispatch,
+    // dispatch,
     clearAlerts: () => dispatch(alertActions.clear()),
   };
 }
