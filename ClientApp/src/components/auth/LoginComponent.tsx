@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ILoginProps } from './types';
+import { ILoginProps, ILoginState } from './types';
 
-export default class LoginComponent extends React.Component<ILoginProps, any> {
+export default class LoginComponent extends React.Component<ILoginProps, ILoginState> {
 
     constructor(props: ILoginProps) {
         super(props);
@@ -22,9 +22,10 @@ export default class LoginComponent extends React.Component<ILoginProps, any> {
 
     handleChange(e: React.ChangeEvent<HTMLInputElement>) {
         const { name, value } = e.target;
-        this.setState({
-             [name]: value              
-        });
+        this.setState(prevState => ({
+            ...prevState,
+            [name]: value,
+        }));
     }
 
     handleSubmit(e: React.FormEvent) {

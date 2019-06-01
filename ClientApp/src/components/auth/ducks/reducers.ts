@@ -1,21 +1,22 @@
 import { userTypes } from './types';
-import { IAuthState, IUserState, IUser } from "../types";
+import { IAuthState, IUserState, ILogon } from "../types";
+// import { Action } from 'redux';
 
-let user = JSON.parse(localStorage.getItem('user') || '{}') as IUser;
+let user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-const initialAuthState: IAuthState = user ? { loggingIn: false, loggedIn: true, user: user } : { loggingIn: false, loggedIn: false, user: user };
+const initialAuthState: IAuthState = user ? { loggingIn: false, loggedIn: true, logon: user } : { loggingIn: false, loggedIn: false, logon: user };
 
 const authenticationReducer = function authentication(state = initialAuthState, action: any) {
     switch (action.type) {
         case userTypes.LOGIN_REQUEST:
             return {
                 loggingIn: true,
-                user: action.user
+                logon: action.user
             };
         case userTypes.LOGIN_SUCCESS:
             return {
                 loggedIn: true,
-                user: action.user
+                logon: action.user
             };
         case userTypes.LOGIN_FAILURE:
             return {};

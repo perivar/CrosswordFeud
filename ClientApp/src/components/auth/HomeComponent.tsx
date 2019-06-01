@@ -1,42 +1,55 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { IHomeProps, IUser } from "./types";
+import { IHomeProps, IUser, IClaim } from "./types";
+import { Button, ListGroup, ListGroupItem, Alert } from 'reactstrap';
 
-export default class HomeComponent extends React.Component<IHomeProps, any> {
+export default class HomeComponent extends React.Component<IHomeProps> {
 
     componentDidMount() {
-        this.props.getUsers();
+        this.props.getAll();
     }
 
-    handleDeleteUser(id: number) {
-        return () => this.props.delete(id);
+    handleDeleteUser(username: string) {
+        return () => this.props.delete(username);
     }
 
     render() {
-        const { user, users } = this.props;
+        const { logon, users } = this.props;
         return (
-            <div className="col-md-6 col-md-offset-3">
-                <h1>Hi {user.firstName}!</h1>
-                <p>You're logged in with React!</p>
-                <h3>All registered users:</h3>
+            <div>
+                <h4>Hi {logon.user.userName}!</h4>
+                <h5>Claims</h5>
+                <ListGroup>
+                    {logon.claims.map((claim: IClaim, index: number) =>
+                        <ListGroupItem key={index}>{claim.value}</ListGroupItem>
+                    )}
+                </ListGroup>
+                <div>&nbsp;</div>
+                <h5>All registered users</h5>
                 {users.loading && <em>Loading users...</em>}
                 {users.items &&
-                    <ul>
+                    <div>
+                        <ListGroup>
                         {users.items.map((user: IUser, index: number) =>
-                            <li key={user.id}>
-                                {user.firstName + ' ' + user.lastName}
+                            <ListGroupItem>
+                                <div><strong>Id:</strong> {user.id}</div>
+                                <div><strong>Username:</strong> {user.userName}</div>
+                                <div><strong>Email:</strong> {user.email}</div>
+                                <div><strong>Phone Number:</strong> {user.phoneNumber}</div>
                                 {
                                     user.deleting ? <em> - Deleting...</em>
                                         : user.deleteError ? <span className="error"> - ERROR: {user.deleteError}</span>
-                                            : <span> - <button onClick={this.handleDeleteUser(user.id)}>Delete</button></span>
+                                            : <Button color="primary" size="sm" onClick={this.handleDeleteUser(user.userName)}>Delete</Button>
                                 }
-                            </li>
+                            </ListGroupItem>
                         )}
-                    </ul>
+                        </ListGroup>
+                    </div>
                 }
-                <p>
+                <div>&nbsp;</div>
+                <Alert color="primary">
                     <Link to="/login">Logout</Link>
-                </p>
+                </Alert>
             </div>
         );
     }

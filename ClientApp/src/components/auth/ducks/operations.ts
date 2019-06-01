@@ -59,16 +59,16 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`${config.apiUrl}/api/states`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/api/Account/GetAll`, requestOptions).then(handleResponse);
 }
 
-function getById(id: number) {
+function getByName(userName: string) {
     const requestOptions = {
         method: 'GET',
         headers: authHeader()
     };
 
-    return fetch(`${config.apiUrl}/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/api/Account/GetByName/${userName}`, requestOptions).then(handleResponse);
 }
 
 function register(user: IUser) {
@@ -88,17 +88,17 @@ function update(user: IUser) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`${config.apiUrl}/users/${user.id}`, requestOptions).then(handleResponse);;
+    return fetch(`${config.apiUrl}/api/Account/Update/${user.userName}`, requestOptions).then(handleResponse);;
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-function _delete(id: number) {
+function _delete(userName: string) {
     const requestOptions = {
         method: 'DELETE',
         headers: authHeader()
     };
 
-    return fetch(`${config.apiUrl}/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/api/Account/Delete/${userName}`, requestOptions).then(handleResponse);
 }
 
 export const userService = {
@@ -106,7 +106,7 @@ export const userService = {
     logout,
     register,
     getAll,
-    getById,
+    getByName,
     update,
     delete: _delete
 };

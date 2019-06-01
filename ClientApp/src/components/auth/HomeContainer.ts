@@ -6,9 +6,9 @@ import { userActions } from "./ducks/actions";
 
 const mapStateToProps = (state: IRootState) => {
     const { users, authentication } = state;
-    const { user } = authentication;
+    const { logon } = authentication;
     return {
-        user,
+        logon,
         users
     };
 }
@@ -17,8 +17,8 @@ const mapStateToProps = (state: IRootState) => {
 const mapDispatchToProps = (dispatch: any) => {
     return {
         dispatch,
-        getUsers: () => dispatch(userActions.getAll()),
-        delete: (id: number) => dispatch(userActions.delete(id))
+        getAll: () => dispatch(userActions.getAll()),
+        delete: (username: string) => dispatch(userActions.delete(username))
     };
 }
 

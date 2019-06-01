@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import { Counter } from "./components/counter/Counter";
 import ForecastContainer from "./components/forecast/ForecastContainer";
-import { Home } from "./components/Home";
+// import { Home } from "./components/Home";
 import { Layout } from "./components/shared/Layout";
 
 import LoginContainer from './components/auth/LoginContainer';

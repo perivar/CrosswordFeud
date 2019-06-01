@@ -1,8 +1,8 @@
 export interface IHomeProps {
     users: IUserState,
-    user: IUser,
-    getUsers: () => void,
-    delete: (id: number) => void
+    logon: ILogon,
+    getAll: () => void,
+    delete: (id: string) => void
 }
 
 export interface ILoginProps {
@@ -14,9 +14,21 @@ export interface ILoginProps {
     logout: () => void
 }
 
+export interface ILoginState {
+    username: string,
+    password: string,
+    submitted: boolean
+}
+
 export interface IRegisterProps {
     register: (user: IUser) => void,
-    registering: boolean
+    registering: boolean,
+    submitted: boolean
+}
+
+export interface IRegisterState {
+    user: IUser,
+    submitted: boolean
 }
 
 export interface IRootState {
@@ -32,14 +44,33 @@ export interface IUserState {
 export interface IAuthState {
     loggingIn: boolean,
     loggedIn: boolean,
-    user: IUser
+    logon: ILogon
 }
 
 export interface IUser {
-    id: number,
-    firstName: string,
-    lastName: string,
-    error: boolean,
-    deleting: boolean,
-    deleteError: string
+    id: string,
+    userName: string,
+    password: string,
+    email: string,
+    phoneNumber: string,
+    error?: boolean,
+    deleting?: boolean,
+    deleteError?: string
 }
+
+export interface IClaim {
+    issuer: string,
+    originalIssuer: string,
+    properties: any,
+    subject: string,
+    type: string,
+    value: string,
+    valueType: string
+}
+
+export interface ILogon {
+    user: IUser,
+    claims: IClaim[],
+    token: string
+}
+
