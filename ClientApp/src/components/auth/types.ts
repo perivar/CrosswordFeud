@@ -28,7 +28,8 @@ export interface IRegisterProps {
 
 export interface IRegisterState {
     user: IUser,
-    submitted: boolean
+    submitted: boolean,
+    registering?: boolean // only used by the reducer
 }
 
 export interface IRootState {
@@ -38,13 +39,15 @@ export interface IRootState {
 
 export interface IUserState {
     items: IUser[],
-    loading: boolean
+    loading: boolean,
+    error: string
 }
 
 export interface IAuthState {
     loggingIn: boolean,
     loggedIn: boolean,
-    logon: ILogon
+    logon: ILogon,
+    logonUserName: string
 }
 
 export interface IUser {

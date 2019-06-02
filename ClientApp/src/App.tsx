@@ -32,7 +32,7 @@ class App extends Component<any, any> {
       <div>
         {
           alert && alert.message &&
-          <div className={`alert ${alert.type}`}>{alert.message}</div>
+          <div className={`alert ${alert.className}`} role="alert">{alert.message}</div>
         }
         {
           loggedIn &&

@@ -1,82 +1,109 @@
-import { userTypes } from './types';
-import { IAuthState, IUserState, ILogon } from "../types";
+// ducks/reducers.ts
+// The reducer deals with updating the state.
+
+import { UserActionTypes, UserActions } from './types';
+import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from "../types";
 // import { Action } from 'redux';
 
 let user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-const initialAuthState: IAuthState = user ? { loggingIn: false, loggedIn: true, logon: user } : { loggingIn: false, loggedIn: false, logon: user };
+const initialAuthState: IAuthState = user ? { loggingIn: false, loggedIn: true, logon: user, logonUserName: '' } : { loggingIn: false, loggedIn: false, logon: user, logonUserName: '' };
 
-const authenticationReducer = function authentication(state = initialAuthState, action: any) {
+const authenticationReducer = function authentication(state = initialAuthState, action: UserActions): IAuthState {
     switch (action.type) {
-        case userTypes.LOGIN_REQUEST:
+        case UserActionTypes.LOGIN_REQUEST:
             return {
+                ...state,
                 loggingIn: true,
-                logon: action.user
+                logonUserName: action.username
             };
-        case userTypes.LOGIN_SUCCESS:
+        case UserActionTypes.LOGIN_SUCCESS:
             return {
+                ...state,
                 loggedIn: true,
                 logon: action.user
             };
-        case userTypes.LOGIN_FAILURE:
-            return {};
-        case userTypes.LOGOUT:
-            return {};
-        default:
-            return state
-    }
-}
-
-const registrationReducer = function registration(state = {}, action: any) {
-    switch (action.type) {
-        case userTypes.REGISTER_REQUEST:
-            return { registering: true };
-        case userTypes.REGISTER_SUCCESS:
-            return {};
-        case userTypes.REGISTER_FAILURE:
-            return {};
-        default:
-            return state
-    }
-}
-
-
-const initialUserState: IUserState = { loading: false, items: [] };
-
-const usersReducer = function users(state = initialUserState, action: any) {
-    switch (action.type) {
-        case userTypes.GETALL_REQUEST:
+        case UserActionTypes.LOGIN_FAILURE:
             return {
+                ...state,
+                loggingIn: false
+            };
+        case UserActionTypes.LOGOUT:
+            return {
+                ...state,
+                loggingIn: false
+            };
+        default:
+            return state
+    }
+}
+
+const initialRegisterState: IRegisterState = { user: user.user, submitted: false };
+
+const registrationReducer = function registration(state = initialRegisterState, action: UserActions): IRegisterState {
+    switch (action.type) {
+        case UserActionTypes.REGISTER_REQUEST:
+            return {
+                ...state,
+                registering: true
+            };
+        case UserActionTypes.REGISTER_SUCCESS:
+            return {
+                ...state,
+                registering: false
+            };
+        case UserActionTypes.REGISTER_FAILURE:
+            return {
+                ...state,
+                registering: false
+            };
+        default:
+            return state
+    }
+}
+
+
+const initialUserState: IUserState = { loading: false, items: [], error: '' };
+
+const usersReducer = function users(state = initialUserState, action: UserActions): IUserState {
+    switch (action.type) {
+        case UserActionTypes.GETALL_REQUEST:
+            return {
+                ...state,
                 loading: true
             };
-        case userTypes.GETALL_SUCCESS:
+        case UserActionTypes.GETALL_SUCCESS:
             return {
+                ...state,
+                loading: false,
                 items: action.users
             };
-        case userTypes.GETALL_FAILURE:
+        case UserActionTypes.GETALL_FAILURE:
             return {
+                ...state,
                 error: action.error
             };
-        case userTypes.DELETE_REQUEST:
+        case UserActionTypes.DELETE_REQUEST:
             // add 'deleting:true' property to user being deleted
             return {
                 ...state,
-                items: state.items.map((user: any) =>
+                items: state.items.map((user: IUser) =>
                     user.id === action.id
                         ? { ...user, deleting: true }
                         : user
                 )
             };
-        case userTypes.DELETE_SUCCESS:
+        case UserActionTypes.DELETE_SUCCESS:
             // remove deleted user from state
             return {
-                items: state.items.filter((user: any) => user.id !== action.id)
+                ...state,
+                items: state.items.filter((user: IUser) => user.id !== action.id)
             };
-        case userTypes.DELETE_FAILURE:
+        case UserActionTypes.DELETE_FAILURE:
             // remove 'deleting:true' property and add 'deleteError:[error]' property to user 
             return {
                 ...state,
-                items: state.items.map((user: any) => {
+                items: state.items.map((user: IUser) => {
                     if (user.id === action.id) {
                         // make copy of user without 'deleting:true' property
                         const { deleting, ...userCopy } = user;

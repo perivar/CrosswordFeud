@@ -1,3 +1,7 @@
+// ducks/operations.ts
+// Here, we define any logic surrounding our actions and side effects, including async logic. 
+// If an action has no surrounding logic, then we simply forward them as is
+
 import { IUser } from "../types";
 
 const config = { apiUrl: process.env.REACT_APP_API };
@@ -28,7 +32,8 @@ function handleResponse(response: any) {
                 window.location.reload(true);
             }
 
-            const error = (data && data.message) || response.statusText;
+            // extract error message and convert to sring
+            const error = (data && data.errors && data.errors.map((a: any) => a.description).join(' ')) || (data && data.title) || data || response.statusText;
             return Promise.reject(error);
         }
 

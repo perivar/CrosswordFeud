@@ -1,17 +1,25 @@
-import { alertTypes } from './types';
+// ducks/actions.ts
+// This is where you define your action creators. 
+// All action creators must be functions that return an object with at least the type property. 
+// We do not define any async logic in this file.
 
-const success = (message: string) => ({
-    type: alertTypes.SUCCESS,
+import { AlertActionTypes, AlertActions } from './types';
+
+// TypeScript infers that this function is returning IAlertSuccessAction
+const success = (message: string): AlertActions => ({
+    type: AlertActionTypes.SUCCESS,
     message
 });
 
-const error = (message: string) => ({
-    type: alertTypes.ERROR,
+// TypeScript infers that this function is returning IAlertErrorAction
+const error = (message: string): AlertActions => ({
+    type: AlertActionTypes.ERROR,
     message
 });
 
-const clear = () => ({
-    type: alertTypes.CLEAR
+// TypeScript infers that this function is returning IAlertClearAction
+const clear = (): AlertActions => ({
+    type: AlertActionTypes.CLEAR
 });
 
 export {

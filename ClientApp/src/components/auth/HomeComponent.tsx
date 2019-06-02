@@ -31,7 +31,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                     <div>
                         <ListGroup>
                         {users.items.map((user: IUser, index: number) =>
-                            <ListGroupItem>
+                            <ListGroupItem key={index}>
                                 <div><strong>Id:</strong> {user.id}</div>
                                 <div><strong>Username:</strong> {user.userName}</div>
                                 <div><strong>Email:</strong> {user.email}</div>

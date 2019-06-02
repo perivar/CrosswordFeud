@@ -1,19 +1,35 @@
-import { alertTypes } from './types';
+// ducks/reducers.ts
+// The reducer deals with updating the state.
 
-const alertReducer = function alert(state = {}, action: any) {
+import { AlertActionTypes, AlertActions } from './types';
+
+interface IAlertState {
+  className: string;
+  message: string;
+}
+
+const initialAlertState: IAlertState = {
+  className: '',
+  message: ''
+}
+
+const alertReducer = function alert(state = initialAlertState, action: AlertActions): IAlertState {
   switch (action.type) {
-    case alertTypes.SUCCESS:
+    case AlertActionTypes.SUCCESS:
       return {
-        type: 'alert-success',
+        className: 'alert-success',
         message: action.message
       };
-    case alertTypes.ERROR:
+    case AlertActionTypes.ERROR:
       return {
-        type: 'alert-danger',
+        className: 'alert-danger',
         message: action.message
       };
-    case alertTypes.CLEAR:
-      return {};
+    case AlertActionTypes.CLEAR:
+      return {
+        className: '',
+        message: ''
+      };
     default:
       return state
   }
