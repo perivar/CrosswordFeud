@@ -2,11 +2,7 @@
 // The reducer deals with updating the state.
 
 import { AlertActionTypes, AlertActions } from './types';
-
-interface IAlertState {
-  className: string;
-  message: string;
-}
+import { IAlertState } from '../../auth/types';
 
 const initialAlertState: IAlertState = {
   className: '',

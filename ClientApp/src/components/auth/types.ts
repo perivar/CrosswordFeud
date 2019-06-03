@@ -1,3 +1,5 @@
+import { IForecastState } from "../forecast/types";
+
 export interface IHomeProps {
     users: IUserState,
     logon: ILogon,
@@ -32,9 +34,9 @@ export interface IRegisterState {
     registering?: boolean // only used by the reducer
 }
 
-export interface IRootState {
-    users: IUserState,
-    authentication: IAuthState
+export interface IAlertState {
+    className: string;
+    message: string;
 }
 
 export interface IUserState {
@@ -77,3 +79,15 @@ export interface ILogon {
     token: string
 }
 
+export interface IRootState {
+    users: IUserState,
+    authentication: IAuthState
+}
+
+export interface IStoreState {
+    alert: IAlertState,
+    authentication: IAuthState,
+    forecast: IForecastState,
+    registration: IRegisterState,
+    users: IUserState
+}

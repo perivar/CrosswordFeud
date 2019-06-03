@@ -1,22 +1,23 @@
-import { applyMiddleware, combineReducers, createStore } from "redux";
+import { applyMiddleware, combineReducers, createStore, Store } from "redux";
 import thunk from "redux-thunk";
 import { logger } from "./logger";
 
-import forecast from "../components/forecast/ducks/reducers";
-import alert from "../components/alert/ducks/reducers";
-import authentication from "../components/auth/ducks/reducers";
+import forecastReducer from "../components/forecast/ducks/reducers";
+import alertReducer from "../components/alert/ducks/reducers";
+import authenticationReducer from "../components/auth/ducks/reducers";
+import { IStoreState } from "../components/auth/types";
 
 const reducers = {
-  ...forecast,
-  ...alert,
-  ...authentication
+  ...forecastReducer,
+  ...alertReducer,
+  ...authenticationReducer
 };
 
-export default function configureStore(initialState = {}) {
-  const rootReducer = combineReducers(reducers as any);
-  return createStore(
+export default function configureStore(): Store<IStoreState> {
+  const rootReducer = combineReducers<IStoreState>(reducers);
+  return createStore<IStoreState, any, any, any>(
     rootReducer,
-    initialState,
+    undefined,
     applyMiddleware(thunk, logger)
   );
 }

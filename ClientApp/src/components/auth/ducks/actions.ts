@@ -96,8 +96,8 @@ function _delete(username: string) {
 
         userService.delete(username)
             .then(
-                (users: any) => {
-                    dispatch(success(username, ''));
+                (id: string) => {
+                    dispatch(success(username, id));
                 },
                 (error: any) => {
                     dispatch(failure(username, '', error.toString()));

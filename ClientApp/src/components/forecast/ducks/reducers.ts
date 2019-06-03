@@ -1,13 +1,13 @@
 import { IForecast, IForecastState } from "../types";
 import * as types from "./types";
 
-const INITIAL_STATE: IForecastState = {
+const initialForecastState: IForecastState = {
   forecasts: [] as IForecast[],
   loading: false,
   loadError: null
 };
 
-const forecastReducer = (state = INITIAL_STATE, action: any) => {
+const forecastReducer = (state = initialForecastState, action: any) => {
   switch (action.type) {
     case types.GET_FORECAST_STARTED:
       return {
