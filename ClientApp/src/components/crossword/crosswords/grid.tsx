@@ -3,20 +3,11 @@ import { gridSize, clueMapKey } from './helpers';
 import { constants } from './constants';
 import GridCell from './cell';
 import { classNames } from './classNames';
-import { IPosition } from './crossword';
+import Crossword, { IPosition } from './crossword';
 
 export interface ISeparatorDescription {
   direction: string,
-  separator: string
-}
-
-export interface IGridProps {
-  rows: number,
-  columns: number,
-  cells: any,
-  separators: any,
-  crossword: any,
-  focusedCell: IPosition
+  separator: string,
 }
 
 export interface IGrid {
@@ -26,6 +17,15 @@ export interface IGrid {
   isError: boolean,
   isAnimating: boolean,
   value: string
+}
+
+export interface IGridProps {
+  rows: number,
+  columns: number,
+  cells: IGrid[][],
+  separators: Record<string, ISeparatorDescription>,
+  crossword: Crossword,
+  focusedCell: IPosition
 }
 
 // Position at end of previous cell
@@ -105,7 +105,7 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
 };
 
 export const Grid = (props: IGridProps) => {
-  const getSeparators = (x: number, y: number) => props.separators[clueMapKey(x, y)] as ISeparatorDescription;
+  const getSeparators = (x: number, y: number) => props.separators[clueMapKey(x, y)];
 
   const handleSelect = (x: number, y: number) => props.crossword.onSelect(x, y);
 
@@ -120,7 +120,7 @@ export const Grid = (props: IGridProps) => {
   const cellsIn = props.cells;
 
   range(props.rows).forEach(y => range(props.columns).forEach((x: number) => {
-    const cellProps = cellsIn[x][y];
+    const cellProps = cellsIn[x][y] as IGrid;
 
     if (cellProps.isEditable) {
 

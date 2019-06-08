@@ -14,7 +14,6 @@ export interface IConfirmButtonState {
   confirming: boolean
 }
 
-
 class ConfirmButton extends Component<IConfirmButtonProps, IConfirmButtonState> {
 
   constructor(props: IConfirmButtonProps) {

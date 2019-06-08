@@ -44,7 +44,7 @@ import { IGrid } from './grid';
 
 const isAcross = (clue: IClue): boolean => clue.direction === 'across';
 
-const getLastCellInClue = (clue: IClue): any => {
+const getLastCellInClue = (clue: IClue): IPosition => {
 
   const ax: any = {
     true: 'x',
@@ -57,27 +57,27 @@ const getLastCellInClue = (clue: IClue): any => {
   const cell = {
     [axis]: clue.position[axis] + (clue.length - 1),
     [otherAxis]: clue.position[otherAxis],
-  };
+  } as IPosition;
 
   return cell;
 };
 
-const isFirstCellInClue = (cell: IPosition, clue: IClue) => {
+const isFirstCellInClue = (cell: IPosition, clue: IClue): boolean => {
   const axis = isAcross(clue) ? 'x' : 'y';
 
   return cell[axis] === clue.position[axis];
 };
 
-const isLastCellInClue = (cell: IPosition, clue: IClue) => {
+const isLastCellInClue = (cell: IPosition, clue: IClue): boolean => {
   const axis = isAcross(clue) ? 'x' : 'y';
 
   return cell[axis] === clue.position[axis] + (clue.length - 1);
 };
 
-const getNextClueInGroup = (entries: IClue[], clue: IClue) => {
+const getNextClueInGroup = (entries: IClue[], clue: IClue): IClue => {
   const newClueId = clue.group[clue.group.findIndex((id: string) => id === clue.id) + 1];
 
-  return entries.find(entry => entry.id === newClueId);
+  return entries.find(entry => entry.id === newClueId) as IClue;
 };
 
 const getPreviousClueInGroup = (entries: IClue[], clue: IClue) => {
@@ -88,7 +88,7 @@ const getPreviousClueInGroup = (entries: IClue[], clue: IClue) => {
 
 const getGroupEntriesForClue = (entries: IClue[], group: any) => group.reduce((acc: IClue[], clueId: string) => {
 
-  const entry = entries.find(e => e.id === clueId);
+  const entry = entries.find(e => e.id === clueId) as IClue;
 
   if (entry) {
     acc.push(entry);
@@ -97,9 +97,9 @@ const getGroupEntriesForClue = (entries: IClue[], group: any) => group.reduce((a
   return acc;
 }, []);
 
-const clueIsInGroup = (clue: IClue) => clue.group.length !== 1;
+const clueIsInGroup = (clue: IClue): boolean => clue.group.length !== 1;
 
-const getAllSeparatorsForGroup = (clues: IClue[]) => {
+const getAllSeparatorsForGroup = (clues: IClue[]): any => {
 
   const k: any = {};
 
@@ -122,20 +122,20 @@ const getAllSeparatorsForGroup = (clues: IClue[]) => {
   return k;
 };
 
-const getClueForGroupedEntries = (clueGroup: IClue[]) => clueGroup[0].clue;
+const getClueForGroupedEntries = (clueGroup: IClue[]): any => clueGroup[0].clue;
 
-const getNumbersForGroupedEntries = (clueGroup: IClue[]) => clueGroup[0].humanNumber;
+const getNumbersForGroupedEntries = (clueGroup: IClue[]): any => clueGroup[0].humanNumber;
 
-const getTtotalLengthOfGroup = (clueGroup: IClue[]) => clueGroup.reduce((total: number, clue: IClue) => total + clue.length, 0);
+const getTotalLengthOfGroup = (clueGroup: IClue[]) => clueGroup.reduce((total: number, clue: IClue): number => total + clue.length, 0);
 
-const getAnagramClueData = (entries: IClue[], clue: IClue) => {
+const getAnagramClueData = (entries: IClue[], clue: IClue): any => {
 
   if (clueIsInGroup(clue)) {
     const groupEnts = getGroupEntriesForClue(entries, clue.group);
     const groupClue = {
       id: clue.id,
       number: getNumbersForGroupedEntries(groupEnts),
-      length: getTtotalLengthOfGroup(groupEnts),
+      length: getTotalLengthOfGroup(groupEnts),
       separatorLocations: getAllSeparatorsForGroup(groupEnts),
       direction: '',
       clue: getClueForGroupedEntries(groupEnts),
@@ -147,9 +147,9 @@ const getAnagramClueData = (entries: IClue[], clue: IClue) => {
   return clue;
 };
 
-const cluesAreInGroup = (clue: IClue, otherClue: IClue) => otherClue.group.includes(clue.id);
+const cluesAreInGroup = (clue: IClue, otherClue: IClue): boolean => otherClue.group.includes(clue.id);
 
-const cellsForEntry = (entry: IClue) => (isAcross(entry)
+const cellsForEntry = (entry: IClue): any => (isAcross(entry)
   ? range(entry.position.x, entry.position.x + entry.length).map((x: number) => ({
     x,
     y: entry.position.y,
@@ -159,11 +159,11 @@ const cellsForEntry = (entry: IClue) => (isAcross(entry)
     y,
   })));
 
-const checkClueHasBeenAnswered = (grid: IGrid[][], entry: IClue) => cellsForEntry(entry).every((position: IPosition) => /^.$/.test(grid[position.x][position.y].value));
+const checkClueHasBeenAnswered = (grid: IGrid[][], entry: IClue): any => cellsForEntry(entry).every((position: IPosition) => /^.$/.test(grid[position.x][position.y].value));
 
-const otherDirection = (direction: string) => (direction === 'across' ? 'down' : 'across');
+const otherDirection = (direction: string): string => (direction === 'across' ? 'down' : 'across');
 
-const cellsForClue = (entries: IClue[], clue: IClue) => {
+const cellsForClue = (entries: IClue[], clue: IClue): any => {
   if (clueIsInGroup(clue)) {
     const entriesForClue = getGroupEntriesForClue(entries, clue.group);
 
@@ -174,11 +174,11 @@ const cellsForClue = (entries: IClue[], clue: IClue) => {
 };
 
 /** Hash key for the cell at x, y in the clue map */
-const clueMapKey = (x: number, y: number) => `${x}_${y}`;
+const clueMapKey = (x: number, y: number): string => `${x}_${y}`;
 
-const cluesFor = (clueMap: any, x: number, y: number) => clueMap[clueMapKey(x, y)];
+const cluesFor = (clueMap: any, x: number, y: number): any => clueMap[clueMapKey(x, y)];
 
-const getClearableCellsForEntry = (grid: IGrid[][], clueMap: any, entries: IClue[], entry: IClue) => {
+const getClearableCellsForEntry = (grid: IGrid[][], clueMap: any, entries: IClue[], entry: IClue): any => {
   const direction = otherDirection(entry.direction);
 
   return cellsForEntry(entry).filter((cell: IPosition) => {
@@ -196,7 +196,7 @@ const getClearableCellsForEntry = (grid: IGrid[][], clueMap: any, entries: IClue
   });
 };
 
-const getClearableCellsForClue = (grid: IGrid[][], clueMap: any, entries: IClue[], clue: IClue) => {
+const getClearableCellsForClue = (grid: IGrid[][], clueMap: any, entries: IClue[], clue: IClue): any => {
 
   if (clueIsInGroup(clue)) {
     const entriesForClue = getGroupEntriesForClue(entries, clue.group);
@@ -228,12 +228,12 @@ const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: 
         : '',
   }))) as IGrid[][];
 
-  entries.forEach((entry : IClue) => {
+  entries.forEach((entry: IClue) => {
     const { x, y } = entry.position as IPosition;
 
     grid[x][y].number = entry.number;
 
-    cellsForEntry(entry).forEach((cell) => {
+    cellsForEntry(entry).forEach((cell: IPosition) => {
       grid[cell.x][cell.y].isEditable = true;
     });
   });
@@ -243,7 +243,7 @@ const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: 
 };
 
 /** A map for looking up clues that a given cell relates to */
-const buildClueMap = (clues: IClue[]) => {
+const buildClueMap = (clues: IClue[]): any => {
 
   type ClueMapType = Record<string, any>;
   const map: ClueMapType = {};
@@ -268,7 +268,7 @@ const buildClueMap = (clues: IClue[]) => {
 };
 
 /** A map for looking up separators (i.e word or hyphen) that a given cell relates to */
-const buildSeparatorMap = (clues: IClue[]) => {
+const buildSeparatorMap = (clues: IClue[]): any => {
   const flattenReducer = (acc: any, curr: any) => {
     let flattened = curr;
 
@@ -318,12 +318,12 @@ const buildSeparatorMap = (clues: IClue[]) => {
     }, {});
 };
 
-const entryHasCell = (entry: IClue, x: number, y: number) => cellsForEntry(entry).some((cell: IPosition) => cell.x === x && cell.y === y);
+const entryHasCell = (entry: IClue, x: number, y: number): boolean => cellsForEntry(entry).some((cell: IPosition) => cell.x === x && cell.y === y);
 
 /** Can be used for width or height, as the cell height == cell width */
-const gridSize = (cells: number) => cells * (constants.cellSize + constants.borderSize) + constants.borderSize;
+const gridSize = (cells: number): number => cells * (constants.cellSize + constants.borderSize) + constants.borderSize;
 
-const mapGrid = (grid: IGrid[][], f: any) => grid.map((col, x: number) => col.map((cell: any, y: number) => f(cell, x, y)));
+const mapGrid = (grid: IGrid[][], f: any): any => grid.map((col, x: number) => col.map((cell: any, y: number) => f(cell, x, y)));
 
 export {
   isAcross,
@@ -349,7 +349,7 @@ export {
   getNumbersForGroupedEntries,
   getClueForGroupedEntries,
   getAllSeparatorsForGroup,
-  getTtotalLengthOfGroup,
+  getTotalLengthOfGroup as getTtotalLengthOfGroup,
   cluesAreInGroup,
   checkClueHasBeenAnswered,
   getClearableCellsForClue,

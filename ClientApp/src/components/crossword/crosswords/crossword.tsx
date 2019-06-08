@@ -719,7 +719,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     if (entry.solution) {
       this.setState({
         grid: mapGrid(this.state.grid, (cell: any, x: number, y: number) => {
-          if (cells.some(c => c.x === x && c.y === y)) {
+          if (cells.some((c: IPosition) => c.x === x && c.y === y)) {
             const n = entry.direction === 'across'
               ? x - entry.position.x
               : y - entry.position.y;
