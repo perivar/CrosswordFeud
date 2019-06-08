@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { classNames } from '../crosswords/classNames';
+import { classNames } from './classNames';
 
 const timeout = 2000;
 

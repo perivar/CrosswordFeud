@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 // import bean from 'bean';
 import fastdom from 'fastdom';
-import { classNames } from '../crosswords/classNames';
+import { classNames } from './classNames';
 import { isBreakpoint } from '../lib/detect';
 import { scrollTo } from '../lib/scroller';
 import { IPosition } from './crossword';
@@ -19,16 +19,16 @@ export interface IClueProps {
 }
 
 export interface IClue {
-  id: string,
-  number: number,
-  humanNumber: string,
-  group: string[],
-  clue: string,
-  position: IPosition,
-  separatorLocations: any // ',': [3, 9]
-  direction: string,
-  length: number,
-  solution: string
+  id: string,             // '1-across',
+  number: number,         // 1
+  humanNumber: string,    // '1'
+  group: string[],        // ['1-across']
+  clue: string,           // 'Toy on a string (2-2)'
+  position: IPosition,    // { x: 0, y: 0 }
+  separatorLocations: any // { '-': [2] }
+  direction: string,      // 'across'
+  length: number,         // 4
+  solution: string        // YOYO
 }
 
 export interface IClueEntry {

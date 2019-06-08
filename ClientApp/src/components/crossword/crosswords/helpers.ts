@@ -1,10 +1,10 @@
-import { constants } from '../crosswords/constants';
+import { constants } from './constants';
 import flattenDeep from 'lodash/flattenDeep';
 import range from 'lodash/range';
 import uniqBy from 'lodash/uniqBy';
 
 import { IClue } from './clues';
-import { ICell, IPosition } from './crossword';
+import { IPosition } from './crossword';
 import { IGrid } from './grid';
 
 // const flattenDeep = (arr: any): any => Array.isArray(arr)
@@ -62,13 +62,13 @@ const getLastCellInClue = (clue: IClue): any => {
   return cell;
 };
 
-const isFirstCellInClue = (cell: ICell, clue: IClue) => {
+const isFirstCellInClue = (cell: IPosition, clue: IClue) => {
   const axis = isAcross(clue) ? 'x' : 'y';
 
   return cell[axis] === clue.position[axis];
 };
 
-const isLastCellInClue = (cell: ICell, clue: IClue) => {
+const isLastCellInClue = (cell: IPosition, clue: IClue) => {
   const axis = isAcross(clue) ? 'x' : 'y';
 
   return cell[axis] === clue.position[axis] + (clue.length - 1);
@@ -181,7 +181,7 @@ const cluesFor = (clueMap: any, x: number, y: number) => clueMap[clueMapKey(x, y
 const getClearableCellsForEntry = (grid: IGrid[][], clueMap: any, entries: IClue[], entry: IClue) => {
   const direction = otherDirection(entry.direction);
 
-  return cellsForEntry(entry).filter((cell: ICell) => {
+  return cellsForEntry(entry).filter((cell: IPosition) => {
     const clues = cluesFor(clueMap, cell.x, cell.y);
     const otherClue = clues[direction];
 
@@ -215,7 +215,7 @@ const getClearableCellsForClue = (grid: IGrid[][], clueMap: any, entries: IClue[
 /**
  * Builds the initial state of the grid given the number of rows, columns, and a list of clues.
  */
-const buildGrid = (rows: any, columns: any, entries: IClue[], savedState: any): IGrid[][] => {
+const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: any): IGrid[][] => {
 
   const grid = range(columns).map(x => range(rows).map(y => ({
     isHighlighted: false,
@@ -228,8 +228,8 @@ const buildGrid = (rows: any, columns: any, entries: IClue[], savedState: any): 
         : '',
   }))) as IGrid[][];
 
-  entries.forEach((entry) => {
-    const { x, y } = entry.position;
+  entries.forEach((entry : IClue) => {
+    const { x, y } = entry.position as IPosition;
 
     grid[x][y].number = entry.number;
 
@@ -249,7 +249,7 @@ const buildClueMap = (clues: IClue[]) => {
   const map: ClueMapType = {};
 
   clues.forEach((clue) => {
-    cellsForEntry(clue).forEach((cell: ICell) => {
+    cellsForEntry(clue).forEach((cell: IPosition) => {
       const key = clueMapKey(cell.x, cell.y);
 
       if (map[key] === undefined) {
@@ -318,7 +318,7 @@ const buildSeparatorMap = (clues: IClue[]) => {
     }, {});
 };
 
-const entryHasCell = (entry: IClue, x: number, y: number) => cellsForEntry(entry).some((cell: ICell) => cell.x === x && cell.y === y);
+const entryHasCell = (entry: IClue, x: number, y: number) => cellsForEntry(entry).some((cell: IPosition) => cell.x === x && cell.y === y);
 
 /** Can be used for width or height, as the cell height == cell width */
 const gridSize = (cells: number) => cells * (constants.cellSize + constants.borderSize) + constants.borderSize;

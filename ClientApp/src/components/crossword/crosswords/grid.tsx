@@ -1,9 +1,9 @@
 import React from 'react';
-import { gridSize, clueMapKey } from '../crosswords/helpers';
-import { constants } from '../crosswords/constants';
-import GridCell from '../crosswords/cell';
-import { classNames } from '../crosswords/classNames';
-import { ICell } from './crossword';
+import { gridSize, clueMapKey } from './helpers';
+import { constants } from './constants';
+import GridCell from './cell';
+import { classNames } from './classNames';
+import { IPosition } from './crossword';
 
 export interface ISeparatorDescription {
   direction: string,
@@ -16,7 +16,7 @@ export interface IGridProps {
   cells: any,
   separators: any,
   crossword: any,
-  focusedCell: ICell
+  focusedCell: IPosition
 }
 
 export interface IGrid {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { gridSize } from '../crosswords/helpers';
-import { constants } from '../crosswords/constants';
-import { classNames } from '../crosswords/classNames';
+import { gridSize } from './helpers';
+import { constants } from './constants';
+import { classNames } from './classNames';
 
 export interface ICellProps {
   x: number,

@@ -17,7 +17,7 @@ import {
   cluesAreInGroup,
   checkClueHasBeenAnswered,
   getClearableCellsForClue,
-} from '../crosswords/helpers';
+} from './helpers';
 
 import { IGrid } from './grid';
 import { IClue } from './clues';

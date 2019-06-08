@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ConfirmButton } from '../crosswords/confirm-button';
+import { ConfirmButton } from './confirm-button';
 import Crossword from './crossword';
 
 const buttonClassName = 'button button--primary';
