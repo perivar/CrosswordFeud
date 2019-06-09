@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-import { IClue } from '../clues';
+import { IClue } from '../../types';
 
 export interface IClueInputProps {
   value: string,

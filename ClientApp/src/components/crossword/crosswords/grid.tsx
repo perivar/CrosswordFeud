@@ -3,34 +3,21 @@ import { gridSize, clueMapKey } from './helpers';
 import { constants } from './constants';
 import GridCell from './cell';
 import { classNames } from './classNames';
-import Crossword, { IPosition } from './crossword';
-
-export interface ISeparatorDescription {
-  direction: string,
-  separator: string,
-}
-
-export interface IGrid {
-  isAnimating: boolean,
-  isEditable: boolean,
-  isError: boolean,
-  isHighlighted: boolean,
-  number: number,
-  value: string
-}
+import Crossword from './crossword';
+import { ISeparatorDescription, Direction, ISeparatorMap, ICell, IPosition, IGrid } from '../types';
 
 export interface IGridProps {
   rows: number,
   columns: number,
-  cells: IGrid[][],
-  separators: Record<string, ISeparatorDescription>,
+  cells: IGrid,
+  separators: ISeparatorMap, //Record<string, ISeparatorDescription>,
   crossword: Crossword,
-  focusedCell: IPosition,
-  ref: React.RefObject<IGrid>
+  focusedCell?: IPosition,
+  ref: React.RefObject<ICell>
 }
 
-// Position at end of previous cell
-const createWordSeparator = (x: number, y: number, direction: string): any => {
+// IPosition at end of previous cell
+const createWordSeparator = (x: number, y: number, direction: Direction): React.ReactNode => {
   const top = gridSize(y);
   const left = gridSize(x);
   const borderWidth = 1;
@@ -60,8 +47,8 @@ const createWordSeparator = (x: number, y: number, direction: string): any => {
   }
 };
 
-// Position in-between this and previous cells
-const createHyphenSeparator = (x: number, y: number, direction: string): any => {
+// IPosition in-between this and previous cells
+const createHyphenSeparator = (x: number, y: number, direction: Direction): React.ReactNode => {
   const top = gridSize(y);
   const left = gridSize(x);
   const borderWidth = 1;
@@ -95,7 +82,7 @@ const createHyphenSeparator = (x: number, y: number, direction: string): any => 
   }
 };
 
-const createSeparator = (x: number, y: number, separatorDescription: ISeparatorDescription): any => {
+const createSeparator = (x: number, y: number, separatorDescription: ISeparatorDescription): React.ReactNode => {
   if (separatorDescription) {
     if (separatorDescription.separator === ',') {
       return createWordSeparator(x, y, separatorDescription.direction);
@@ -105,19 +92,22 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
   }
 };
 
-export const Grid = (props: IGridProps) => {
-  const getSeparators = (x: number, y: number) => props.separators[clueMapKey(x, y)];
-  const handleSelect = (x: number, y: number) => props.crossword.onSelect(x, y);
+export const Grid = (props: IGridProps): React.ReactNode => {
+  const getSeparators = (x: number, y: number): ISeparatorDescription =>
+    props.separators[clueMapKey(x, y)];
+
+  const handleSelect = (x: number, y: number): void =>
+    props.crossword.onSelect(x, y);
 
   const width = gridSize(props.columns);
   const height = gridSize(props.rows);
   const cells = [] as any;
-  let separators = [] as string[];
+  let separators = [] as React.ReactNode[];
 
   const range = (n: number) => Array.from({ length: n }, (value, key) => key);
 
   range(props.rows).forEach(y => range(props.columns).forEach((x: number) => {
-    const cellProps = props.cells[x][y] as IGrid;
+    const cellProps = props.cells[x][y] as ICell;
 
     if (cellProps.isEditable) {
 
@@ -132,9 +122,9 @@ export const Grid = (props: IGridProps) => {
           key={`cell_${x}_${y}`}
           isHighlighted={isHighlighted}
           isFocused={
-            props.focusedCell
-            && x === props.focusedCell.x
-            && y === props.focusedCell.y}
+            (props.focusedCell != undefined) &&
+            x === props.focusedCell.x &&
+            y === props.focusedCell.y}
         />
       );
 

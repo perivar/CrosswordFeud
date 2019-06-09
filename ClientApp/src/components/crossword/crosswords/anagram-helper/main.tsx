@@ -6,9 +6,8 @@ import shuffle from 'lodash/shuffle';
 import { ClueInput } from './clue-input';
 import { CluePreview, ICluePreview } from './clue-preview';
 import { Ring } from './ring';
-import { IClue } from '../clues';
-import Crossword, { IPosition } from '../crossword';
-import { IGrid } from '../grid';
+import Crossword from '../crossword';
+import { IClue, IGrid, IPosition, ICell } from '../../types';
 
 // function shuffle(array: any) {
 //   for (let i = array.length - 1; i > 0; i--) {
@@ -20,7 +19,7 @@ import { IGrid } from '../grid';
 export interface IAnagramHelperProps {
   entries: IClue[],
   crossword?: Crossword, // make sure it can be undefined
-  grid: IGrid[][],
+  grid: IGrid,
   focusedEntry: any
   close: any
 }
@@ -127,6 +126,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
 
     return cells.map((coords: IPosition) => Object.assign({}, this.props.grid[coords.x][coords.y], {
       key: `${coords.x},${coords.y}`,
+      solved: false
     }));
   }
 
@@ -192,7 +192,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
 
 AnagramHelper.defaultProps = {
   entries: new Array<IClue>(),
-  grid: new Array<IGrid[]>(),
+  grid: new Array<ICell[]>(),
   close: null,
   focusedEntry: null
 };

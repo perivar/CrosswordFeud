@@ -3,6 +3,7 @@ export const isBreakpoint = (criteria: any) => {
   return false;
 };
 
+export const isIOS = () => /(iPad|iPhone|iPod touch)/i.test(navigator.userAgent);
 
 /*
 import mediator from '../lib/mediator';

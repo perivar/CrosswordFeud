@@ -1,11 +1,10 @@
 files:
-  include: 'src/stylesheets/**/*.scss'
+  include: "./src/**/*.scss"
 
 options:
   formatter: stylish
   merge-default-rules: false
 rules:
-
   # Extends
   extends-before-declarations: 1
   extends-before-mixins: 1
@@ -72,7 +71,7 @@ rules:
     - include: false
   property-sort-order:
     - 0
-    - order: 'margin,'
+    - order: "margin,"
   quotes:
     - 1
     - style: single

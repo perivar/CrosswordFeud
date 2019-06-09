@@ -5,7 +5,7 @@ import fastdom from 'fastdom';
 import { classNames } from './classNames';
 import { isBreakpoint } from '../lib/detect';
 import { scrollTo } from '../lib/scroller';
-import { IPosition } from './crossword';
+import { IClue, Direction } from '../types';
 
 export interface IClueProps {
   id: string,
@@ -16,25 +16,6 @@ export interface IClueProps {
   isSelected: boolean,
   setReturnPosition: (position: number) => void,
   focusFirstCellInClueById: (id: string) => void
-}
-
-export interface IClue {
-  id: string,             // '1-across',
-  number: number,         // 1
-  humanNumber: string,    // '1'
-  group: string[],        // ['1-across']
-  clue: string,           // 'Toy on a string (2-2)'
-  position: IPosition,    // { x: 0, y: 0 }
-  separatorLocations: any // { '-': [2] }
-  direction: string,      // 'across'
-  length: number,         // 4
-  solution: string        // YOYO
-}
-
-export interface IClueEntry {
-  entry: IClue,
-  hasAnswered: boolean,
-  isSelected: boolean
 }
 
 class Clue extends Component<IClueProps> {
@@ -75,9 +56,15 @@ class Clue extends Component<IClueProps> {
 
 export interface ICluesProps {
   focused: IClue,
-  clues: any,
+  clues: IClueEntry[],
   setReturnPosition: (position: number) => void,
   focusFirstCellInClueById: (id: string) => void
+}
+
+export interface IClueEntry {
+  entry: IClue,
+  hasAnswered: boolean,
+  isSelected: boolean
 }
 
 export interface ICluesState {
@@ -142,14 +129,14 @@ class Clues extends Component<ICluesProps, ICluesState> {
       < this.$cluesNode.scrollTop + this.$cluesNode.clientHeight;
 
     if (!visible) {
-      const offset = node.offsetTop - this.$cluesNode.clientHeight / 2;      
+      const offset = node.offsetTop - this.$cluesNode.clientHeight / 2;
       scrollTo(offset, 250, 'easeOutQuad', this.$cluesNode);
     }
   }
 
   render() {
     const headerClass = 'crossword__clues-header';
-    const cluesByDirection = (direction: string) => this.props.clues
+    const cluesByDirection = (direction: Direction) => this.props.clues
       .filter((clue: IClueEntry) => clue.entry.direction === direction)
       .map((clue: IClueEntry) => (
         <Clue

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { IClue } from '../clues';
+import { IClue } from '../../types';
 
 // Checks a object in the form{",":[4,7]}
 const checkIfLetterHasSeparator = (locations: any, letterIndex: number): string => {

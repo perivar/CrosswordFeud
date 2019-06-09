@@ -14,14 +14,13 @@ export interface IControlProps {
 
 class Controls extends Component<IControlProps> {
 
-  render() {
-
+  render(): React.ReactNode {
     const hasSolutions = this.props.hasSolutions;
     const hasFocus = this.props.clueInFocus;
 
     const controls = {
-      clue: [] as any,
-      grid: [] as any
+      clue: [] as React.ReactNode[],
+      grid: [] as React.ReactNode[]
     };
 
     // GRID CONTROLS
