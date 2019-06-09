@@ -349,7 +349,7 @@ export {
   getNumbersForGroupedEntries,
   getClueForGroupedEntries,
   getAllSeparatorsForGroup,
-  getTotalLengthOfGroup as getTtotalLengthOfGroup,
+  getTotalLengthOfGroup,
   cluesAreInGroup,
   checkClueHasBeenAnswered,
   getClearableCellsForClue,

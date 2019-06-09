@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { IClue } from '../clues';
 
 // Checks a object in the form{",":[4,7]}
-const checkIfLetterHasSeparator = (locations: any, letterIndex: number) => {
+const checkIfLetterHasSeparator = (locations: any, letterIndex: number): string => {
   const spaces = locations[','];
   const letterHasBoundary = (separators: any) => separators.includes(letterIndex);
 
@@ -19,12 +19,27 @@ const checkIfLetterHasSeparator = (locations: any, letterIndex: number) => {
 };
 
 export interface ICluePreviewProps {
-  letters: any,
-  entries: IClue[],
+  letters: ILetter[],
+  entries: ICluePreview[],
   hasShuffled: boolean,
   clue: IClue
 }
 
+export interface ILetter {
+  value: string,
+  entered: boolean
+}
+
+export interface ICluePreview {
+  isAnimating: boolean,
+  isEditable: boolean,
+  isError: boolean,
+  isHighlighted: boolean,
+  key: string,
+  number: number,
+  value: string,
+  solved: boolean
+}
 
 class CluePreview extends Component<ICluePreviewProps> {
 
@@ -38,17 +53,17 @@ class CluePreview extends Component<ICluePreviewProps> {
      * If the user hasn't yet clicked 'shuffle' (this.props.hasShuffled) just
      * display the entries as they are, preserving any blank spaces.
      */
-  getEntries(): IClue[] {
-    const unsolved = this.props.letters.filter((l: any) => !l.entered);
+  getEntries(): ICluePreview[] {
+    const unsolved = this.props.letters.filter((l: ILetter) => !l.entered);
 
-    return this.props.entries.map((entry: any) => {
+    return this.props.entries.map((entry: ICluePreview) => {
       entry.solved = !!entry.value;
 
       const returnVal = this.props.hasShuffled
         ? (entry.value && entry) || unsolved.shift()
         : entry;
 
-      return Object.assign({}, { key: entry.key }, returnVal);
+      return { ...entry, ...returnVal, key: entry.key };
     });
   }
 
@@ -72,7 +87,7 @@ class CluePreview extends Component<ICluePreviewProps> {
           {' '}
           {this.props.clue.clue}
         </div>
-        {entries.map((entry: any, i: number) => {
+        {entries.map((entry: ICluePreview, i: number) => {
           const classNames = checkIfLetterHasSeparator(
             this.props.clue.separatorLocations,
             i + 1,

@@ -13,7 +13,7 @@ import zip from 'lodash/zip';
 import { Clues, IClue } from './clues';
 import { Controls } from './controls';
 import { HiddenInput } from './hidden-input';
-import { Grid, IGrid } from './grid';
+import { Grid, IGrid, IGridProps } from './grid';
 import {
   buildClueMap,
   buildGrid,
@@ -425,7 +425,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     });
   }
 
-  getCellValue(x: number, y: number) {
+  getCellValue(x: number, y: number): string {
     return this.state.grid[x][y].value;
   }
 
@@ -532,7 +532,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  isAcross() {
+  isAcross(): boolean {
     return this.state.directionOfEntry === 'across';
   }
 
@@ -816,7 +816,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       />
     );
 
-    const gridProps = {
+    const gridProps: IGridProps = {
       rows: this.rows,
       columns: this.columns,
       cells: this.state.grid,

@@ -4,9 +4,11 @@ import { ReactComponent as Close } from '../../svgs/close.svg';
 import { cellsForClue, getAnagramClueData } from '.././helpers';
 import shuffle from 'lodash/shuffle';
 import { ClueInput } from './clue-input';
-import { CluePreview } from './clue-preview';
+import { CluePreview, ICluePreview } from './clue-preview';
 import { Ring } from './ring';
 import { IClue } from '../clues';
+import Crossword, { IPosition } from '../crossword';
+import { IGrid } from '../grid';
 
 // function shuffle(array: any) {
 //   for (let i = array.length - 1; i > 0; i--) {
@@ -16,11 +18,11 @@ import { IClue } from '../clues';
 // }
 
 export interface IAnagramHelperProps {
-  focusedEntry: any,
-  entries: any,
-  close: any,
-  crossword: any,
-  grid: any
+  entries: IClue[],
+  crossword?: Crossword, // make sure it can be undefined
+  grid: IGrid[][],
+  focusedEntry: any
+  close: any
 }
 
 export interface IAnagramHelperState {
@@ -61,10 +63,9 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
      * shuffle it.
      *
      */
-  // eslint-disable-next-line class-methods-use-this
-  shuffleWord(word: string, entries: any) {
+  shuffleWord(word: string, entries: ICluePreview[]) {
     const wordEntries = entries
-      .map((entry: any) => entry.value.toLowerCase())
+      .map((entry: ICluePreview) => entry.value.toLowerCase())
       .filter((entry: any) => word.includes(entry))
       .filter(Boolean)
       .sort();
@@ -117,23 +118,19 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     return !!this.state.clueInput && this.state.clueInput.length > 0;
   }
 
-  entries() {
+  entries(): ICluePreview[] {
 
     const cells = cellsForClue(
       this.props.entries,
       this.props.focusedEntry,
     );
 
-    return cells.map((coords: any) => Object.assign({}, this.props.grid[coords.x][coords.y], {
+    return cells.map((coords: IPosition) => Object.assign({}, this.props.grid[coords.x][coords.y], {
       key: `${coords.x},${coords.y}`,
     }));
   }
 
   render() {
-
-    // const closeIcon = {
-    //   __html: closeCentralIcon,
-    // };
 
     const clue = getAnagramClueData(
       this.props.entries,
@@ -194,11 +191,10 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
 }
 
 AnagramHelper.defaultProps = {
-  focusedEntry: null,
-  entries: null,
+  entries: new Array<IClue>(),
+  grid: new Array<IGrid[]>(),
   close: null,
-  crossword: null,
-  grid: null
+  focusedEntry: null
 };
 
 export { AnagramHelper };

@@ -11,11 +11,11 @@ export interface ISeparatorDescription {
 }
 
 export interface IGrid {
-  number: number,
-  isHighlighted: boolean,
+  isAnimating: boolean,
   isEditable: boolean,
   isError: boolean,
-  isAnimating: boolean,
+  isHighlighted: boolean,
+  number: number,
   value: string
 }
 
@@ -25,11 +25,12 @@ export interface IGridProps {
   cells: IGrid[][],
   separators: Record<string, ISeparatorDescription>,
   crossword: Crossword,
-  focusedCell: IPosition
+  focusedCell: IPosition,
+  ref: React.RefObject<IGrid>
 }
 
 // Position at end of previous cell
-const createWordSeparator = (x: number, y: number, direction: string) => {
+const createWordSeparator = (x: number, y: number, direction: string): any => {
   const top = gridSize(y);
   const left = gridSize(x);
   const borderWidth = 1;
@@ -60,7 +61,7 @@ const createWordSeparator = (x: number, y: number, direction: string) => {
 };
 
 // Position in-between this and previous cells
-const createHyphenSeparator = (x: number, y: number, direction: string) => {
+const createHyphenSeparator = (x: number, y: number, direction: string): any => {
   const top = gridSize(y);
   const left = gridSize(x);
   const borderWidth = 1;
@@ -106,7 +107,6 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
 
 export const Grid = (props: IGridProps) => {
   const getSeparators = (x: number, y: number) => props.separators[clueMapKey(x, y)];
-
   const handleSelect = (x: number, y: number) => props.crossword.onSelect(x, y);
 
   const width = gridSize(props.columns);
@@ -116,11 +116,8 @@ export const Grid = (props: IGridProps) => {
 
   const range = (n: number) => Array.from({ length: n }, (value, key) => key);
 
-  // This is needed to appease ESLint (https://github.com/yannickcr/eslint-plugin-react/blob/master/docs/rules/no-unused-prop-types.md#false-positives-sfc)
-  const cellsIn = props.cells;
-
   range(props.rows).forEach(y => range(props.columns).forEach((x: number) => {
-    const cellProps = cellsIn[x][y] as IGrid;
+    const cellProps = props.cells[x][y] as IGrid;
 
     if (cellProps.isEditable) {
 

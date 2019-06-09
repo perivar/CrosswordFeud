@@ -37,18 +37,6 @@ export interface IClueEntry {
   isSelected: boolean
 }
 
-export interface ICluesProps {
-  focused: IClue,
-  clues: any,
-  setReturnPosition: (position: number) => void,
-  focusFirstCellInClueById: (id: string) => void
-}
-
-export interface ICluesState {
-  showGradient: boolean
-}
-
-
 class Clue extends Component<IClueProps> {
 
   onClick(e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) {
@@ -85,6 +73,16 @@ class Clue extends Component<IClueProps> {
   }
 }
 
+export interface ICluesProps {
+  focused: IClue,
+  clues: any,
+  setReturnPosition: (position: number) => void,
+  focusFirstCellInClueById: (id: string) => void
+}
+
+export interface ICluesState {
+  showGradient: boolean
+}
 
 class Clues extends Component<ICluesProps, ICluesState> {
 

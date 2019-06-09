@@ -25,7 +25,7 @@ class Cell extends Component<ICellProps> {
     );
   }
 
-  onClick(event: any) {
+  onClick(event: React.MouseEvent<SVGGElement, MouseEvent>) {
     event.preventDefault();
     this.props.handleSelect(this.props.x, this.props.y);
   }
@@ -77,8 +77,7 @@ class Cell extends Component<ICellProps> {
           className={classNames({
             'crossword__cell': true,
             'crossword__cell--focused': this.props.isFocused,
-            'crossword__cell--highlighted': this.props
-              .isHighlighted,
+            'crossword__cell--highlighted': this.props.isHighlighted,
           })}
         />
         {cellNumber}
