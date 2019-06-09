@@ -62,9 +62,9 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
      * shuffle it.
      *
      */
-  shuffleWord(word: string, entries: ICluePreview[]) {
+  shuffleWord(word: string, entries: any) {
     const wordEntries = entries
-      .map((entry: ICluePreview) => entry.value.toLowerCase())
+      .map((entry: any) => entry.value.toLowerCase())
       .filter((entry: any) => word.includes(entry))
       .filter(Boolean)
       .sort();

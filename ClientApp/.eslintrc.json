@@ -8,7 +8,8 @@
   "parser": "@typescript-eslint/parser",
   "plugins": ["@typescript-eslint"],
   "parserOptions": {
-    "project": "./ClientApp/tsconfig.json"
+    "project": "tsconfig.json",
+    "tsconfigRootDir": "ClientApp"
   },
   "rules": {
     "@typescript-eslint/interface-name-prefix": "off",          "// disagree with TS team on usefulness": "",

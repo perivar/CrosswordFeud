@@ -1,5 +1,5 @@
 {
-  "name": "CrosswordFeud",
+  "name": "crosswordfeud",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -68,7 +68,7 @@
     "test": "react-scripts test --env=jsdom",
     "test-ci": "cross-env TEAMCITY_VERSION=1 CI=true react-scripts test --env=jsdom --reporters=jest-teamcity-reporter",
     "eject": "react-scripts eject",
-    "lint": "node ./node_modules/eslint/bin/eslint.js --config .eslintrc.json --ext .js,.ts,.tsx src",
+    "lint": "node ./node_modules/eslint/bin/eslint.js --config .eslintrc.json --parser-options={tsconfigRootDir:null} --ext .js,.ts,.tsx src",
     "lint-ci": "node ./node_modules/eslint/bin/eslint.js --config .eslintrc.json --ext .js,.ts,.tsx --format node_modules/eslint-teamcity/index.js src"
   },
   "browserslist": [
