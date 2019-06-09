@@ -12,7 +12,7 @@ import RegisterContainer from './components/auth/RegisterContainer';
 import HomeContainer from './components/auth/HomeContainer';
 import PrivateRoute from "./components/auth/PrivateRouteComponent";
 import * as alertActions from './components/alert/ducks/actions';
-import Crossword, { ICrosswordData } from './components/crossword/crosswords/crossword'
+import Crossword from './components/crossword/crosswords/crossword'
 
 import { history } from './history';
 

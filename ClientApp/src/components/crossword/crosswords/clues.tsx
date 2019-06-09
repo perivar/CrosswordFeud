@@ -87,9 +87,9 @@ class Clues extends Component<ICluesProps, ICluesState> {
 
   componentDidMount() {
 
-    this.$cluesNode = this.clues.current as HTMLDivElement;
+    // this.$cluesNode = this.clues.current as HTMLDivElement;
 
-    const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
+    // const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
 
     // bean.on(this.$cluesNode, 'scroll', (e: any) => {
 

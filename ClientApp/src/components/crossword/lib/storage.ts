@@ -1,13 +1,10 @@
-/* eslint consistent-return: 0 */
-
 class Storage {
 
   private storage: any;
-  private available: boolean;
+  private available: boolean | undefined;
 
   constructor(type: any) {
-    // this.storage = window[type];
-    this.storage = localStorage;
+    this.storage = (window as any)[type];
     this.available = this.isAvailable();
   }
 

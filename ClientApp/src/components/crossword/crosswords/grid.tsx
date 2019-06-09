@@ -122,7 +122,7 @@ export const Grid = (props: IGridProps): React.ReactNode => {
           key={`cell_${x}_${y}`}
           isHighlighted={isHighlighted}
           isFocused={
-            (props.focusedCell != undefined) &&
+            (props.focusedCell !== undefined) &&
             x === props.focusedCell.x &&
             y === props.focusedCell.y}
         />
