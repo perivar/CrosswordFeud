@@ -375,12 +375,12 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
         if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
           // if (scrollY > gridOffsetBottom - stickyClueWrapperOffsetHeight) {
-          $stickyClueWrapper.setAttribute('style', `top: 'auto', bottom: 0`);
+          $stickyClueWrapper.setAttribute('style', `top: auto, bottom: 0px`);
         } else if (isIOS()) {
           // iOS doesn't support sticky things when the keyboard
           // is open, so we use absolute positioning and
           // programatically update the value of top
-          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}`);
+          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}px`);
         } else {
           $stickyClueWrapper.classList.add('is-fixed');
         }
