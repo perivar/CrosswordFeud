@@ -1,9 +1,15 @@
 import mediator from '../lib/mediator';
 
+interface IBreakPoint {
+  name: string,
+  isTweakpoint: boolean,
+  width: number
+}
+
 // These should match those defined in:
 //   stylesheets/_vars.scss
 //   common/app/layout/Breakpoint.scala
-const breakpoints = [
+const breakpoints: IBreakPoint[] = [
   {
     name: 'mobile',
     isTweakpoint: false,
@@ -46,9 +52,9 @@ const breakpoints = [
   },
 ];
 
-let currentBreakpoint: any;
-let currentTweakpoint: any;
-let supportsPushState: any;
+let currentBreakpoint: string;
+let currentTweakpoint: string;
+let supportsPushState: boolean;
 
 // #?: Consider dropping support for vendor-specific implementations
 let pageVisibility = document.visibilityState
@@ -60,9 +66,9 @@ let pageVisibility = document.visibilityState
   || document.msVisibilityState
   || 'visible';
 
-const breakpointNames = breakpoints.map(breakpoint => breakpoint.name);
+const breakpointNames = breakpoints.map((breakpoint: IBreakPoint) => breakpoint.name);
 
-const findBreakpoint = (tweakpoint: any) => {
+const findBreakpoint = (tweakpoint: string) => {
   let breakpointIndex = breakpointNames.indexOf(tweakpoint);
   let breakpoint = breakpoints[breakpointIndex];
   while (breakpointIndex >= 0 && breakpoint.isTweakpoint) {
@@ -72,7 +78,7 @@ const findBreakpoint = (tweakpoint: any) => {
   return breakpoint.name;
 };
 
-const updateBreakpoint = (breakpoint: any) => {
+const updateBreakpoint = (breakpoint: IBreakPoint) => {
   currentTweakpoint = breakpoint.name;
 
   if (breakpoint.isTweakpoint) {
@@ -155,7 +161,7 @@ const getViewport = () => {
   };
 };
 
-const getBreakpoint = (includeTweakpoint: any) =>
+const getBreakpoint = (includeTweakpoint: boolean) =>
   (includeTweakpoint ? currentTweakpoint : currentBreakpoint);
 
 const isBreakpoint = (criteria: any) => {
@@ -170,7 +176,7 @@ const isBreakpoint = (criteria: any) => {
   return indexMin <= indexCur && indexCur <= indexMax;
 };
 
-const hasCrossedBreakpoint = (includeTweakpoint: any) => {
+const hasCrossedBreakpoint = (includeTweakpoint: boolean) => {
   let was = getBreakpoint(includeTweakpoint);
 
   return (callback: any) => {

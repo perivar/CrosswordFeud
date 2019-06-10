@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 // import { findDOMNode } from 'react-dom';
 import fastdom from 'fastdom';
 // import $ from '../lib/$';
-import mediator from '../lib/mediator';
+// import mediator from '../lib/mediator';
 import { isBreakpoint, isIOS } from '../lib/detect';
 import { scrollTo } from '../lib/scroller';
 import { addMyEventListener } from '../lib/events';
@@ -85,7 +85,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   private columns: number;
   private rows: number;
   private clueMap: IClueMap;
-  private $gridWrapper: any;
   private returnPosition: number;
   private gridHeightIsSet: boolean;
 
@@ -122,53 +121,26 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   componentDidMount() {
 
-    // Sticky clue
-    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
-    const $game = this.game.current as HTMLDivElement;
+    // mediator.on(
+    //   'window:resize',
+    //   debounce(this.setGridHeight.bind(this), 200),
+    // );
 
-    mediator.on(
-      'window:resize',
-      debounce(this.setGridHeight.bind(this), 200),
-    );
+    // mediator.on(
+    //   'window:orientationchange',
+    //   debounce(this.setGridHeight.bind(this), 200),
+    // );
 
-    mediator.on(
-      'window:orientationchange',
-      debounce(this.setGridHeight.bind(this), 200),
-    );
+    const delayedSetGridCallback = debounce(this.setGridHeight.bind(this), 200);
+    // window.addEventListener('resize', delayedSetGridCallback);
+    // window.addEventListener('orientationchange', delayedSetGridCallback);
+    addMyEventListener(window, 'resize', delayedSetGridCallback);
+    addMyEventListener(window, 'orientationchange', delayedSetGridCallback);
 
     this.setGridHeight();
 
-    addMyEventListener(window, 'scroll', () => {
-
-      const gameOffsetTop = $game.offsetTop;
-      const gameOffsetHeight = $game.offsetTop;
-
-      const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
-      const scrollY = window.scrollY;
-
-      const scrollYPastGame = scrollY - gameOffsetTop
-
-      if (scrollYPastGame >= 0) {
-        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
-
-        if (
-          scrollY >
-          gameOffsetBottom - stickyClueWrapperOffsetHeight
-        ) {
-          // $stickyClueWrapper.css({ top: 'auto', bottom: 0 });
-        } else if (isIOS()) {
-          // iOS doesn't support sticky things when the keyboard
-          // is open, so we use absolute positioning and
-          // programatically update the value of top
-          // $stickyClueWrapper.css({
-          //   top: scrollYPastGame,
-          //   bottom: '',
-          // });
-        }
-      } else {
-        // $stickyClueWrapper.css({ top: '', bottom: '' });
-      }
-    });
+    const delayedOnScrollCallback = debounce(this.onScroll.bind(this), 200);
+    addMyEventListener(window, 'scroll', delayedOnScrollCallback);
 
     const entryId = window.location.hash.replace('#', '');
     this.focusFirstCellInClueById(entryId);
@@ -373,11 +345,42 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
+  onScroll(): void {
+
+    // Sticky clue
+    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
+    const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
+    
+    const scrollY = window.scrollY;
+
+    const $game = this.game.current as HTMLDivElement;
+    const gameOffsetTop = $game.offsetTop;
+    const gameOffsetHeight = $game.offsetHeight;
+
+    const scrollYPastGame = scrollY - gameOffsetTop
+
+    if (scrollYPastGame >= 0) {
+      const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
+
+      if (
+        scrollY >
+        gameOffsetBottom - stickyClueWrapperOffsetHeight
+      ) {
+        $stickyClueWrapper.setAttribute('style', `top: 'auto', bottom: 0`);
+      } else if (isIOS()) {
+        // iOS doesn't support sticky things when the keyboard
+        // is open, so we use absolute positioning and
+        // programatically update the value of top
+        $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}, bottom: ''`);
+      }
+    } else {
+      $stickyClueWrapper.removeAttribute('style');
+    }
+  }
+
   setGridHeight(): void {
 
-    if (!this.$gridWrapper) {
-      this.$gridWrapper = this.gridWrapper.current as HTMLDivElement;
-    }
+    const $gridWrapper = this.gridWrapper.current as HTMLDivElement;
 
     if (
       isBreakpoint({
@@ -388,18 +391,14 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         // Our grid is a square, set the height of the grid wrapper
         // to the width of the grid wrapper
         fastdom.mutate(() => {
-          this.$gridWrapper.css(
-            'height',
-            `${this.$gridWrapper.offset().width}px`,
-          );
+          $gridWrapper.setAttribute('style', `height: ${$gridWrapper.offsetWidth}px`);
         });
         this.gridHeightIsSet = true;
       });
     } else if (this.gridHeightIsSet) {
       // Remove inline style if tablet and wider
-      this.$gridWrapper.attr('style', '');
+      $gridWrapper.removeAttribute('style');
     }
-
   }
 
   setCellValue(x: number, y: number, value: string, triggerOnMoveCallback = true): void {
@@ -600,8 +599,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const position = this.asPercentage(left, top);
 
     // This has to be done before focus to move viewport accordingly
-    hiddenWrapperNode.style.left = `${position.x}%`;
-    hiddenWrapperNode.style.top = `${position.y}%`;
+    hiddenWrapperNode.style.left = `${position.x}% `;
+    hiddenWrapperNode.style.top = `${position.y}% `;
 
     const hiddenInputNode = hiddenNode.input.current as HTMLDivElement;
 
@@ -631,7 +630,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       window.history.replaceState(
         undefined,
         document.title,
-        `#${clue.id}`,
+        `#${clue.id} `,
       );
     }
   }
