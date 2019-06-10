@@ -139,8 +139,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     this.setGridHeight();
 
-    const delayedOnScrollCallback = debounce(this.onScroll.bind(this), 200);
-    addMyEventListener(window, 'scroll', delayedOnScrollCallback);
+    const delayedHandleScrollCallback = debounce(this.handleScroll.bind(this), 200);
+    addMyEventListener(window, 'scroll', delayedHandleScrollCallback);
 
     const entryId = window.location.hash.replace('#', '');
     this.focusFirstCellInClueById(entryId);
@@ -345,37 +345,47 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  onScroll(): void {
+  handleScroll(): void {
 
     // Sticky clue
     const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
     const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
-    
-    const scrollY = window.scrollY;
 
     const $game = this.game.current as HTMLDivElement;
     const gameOffsetTop = $game.offsetTop;
     const gameOffsetHeight = $game.offsetHeight;
 
-    const scrollYPastGame = scrollY - gameOffsetTop
+    // const $grid = this.grid.current as React.ReactNode;
+    // const gridOffsetTop = $grid.offsetTop;
+    // const gridOffsetHeight = $grid.offsetHeight;
 
-    if (scrollYPastGame >= 0) {
-      const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
+    const scrollY = window.scrollY;
 
-      if (
-        scrollY >
-        gameOffsetBottom - stickyClueWrapperOffsetHeight
-      ) {
-        $stickyClueWrapper.setAttribute('style', `top: 'auto', bottom: 0`);
-      } else if (isIOS()) {
-        // iOS doesn't support sticky things when the keyboard
-        // is open, so we use absolute positioning and
-        // programatically update the value of top
-        $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}, bottom: ''`);
-      }
-    } else {
+    fastdom.mutate(() => {
+
+      // Clear previous state
       $stickyClueWrapper.removeAttribute('style');
-    }
+      $stickyClueWrapper.classList.remove('is-fixed');
+
+      const scrollYPastGame = scrollY - gameOffsetTop;
+
+      if (scrollYPastGame >= 0) {
+        // const gridOffsetBottom = gridOffsetTop + gridOffsetHeight;
+        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
+
+        if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
+          // if (scrollY > gridOffsetBottom - stickyClueWrapperOffsetHeight) {
+          $stickyClueWrapper.setAttribute('style', `top: 'auto', bottom: 0`);
+        } else if (isIOS()) {
+          // iOS doesn't support sticky things when the keyboard
+          // is open, so we use absolute positioning and
+          // programatically update the value of top
+          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}`);
+        } else {
+          $stickyClueWrapper.classList.add('is-fixed');
+        }
+      }
+    });
   }
 
   setGridHeight(): void {
