@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { crosswordActions } from "./ducks/actions";
 import { IStoreState } from '../../state/store';
+import { ICrosswordReduxState } from './types';
 
-class CrosswordContainer extends Component<any, any> {
+class CrosswordContainer extends Component<any, ICrosswordReduxState> {
 
     componentDidMount() {
         this.props.get();
@@ -13,7 +14,8 @@ class CrosswordContainer extends Component<any, any> {
 
         const {
             data,
-            loading
+            loading,
+            error
         } = this.props;
 
         if (loading) {
@@ -23,6 +25,7 @@ class CrosswordContainer extends Component<any, any> {
         // return <Crossword data={data} />;
         return (
             <div>
+                {error}
                 {JSON.stringify(data)}
             </div>
         );
@@ -30,13 +33,15 @@ class CrosswordContainer extends Component<any, any> {
     }
 }
 
-const mapStateToProps = (state: IStoreState) => {
+const mapStateToProps = (state: IStoreState) : ICrosswordReduxState => {
     const { crossword } = state;
     const data = crossword.data;
     const loading = crossword.loading;
+    const error = crossword.error;
     return {
         data,
-        loading
+        loading,
+        error
     };
 }
 

@@ -1,9 +1,9 @@
+// ducks/reducers.ts
+// The reducer deals with updating the state.
+
 import Crossword from "../crosswords/crossword";
 import { CrosswordActions, CrosswordActionTypes } from "./types";
 import { ICrosswordReduxState } from "../types";
-
-// ducks/reducers.ts
-// The reducer deals with updating the state.
 
 const initialCrosswordState: ICrosswordReduxState = { loading: false, data: Crossword.defaultProps.data, error: '' };
 
@@ -23,6 +23,7 @@ const crosswordReducer = function crossword(state = initialCrosswordState, actio
         case CrosswordActionTypes.GET_FAILURE:
             return {
                 ...state,
+                loading: false,
                 error: action.error
             };
         default:
