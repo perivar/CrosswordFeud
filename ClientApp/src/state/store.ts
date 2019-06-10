@@ -5,12 +5,15 @@ import { logger } from "./logger";
 import forecastReducer from "../components/forecast/ducks/reducers";
 import alertReducer from "../components/alert/ducks/reducers";
 import authenticationReducer from "../components/auth/ducks/reducers";
-import { IStoreState } from "../components/auth/types";
+import crosswordReducer from "../components/crossword/ducks/reducers"
+import { IAlertState, IAuthState, IRegisterState, IUserState } from "../components/auth/types";
+import { IForecastState } from "../components/forecast/types";
 
 const reducers = {
   ...forecastReducer,
   ...alertReducer,
-  ...authenticationReducer
+  ...authenticationReducer,
+  ...crosswordReducer
 };
 
 export default function configureStore(): Store<IStoreState> {
@@ -20,4 +23,13 @@ export default function configureStore(): Store<IStoreState> {
     undefined,
     applyMiddleware(thunk, logger)
   );
+}
+
+export interface IStoreState {
+  alert: IAlertState,
+  authentication: IAuthState,
+  crossword: any
+  forecast: IForecastState,
+  registration: IRegisterState,
+  users: IUserState
 }

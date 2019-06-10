@@ -1,10 +1,10 @@
 import { connect } from "react-redux";
 import LoginComponent from "./LoginComponent";
 
-import { IRootState } from "./types";
 import { userActions } from './ducks/actions';
+import { IStoreState } from "../../state/store";
 
-function mapStateToProps(state: IRootState) {
+function mapStateToProps(state: IStoreState) {
     const { loggingIn } = state.authentication;
     return {
         loggingIn

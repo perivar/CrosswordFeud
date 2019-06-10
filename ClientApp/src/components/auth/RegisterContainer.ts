@@ -2,7 +2,7 @@ import { connect } from "react-redux";
 import RegisterComponent from "./RegisterComponent";
 
 import { userActions } from './ducks/actions';
-import { IUser } from "./types";
+import { IUser} from "./types";
 
 function mapStateToProps(state: any) {
     const { registering } = state.registration;

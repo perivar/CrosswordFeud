@@ -13,10 +13,6 @@ export interface IForecastProps {
   getForecasts: () => void;
 }
 
-export interface IRootState {
-  forecast: IForecastState;
-}
-
 export interface IForecastState {
   forecasts: IForecast[];
   loading: boolean;

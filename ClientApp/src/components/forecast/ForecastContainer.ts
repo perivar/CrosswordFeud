@@ -2,9 +2,9 @@ import { connect } from "react-redux";
 import ForecastComponent from "./ForecastComponent";
 
 import * as operations from "./ducks/operations";
-import { IRootState } from "./types";
+import { IStoreState } from "../../state/store";
 
-const mapStateToProps = (state: IRootState) => {
+const mapStateToProps = (state: IStoreState) => {
   return {
     forecasts: state.forecast.forecasts,
     loading: state.forecast.loading,

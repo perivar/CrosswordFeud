@@ -1,3 +1,5 @@
+import { ICrosswordData } from "./crosswords/crossword";
+
 // https://github.com/guardian/frontend/blob/master/static/src/javascripts/__flow__/types/crosswords.js
 
 export type Direction = 'across' | 'down';
@@ -105,4 +107,10 @@ export interface IClueMap {
 export interface IDimensions {
   cols: number,
   rows: number
+}
+
+export interface ICrosswordReduxState {
+  data: ICrosswordData,
+  loading: boolean,
+  error: string
 }

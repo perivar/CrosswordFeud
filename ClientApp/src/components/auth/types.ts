@@ -1,5 +1,3 @@
-import { IForecastState } from "../forecast/types";
-
 export interface IHomeProps {
     users: IUserState,
     logon: ILogon,
@@ -77,17 +75,4 @@ export interface ILogon {
     user: IUser,
     claims: IClaim[],
     token: string
-}
-
-export interface IRootState {
-    users: IUserState,
-    authentication: IAuthState
-}
-
-export interface IStoreState {
-    alert: IAlertState,
-    authentication: IAuthState,
-    forecast: IForecastState,
-    registration: IRegisterState,
-    users: IUserState
 }
