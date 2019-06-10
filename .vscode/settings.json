@@ -6,5 +6,6 @@
     { "language": "typescript", "autoFix": true },
     { "language": "typescriptreact", "autoFix": true }
   ],
-  "sasslint.trace.server": "messages"
+  "sasslint.trace.server": "messages",
+  "scss.showErrors": true
 }
