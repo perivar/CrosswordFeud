@@ -31,7 +31,8 @@ const addMyEventListener = (
     node.addEventListener(
       name,
       function boundHandler(evt: Event) {
-        handler.call(undefined, evt); // TODO, thisObject used to be 'this'
+        // @ts-ignore
+        handler.call(this, evt);
         node.removeEventListener(name, boundHandler);
       },
       capture,

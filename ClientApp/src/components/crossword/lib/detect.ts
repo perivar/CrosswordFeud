@@ -1,11 +1,3 @@
-
-export const isBreakpoint = (criteria: any) => {
-  return false;
-};
-
-export const isIOS = () => /(iPad|iPhone|iPod touch)/i.test(navigator.userAgent);
-
-/*
 import mediator from '../lib/mediator';
 
 // These should match those defined in:
@@ -54,23 +46,23 @@ const breakpoints = [
   },
 ];
 
-let currentBreakpoint;
-let currentTweakpoint;
-let supportsPushState;
+let currentBreakpoint: any;
+let currentTweakpoint: any;
+let supportsPushState: any;
 
 // #?: Consider dropping support for vendor-specific implementations
 let pageVisibility = document.visibilityState
-    // $FlowFixMe
-    || document.webkitVisibilityState
-    // $FlowFixMe
-    || document.mozVisibilityState
-    // $FlowFixMe
-    || document.msVisibilityState
-    || 'visible';
+  // @ts-ignore
+  || document.webkitVisibilityState
+  // @ts-ignore
+  || document.mozVisibilityState
+  // @ts-ignore
+  || document.msVisibilityState
+  || 'visible';
 
 const breakpointNames = breakpoints.map(breakpoint => breakpoint.name);
 
-const findBreakpoint = (tweakpoint) => {
+const findBreakpoint = (tweakpoint: any) => {
   let breakpointIndex = breakpointNames.indexOf(tweakpoint);
   let breakpoint = breakpoints[breakpointIndex];
   while (breakpointIndex >= 0 && breakpoint.isTweakpoint) {
@@ -80,7 +72,7 @@ const findBreakpoint = (tweakpoint) => {
   return breakpoint.name;
 };
 
-const updateBreakpoint = (breakpoint) => {
+const updateBreakpoint = (breakpoint: any) => {
   currentTweakpoint = breakpoint.name;
 
   if (breakpoint.isTweakpoint) {
@@ -91,8 +83,9 @@ const updateBreakpoint = (breakpoint) => {
 };
 
 // this function has a Breakpoint as context, so we can't use fat arrows
-const onMatchingBreakpoint = function onMatchingBreakpoint(mql) {
+const onMatchingBreakpoint = function onMatchingBreakpoint(mql: any) {
   if (mql && mql.matches) {
+    // @ts-ignore
     updateBreakpoint(this);
   }
 };
@@ -102,16 +95,17 @@ const updateBreakpoints = () => {
   // but relies on (1) the resize event, (2) layout and (3) hidden generated content
   // on a pseudo-element
   const bodyStyle = window.getComputedStyle(document.body, '::after');
-  const breakpointName = bodyStyle.content.substring(
+  const bodyStyleContent = bodyStyle.content as string;
+  const breakpointName = bodyStyleContent.substring(
     1,
-    bodyStyle.content.length - 1,
+    bodyStyleContent.length - 1,
   );
   const breakpointIndex = breakpointNames.indexOf(breakpointName);
   updateBreakpoint(breakpoints[breakpointIndex]);
 };
 
 const initMediaQueryListeners = () => {
-  breakpoints.forEach((bp, index, bps) => {
+  breakpoints.forEach((bp: any, index: number, bps) => {
     // We create mutually exclusive (min-width) and (max-width) media queries
     // to facilitate the breakpoint/tweakpoint logic.
     const minWidth = `(min-width: ${bp.width}px)`;
@@ -119,7 +113,7 @@ const initMediaQueryListeners = () => {
     bp.mql = index < bps.length - 1
       ? window.matchMedia(
         `${minWidth} and (max-width: ${bps[index + 1].width
-                          - 1}px)`,
+        - 1}px)`,
       )
       : window.matchMedia(minWidth);
 
@@ -147,7 +141,7 @@ const initBreakpoints = () => {
 const getViewport = () => {
   if (
     !window.innerWidth
-        || !(document && document.body && document.body.clientWidth)
+    || !(document && document.body && document.body.clientWidth)
   ) {
     return {
       height: 0,
@@ -161,9 +155,10 @@ const getViewport = () => {
   };
 };
 
-const getBreakpoint = includeTweakpoint => (includeTweakpoint ? currentTweakpoint : currentBreakpoint);
+const getBreakpoint = (includeTweakpoint: any) =>
+  (includeTweakpoint ? currentTweakpoint : currentBreakpoint);
 
-const isBreakpoint = (criteria) => {
+const isBreakpoint = (criteria: any) => {
   const indexMin = criteria.min ? breakpointNames.indexOf(criteria.min) : 0;
   const indexMax = criteria.max
     ? breakpointNames.indexOf(criteria.max)
@@ -175,10 +170,10 @@ const isBreakpoint = (criteria) => {
   return indexMin <= indexCur && indexCur <= indexMax;
 };
 
-const hasCrossedBreakpoint = (includeTweakpoint) => {
+const hasCrossedBreakpoint = (includeTweakpoint: any) => {
   let was = getBreakpoint(includeTweakpoint);
 
-  return (callback) => {
+  return (callback: any) => {
     const is = getBreakpoint(includeTweakpoint);
 
     if (is !== was) {
@@ -192,8 +187,10 @@ const isIOS = () => /(iPad|iPhone|iPod touch)/i.test(navigator.userAgent);
 
 const isAndroid = () => /Android/i.test(navigator.userAgent);
 
-const hasTouchScreen = () => 'ontouchstart' in window
-    || (window.DocumentTouch && document instanceof window.DocumentTouch);
+const hasTouchScreen = () =>
+  'ontouchstart' in window ||
+  // @ts-ignore
+  (window.DocumentTouch && document instanceof window.DocumentTouch);
 
 const hasPushStateSupport = () => {
   if (supportsPushState !== undefined) {
@@ -216,7 +213,7 @@ const hasPushStateSupport = () => {
 const initPageVisibility = () => {
   const onchange = (evt = window.event) => {
     const v = 'visible';
-    const evtMap = {
+    const evtMap: any = {
       focus: v,
       focusin: v,
       pageshow: v,
@@ -225,9 +222,11 @@ const initPageVisibility = () => {
       pagehide: 'hidden',
     };
 
-    if (evt.type in evtMap) {
-      pageVisibility = evtMap[evt.type];
+    const e = evt as Event;
+    if (e.type in evtMap) {
+      pageVisibility = evtMap[e.type];
     } else {
+      // @ts-ignore      
       pageVisibility = window && window.hidden ? 'hidden' : 'visible';
     }
   };
@@ -236,10 +235,13 @@ const initPageVisibility = () => {
   if ('hidden' in document) {
     document.addEventListener('visibilitychange', onchange);
   } else if ('msHidden' in document) {
+    // @ts-ignore
     document.addEventListener('msvisibilitychange', onchange);
   } else if ('onfocusin' in document) {
     // IE 9 and lower:
+    // @ts-ignore
     window.onfocusout = onchange;
+    // @ts-ignore
     window.onfocusin = onchange;
   } else {
     // All others:
@@ -252,11 +254,13 @@ const initPageVisibility = () => {
 
 const pageVisible = () => pageVisibility === 'visible';
 
+// @ts-ignore
 const isEnhanced = () => window.guardian.isEnhanced;
 
 const getReferrer = () => document.referrer || '';
 
 const getUserAgent = (() => {
+  // @ts-ignore
   if (!navigator && !navigator.userAgent) {
     return '';
   }
@@ -316,4 +320,3 @@ export {
   isEnhanced,
   getReferrer,
 };
-*/

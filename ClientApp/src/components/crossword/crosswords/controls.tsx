@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ConfirmButton } from './confirm-button';
 import Crossword from './crossword';
+import { IClue } from '../types';
 
 const buttonClassName = 'button button--primary';
 const buttonCurrentClassName = 'button--crossword--current';
@@ -8,7 +9,7 @@ const buttonGenericClassName = 'button--secondary';
 
 export interface IControlProps {
   hasSolutions: boolean,
-  clueInFocus: boolean,
+  clueInFocus: IClue,
   crossword: Crossword
 }
 
@@ -16,7 +17,7 @@ class Controls extends Component<IControlProps> {
 
   render(): React.ReactNode {
     const hasSolutions = this.props.hasSolutions;
-    const hasFocus = this.props.clueInFocus;
+    const clueInFocus = this.props.clueInFocus;
 
     const controls = {
       clue: [] as React.ReactNode[],
@@ -62,7 +63,7 @@ class Controls extends Component<IControlProps> {
     }
 
     // HIGHLIGHTED CLUE CONTROLS  - published solution
-    if (hasFocus) {
+    if (clueInFocus) {
       controls.clue.unshift(
         <button
           className={`${buttonClassName} ${buttonCurrentClassName}`}

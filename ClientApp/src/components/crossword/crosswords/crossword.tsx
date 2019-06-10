@@ -473,7 +473,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   indexOfClueInFocus(): number {
-    return this.props.data.entries.indexOf(this.clueInFocus());
+    return this.props.data.entries.indexOf(this.clueInFocus() as IClue);
   }
 
   focusPreviousClue(): void {
@@ -657,7 +657,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  clueInFocus(): any {
+  clueInFocus(): IClue | null {
     if (this.state.cellInFocus) {
       const cluesForCell = cluesFor(
         this.clueMap,
@@ -666,7 +666,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       );
 
       if (this.state.directionOfEntry) {
-        return cluesForCell[this.state.directionOfEntry];
+        return cluesForCell[this.state.directionOfEntry] as IClue;
       }
     }
     return null;
@@ -801,7 +801,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   render() {
-    const focused = this.clueInFocus();
+    const focused = this.clueInFocus() as IClue;
 
     const anagramHelper = this.state.showAnagramHelper && (
       <AnagramHelper
