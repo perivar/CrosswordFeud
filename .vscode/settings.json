@@ -7,5 +7,15 @@
     { "language": "typescriptreact", "autoFix": true }
   ],
   "sasslint.trace.server": "messages",
-  "scss.showErrors": true
+  "scss.showErrors": true,
+  "backtix.languages": {
+    "javascript": true,
+    "typescript": true,
+    "javascriptreact": true,
+    "typescriptreact": true
+  },
+  "backtix.placeholders": {
+    "active": true,
+    "text": "Add placeholder."
+  }
 }
