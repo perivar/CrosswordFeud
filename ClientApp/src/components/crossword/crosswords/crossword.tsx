@@ -37,6 +37,18 @@ import { saveGridState, loadGridState } from './persistence';
 import { classNames } from './classNames';
 import { IClue, IPosition, IGrid, ICell, IDimensions, Direction, IClueMap } from '../types';
 
+type CrosswordType =
+  "cryptic" |
+  "quick" |
+  "quiptic" |
+  "prize" |
+  "everyman" |
+  "azed" |
+  "special" |
+  "genius" |
+  "speedy" |
+  "weekend";
+
 export interface ICrosswordData {
   id: string,
   number: number,
@@ -46,7 +58,7 @@ export interface ICrosswordData {
   solutionAvailable: boolean,
   dateSolutionAvailable: number,
   dimensions: IDimensions,
-  crosswordType: string,
+  crosswordType: CrosswordType,
   pdf: string
 }
 
@@ -916,7 +928,7 @@ Crossword.defaultProps = {
     solutionAvailable: false,
     dateSolutionAvailable: 0,
     dimensions: { rows: 0, cols: 0 },
-    crosswordType: '',
+    crosswordType: 'quick',
     pdf: ''
   }
 };
