@@ -109,7 +109,7 @@ export interface IDimensions {
   rows: number
 }
 
-export interface ICrosswordReduxState {
+export interface ICrosswordContainerState {
   data: ICrosswordData,
   loading: boolean,
   error: string

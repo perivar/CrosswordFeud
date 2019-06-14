@@ -3,11 +3,11 @@
 
 import Crossword from "../crosswords/crossword";
 import { CrosswordActions, CrosswordActionTypes } from "./types";
-import { ICrosswordReduxState } from "../types";
+import { ICrosswordContainerState } from "../types";
 
-const initialCrosswordState: ICrosswordReduxState = { loading: false, data: Crossword.defaultProps.data, error: '' };
+const initialCrosswordState: ICrosswordContainerState = { loading: false, data: Crossword.defaultProps.data, error: '' };
 
-const crosswordReducer = function crossword(state = initialCrosswordState, action: CrosswordActions): ICrosswordReduxState {
+const crosswordReducer = function crossword(state = initialCrosswordState, action: CrosswordActions): ICrosswordContainerState {
     switch (action.type) {
         case CrosswordActionTypes.GET_REQUEST:
             return {

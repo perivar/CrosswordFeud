@@ -46,7 +46,8 @@ export interface ICrosswordData {
   solutionAvailable: boolean,
   dateSolutionAvailable: number,
   dimensions: IDimensions,
-  crosswordType: string
+  crosswordType: string,
+  pdf: string
 }
 
 export interface ICrosswordProps {
@@ -915,7 +916,8 @@ Crossword.defaultProps = {
     solutionAvailable: false,
     dateSolutionAvailable: 0,
     dimensions: { rows: 0, cols: 0 },
-    crosswordType: ''
+    crosswordType: '',
+    pdf: ''
   }
 };
 

@@ -2,11 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { crosswordActions } from "./ducks/actions";
 import { IStoreState } from '../../state/store';
-import { ICrosswordReduxState } from './types';
+import { ICrosswordContainerState } from './types';
+import Crossword from './crosswords/crossword';
 
-class CrosswordContainer extends Component<any, ICrosswordReduxState> {
+class CrosswordContainer extends Component<any, ICrosswordContainerState> {
 
-    componentDidMount() {
+    constructor(props: any) {
+        super(props);
+        this.getCrossword = this.getCrossword.bind(this);
+    }
+
+    getCrossword() {
         this.props.get();
     }
 
@@ -22,18 +28,19 @@ class CrosswordContainer extends Component<any, ICrosswordReduxState> {
             return null;
         }
 
-        // return <Crossword data={data} />;
         return (
             <div>
                 {error}
                 {JSON.stringify(data)}
+                {/* <Crossword data={data} /> */}
+                <button className="btn btn-primary" onClick={this.getCrossword}>Get crossword</button>
             </div>
         );
 
     }
 }
 
-const mapStateToProps = (state: IStoreState) : ICrosswordReduxState => {
+const mapStateToProps = (state: IStoreState): ICrosswordContainerState => {
     const { crossword } = state;
     const data = crossword.data;
     const loading = crossword.loading;
