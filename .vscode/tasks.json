@@ -89,6 +89,11 @@
         "cwd": "${workspaceRoot}"
       },
       "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "echo workspaceFolder",
+      "type": "shell",
+      "command": "echo ${workspaceFolder}"
     }
   ]
 }
