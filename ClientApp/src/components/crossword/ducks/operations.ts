@@ -2,7 +2,7 @@
 // Here, we define any logic surrounding our actions and side effects, including async logic. 
 // If an action has no surrounding logic, then we simply forward them as is
 
-// const config = { apiUrl: process.env.REACT_APP_API };
+const config = { apiUrl: process.env.REACT_APP_API };
 
 function authHeader(): Headers {
     // return authorization header with jwt token
@@ -38,8 +38,8 @@ function get() {
         headers: authHeader()
     };
 
-    // return fetch(`${config.apiUrl}/api/Account/GetAll`, requestOptions).then(handleResponse);
-    return fetch("http://order.wazalo.com:8000/api/crosswords", requestOptions).then(handleResponse);    
+    // return fetch("http://localhost:8000/api/crosswordguardian", requestOptions).then(handleResponse);    
+    return fetch(`${config.apiUrl}/api/crosswordguardian`, requestOptions).then(handleResponse);
 }
 
 export const crosswordService = {

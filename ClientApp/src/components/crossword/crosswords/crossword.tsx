@@ -35,32 +35,7 @@ import {
 import { keycodes } from './keycodes';
 import { saveGridState, loadGridState } from './persistence';
 import { classNames } from './classNames';
-import { IClue, IPosition, IGrid, ICell, IDimensions, Direction, IClueMap } from '../types';
-
-type CrosswordType =
-  "cryptic" |
-  "quick" |
-  "quiptic" |
-  "prize" |
-  "everyman" |
-  "azed" |
-  "special" |
-  "genius" |
-  "speedy" |
-  "weekend";
-
-export interface ICrosswordData {
-  id: string,
-  number: number,
-  name: string,
-  date: number
-  entries: IClue[],
-  solutionAvailable: boolean,
-  dateSolutionAvailable: number,
-  dimensions: IDimensions,
-  crosswordType: CrosswordType,
-  pdf: string
-}
+import { IClue, IPosition, IGrid, ICell, Direction, IClueMap, ICrosswordData } from '../types';
 
 export interface ICrosswordProps {
   data: ICrosswordData,
@@ -362,6 +337,10 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     // Sticky clue
     const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
+
+    if (!$stickyClueWrapper) {
+      return;
+    }
     const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
 
     const $game = this.game.current as HTMLDivElement;
@@ -927,13 +906,15 @@ Crossword.defaultProps = {
     id: '',
     number: 0,
     name: '',
+    creator: { name: '', webUrl: '' },
     date: 0,
     entries: [], // or new Array<IClue>()
     solutionAvailable: false,
     dateSolutionAvailable: 0,
     dimensions: { rows: 0, cols: 0 },
     crosswordType: 'quick',
-    pdf: ''
+    pdf: '',
+    instructions: ''
   }
 };
 

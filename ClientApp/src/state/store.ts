@@ -23,6 +23,7 @@ const initialCrosswordState: ICrosswordContainerState = {
     id: 'crosswords/quick/15315',
     number: 15315,
     name: 'Quick crossword No 15,315',
+    creator: { name: 'Guardian', webUrl: '' },
     date: 1559952000000,
     entries: [
       {
@@ -441,7 +442,8 @@ const initialCrosswordState: ICrosswordContainerState = {
       rows: 13
     },
     crosswordType: 'quick',
-    pdf: 'https://crosswords-static.guim.co.uk/gdn.quick.20190608.pdf'
+    pdf: 'https://crosswords-static.guim.co.uk/gdn.quick.20190608.pdf',
+    instructions: ''
   },
   loading: false,
   error: ''
