@@ -804,7 +804,11 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   hasSolutions(): boolean {
-    return 'solution' in this.props.data.entries[0];
+    if (!!this.props.data.entries && this.props.data.entries.length > 0) {
+      return 'solution' in this.props.data.entries[0];
+    } else {
+      return false;
+    }
   }
 
   isHighlighted(x: number, y: number): boolean {
