@@ -31,6 +31,7 @@ $stickyClueHeight: $stickyClueVerticalPadding * 2 + ($stickyClueLineHeight * $st
     // Needs its own layer so we don't keep repainting when the top value is
     // updated by JS
     will-change: transform;
+    outline-color: white;
 
     // Mobile only
     @include mq(tablet) {
@@ -50,7 +51,7 @@ $stickyClueHeight: $stickyClueVerticalPadding * 2 + ($stickyClueLineHeight * $st
     @include fs-textSans(3);
     background: #ffffff;
     height: $stickyClueHeight;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid $brightness-20;
     // The border needs to be included in the height because we use the height
     // as padding on parent, .crossword__container__game
     box-sizing: border-box;
@@ -58,6 +59,8 @@ $stickyClueHeight: $stickyClueVerticalPadding * 2 + ($stickyClueLineHeight * $st
     padding-bottom: $stickyClueVerticalPadding;
     display: table;
     width: 100%;
+    font-size: 1rem;
+    color: $brightness-20;
 }
 
 .crossword__sticky-clue__direction {

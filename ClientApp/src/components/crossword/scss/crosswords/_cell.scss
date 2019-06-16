@@ -5,26 +5,26 @@
 
 .crossword__cell--highlighted {
     &,
-    .crossword__grid--focused & {
+    .crossword__grid--focussed & {
         fill: $xword-highlight-colour;
     }
 }
 
-.crossword__cell--focused {
+.crossword__cell--focussed {
     &,
-    .crossword__grid--focused & {
-        fill: $xword-focused-background-colour;
+    .crossword__grid--focussed & {
+        fill: $xword-focussed-background-colour;
     }
 }
 
 .crossword__cell-number,
 .crossword__cell-text {
-    fill: #000000;
+    fill: $brightness-20;
     font-family: $f-sans-serif-text;
 }
 
 .crossword__cell-number {
-    font-size: 10px;
+    font-size: 11px;
 }
 
 .crossword__cell-text {
@@ -35,16 +35,16 @@
 
     @each $xword, $cells in $xword-grid-sizes {
         .crossword__container--#{$xword} & {
-            font-size: ceil(1.2px * $cells);
+            font-size: ceil(1.3px * $cells);
 
             @include mq(tablet) {
-                font-size: 1.1px * $cells;
+                font-size: 1.3px * $cells;
             }
         }
     }
 }
 
-.crossword__cell-text--focused {
+.crossword__cell-text--focussed {
     font-weight: bold;
 }
 

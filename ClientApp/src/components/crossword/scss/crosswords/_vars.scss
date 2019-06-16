@@ -1,13 +1,15 @@
 // based on cellSize + borderSize from
 // projects/crosswords/constants.js
-$xword-cell-width: 31px;
+$xword-cell-width: 34px;
 $xword-cell-width-small: 24px; // only used in anagram helper preview cells
 $xword-cell-width-xsmall: 20px; // as above but for long (10+ letter) clues
 $xword-border-width: 1px;
 
-$xword-highlight-colour: $highlight-main;
-$xword-focused-colour: #000000;
-$xword-focused-background-colour: #fff7b2;
+// $xword-highlight-background-colour: $highlight-main;
+$xword-highlight-colour: #B9D3DC;
+$xword-focussed-colour: $brightness-20;
+// $xword-focussed-background-colour: #fff7b2;
+$xword-focussed-background-colour: $highlight-main;
 
 $xword-clue-number-width: 32px;
 

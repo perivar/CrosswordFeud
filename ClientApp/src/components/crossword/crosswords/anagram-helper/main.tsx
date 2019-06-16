@@ -161,6 +161,12 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
         >
           <Close />
         </button>
+        <CluePreview
+          clue={clue}
+          entries={this.entries()}
+          letters={this.state.letters}
+          hasShuffled={!this.state.showInput}
+        />
         <button
           className={`button button--large ${
             !this.state.clueInput ? 'button--tertiary' : ''
@@ -168,7 +174,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
           onClick={this.reset.bind(this)}
           data-link-name="Start Again"
         >
-          start again
+          Restart
         </button>
         <button
           className={`button button--large ${
@@ -177,14 +183,8 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
           onClick={this.shuffle.bind(this)}
           data-link-name="Shuffle"
         >
-          shuffle
+          Shuffle
         </button>
-        <CluePreview
-          clue={clue}
-          entries={this.entries()}
-          letters={this.state.letters}
-          hasShuffled={!this.state.showInput}
-        />
       </div>
     );
   }

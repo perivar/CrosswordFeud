@@ -1,19 +1,5 @@
 import '../scss/main.scss';
 import React, { Component } from 'react';
-// import { findDOMNode } from 'react-dom';
-import fastdom from 'fastdom';
-// import $ from '../lib/$';
-// import mediator from '../lib/mediator';
-import { isBreakpoint, isIOS } from '../lib/detect';
-import { scrollTo } from '../lib/scroller';
-import { addMyEventListener } from '../lib/events';
-import { AnagramHelper } from './anagram-helper/main';
-import debounce from 'lodash/debounce';
-import zip from 'lodash/zip';
-import { Clues, IClueEntry } from './clues';
-import { Controls } from './controls';
-import { HiddenInput } from './hidden-input';
-import { Grid, IGridProps } from './grid';
 import {
   buildClueMap,
   buildGrid,
@@ -32,10 +18,26 @@ import {
   buildSeparatorMap,
   cellsForEntry,
 } from './helpers';
-import { keycodes } from './keycodes';
+
 import { saveGridState, loadGridState } from './persistence';
-import { classNames } from './classNames';
 import { IClue, IPosition, IGrid, ICell, Direction, IClueMap, ICrosswordData } from '../types';
+
+// import $ from '../lib/$';
+import { AnagramHelper } from './anagram-helper/main';
+import { Clues, IClueEntry } from './clues';
+import { Controls } from './controls';
+import { Grid, IGridProps } from './grid';
+import { HiddenInput } from './hidden-input';
+import { addMyEventListener } from '../lib/events';
+import { classNames } from './classNames';
+import debounce from 'lodash/debounce';
+import fastdom from 'fastdom';
+// import { findDOMNode } from 'react-dom';
+import { isBreakpoint, isIOS } from '../lib/detect';
+import { keycodes } from './keycodes';
+// import mediator from '../lib/mediator';
+import { scrollTo } from '../lib/scroller';
+import zip from 'lodash/zip';
 
 export interface ICrosswordProps {
   data: ICrosswordData,
@@ -383,6 +385,10 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   setGridHeight(): void {
 
     const $gridWrapper = this.gridWrapper.current as HTMLDivElement;
+
+    if (!$gridWrapper) {
+      return;
+    }
 
     if (
       isBreakpoint({

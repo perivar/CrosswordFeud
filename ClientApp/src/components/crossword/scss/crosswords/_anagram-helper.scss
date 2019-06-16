@@ -5,33 +5,42 @@
     left: 0;
     width: 100%;
     height: 100%;
-    padding-top: 2.5%;
+    padding-top: 2rem;
     background: $brightness-97;
     text-align: center;
+    border: 1px solid $brightness-20;
 
     .button:last-of-type {
         margin-right: 0;
     }
 
     .button--large {
-        background: $lifestyle-main;
-        border: 1px solid $lifestyle-main;
+        background: transparent;
+        color: $brightness-20;
+        border: 1px solid $brightness-20;
+        text-transform: uppercase;
+        cursor: pointer;
         &:hover,
         &:visited,
         &:focus {
-            background-color: darken($lifestyle-main, 10%);
-            border-color: darken($lifestyle-main, 10%);
+            background-color: $brightness-20;
+            border: 1px solid $brightness-20;
+            color: $brightness-100;
         }
     }
 
     .button--tertiary {
         background: transparent;
-        border: 1px solid $brightness-86;
+        border: 1px solid $brightness-20;
+        color: $brightness-20;
+        text-transform: uppercase;
+        cursor: pointer;
         &:hover,
         &:visited,
         &:focus {
-            background-color: transparent;
-            border-color: darken($brightness-86, 15%);
+            background-color: $brightness-20;
+            border: 1px solid $brightness-20;
+            color: $brightness-100;
         }
     }
 
@@ -45,7 +54,7 @@
 }
 
 .crossword__anagram-helper-inner {
-    height: 50%;
+    height: 60%;
 }
 
 .crossword__anagram-helper__clue-input,
@@ -70,6 +79,7 @@
     border: 0;
     outline: none;
     padding-top: 15%;
+    text-transform: uppercase;
     text-align: center;
 
     @include mq(tablet) {
@@ -79,7 +89,13 @@
 
 .crossword__anagram-helper__clue-preview {
     margin-top: 5%;
-    font-size: 14px;
+    top: 35px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.crossword__anagram-helper__clue-preview__text {
+    margin-bottom: 1rem;
 }
 
 .crossword__anagram-helper__direction {
@@ -92,8 +108,8 @@
     width: $xword-cell-width;
     height: $xword-cell-width;
     line-height: $xword-cell-width;
-    border: 1px solid $brightness-86;
-    border-left: 1px solid $brightness-86;
+    border: 1px solid $brightness-20;
+    border-left: 0.5px solid $brightness-20;
 
     @include mq($until: mobileLandscape) {
         width: $xword-cell-width-small;
@@ -108,7 +124,7 @@
     }
 
     &:first-of-type {
-        border-left: 1px solid $brightness-86;
+        border-left: 1px solid $brightness-20;
     }
 
     &.has-value {
@@ -153,7 +169,7 @@
     position: absolute;
 
     &.entered {
-        color: $brightness-86;
+        color: $brightness-20;
     }
 }
 

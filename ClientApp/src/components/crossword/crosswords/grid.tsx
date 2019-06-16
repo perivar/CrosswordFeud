@@ -148,6 +148,7 @@ export const Grid = (props: IGridProps): React.ReactNode => {
         width={width}
         height={height}
         className="crossword__grid-background"
+        style={{ fill: 'rgb(42,44,48)' }}
       />
       {cells}
       <g className="crossword__grid__separators">{separators}</g>

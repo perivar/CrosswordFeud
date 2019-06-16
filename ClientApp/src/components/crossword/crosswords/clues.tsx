@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
-// import bean from 'bean';
 import fastdom from 'fastdom';
 import { classNames } from './classNames';
 import { isBreakpoint } from '../lib/detect';
 import { scrollTo } from '../lib/scroller';
 import { IClue, Direction } from '../types';
+import { addMyEventListener } from '../lib/events';
+import { debounce } from 'lodash';
 
 export interface IClueProps {
   id: string,
@@ -89,18 +90,20 @@ class Clues extends Component<ICluesProps, ICluesState> {
 
     this.$cluesNode = this.clues.current as HTMLDivElement;
 
-    // const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
+    const delayedHandleScrollCallback = debounce(this.handleScroll.bind(this), 200);
+    addMyEventListener(window, 'scroll', delayedHandleScrollCallback);
+  }
 
-    // bean.on(this.$cluesNode, 'scroll', (e: any) => {
+  handleScroll(): void {
 
-    //   const showGradient = height - e.currentTarget.scrollTop > 25;
+    const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
+    const showGradient = height - this.$cluesNode.scrollTop > 25;
 
-    //   if (this.state.showGradient !== showGradient) {
-    //     this.setState({
-    //       showGradient,
-    //     });
-    //   }
-    // });
+    if (this.state.showGradient !== showGradient) {
+      this.setState({
+        showGradient,
+      });
+    }
   }
 
   /**
@@ -110,7 +113,7 @@ class Clues extends Component<ICluesProps, ICluesState> {
     if (
       isBreakpoint({
         min: 'tablet',
-        max: 'leftCol',
+        // max: 'leftCol',
       })
       && (this.props.focused
         && (!prev.focused || prev.focused.id !== this.props.focused.id))

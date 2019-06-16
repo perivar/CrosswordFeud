@@ -76,10 +76,12 @@ class CluePreview extends Component<ICluePreviewProps> {
           entries.length >= 9 ? 'long' : ''
           }`}
       >
-        <div>
+        <div className="crossword__anagram-helper__clue-preview__text">
           <strong>
             {this.props.clue.number}
             {' '}
+            &nbsp;
+            &nbsp;
             <span className="crossword__anagram-helper__direction">
               {this.props.clue.direction}
             </span>

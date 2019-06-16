@@ -1,7 +1,9 @@
 .crossword__clues-header {
     @include fs-header(1);
-    border-bottom: 1px dotted $brightness-86;
+    border-bottom: 1px solid #e1e4e8;
     padding-bottom: $gs-baseline * .75;
+    text-transform: uppercase;
+    color: $brightness-20;
 }
 
 .crossword__clues-list, ol.crossword__clues-list {
@@ -16,6 +18,7 @@
     text-decoration: none;
     position: relative;
     padding: $gs-baseline * .25 $gs-baseline $gs-baseline * .25 0;
+    padding-left: 1rem;
     margin: $gs-baseline * .25 0;
     display: block;
 
@@ -33,13 +36,15 @@
 .crossword__clue__number,
 .crossword__clue__text {
     display: table-cell;
+    color: $brightness-20;
+    font-size: 1rem;
 }
 
 .crossword__clue__number {
     font-weight: bold;
     -webkit-font-smoothing: initial;
     width: $gs-gutter;
-    padding-right: $gs-gutter / 2;
+    padding-right: 0;
 
     .has-grouped-clues & {
         width: $gs-gutter * 2;
@@ -47,16 +52,16 @@
 }
 
 .crossword__clue--selected {
-    background-color: $xword-focused-background-colour;
+    background-color: $xword-highlight-colour;
 
     > * {
         font-weight: bold;
-        color: $xword-focused-colour;
+        color: $xword-focussed-colour;
     }
 }
 
 .crossword__clue--answered {
-    color: $brightness-46;
+    color: $brightness-60;
 }
 
 //For grouped clues we display 11.12,23 accross instead of just a number
