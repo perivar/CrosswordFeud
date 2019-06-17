@@ -13,8 +13,9 @@ const easeOut = (power: number) => (t: number) => 1 - Math.abs((t - 1) ** power)
 
 const easeInOut = (power: number) => (t: number) => (t < 0.5 ? easeIn(power)(t * 2) / 2 : easeOut(power)(t * 2 - 1) / 2 + 0.5);
 
+type EasingRecord = Record<string, any>;
 // #? these probably should not be generated on parse but on being called
-const easingFunctions: any = {
+const easingFunctions: EasingRecord = {
   // no easing, no acceleration
   linear: easeInOut(1),
 

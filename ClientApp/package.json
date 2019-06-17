@@ -38,6 +38,7 @@
     "@types/lodash": "^4.14.134",
     "@types/enzyme": "^3.9.3",
     "@types/enzyme-adapter-react-16": "^1.0.5",
+    "@types/chance": "^1.0.4",
     "ajv": "^6.10.0",
     "cross-env": "^5.2.0",
     "eslint": "^5.16.0",
@@ -57,7 +58,8 @@
     "eslint-plugin-react": "^7.13.0",
     "eslint-plugin-react-hooks": "^1.6.0",
     "enzyme": "^3.10.0",
-    "enzyme-adapter-react-16": "^1.14.0"
+    "enzyme-adapter-react-16": "^1.14.0",
+    "chance": "^1.0.18"
   },
   "eslintConfig": {
     "extends": "react-app"

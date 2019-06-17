@@ -1,10 +1,11 @@
 import Chance from 'chance';
-import { easingFunctions, createEasing } from '../lib/easing';
+import { easingFunctions, createEasing } from './easing';
 
 const chance = new Chance();
 jest.useRealTimers();
 
-const TESTS = {
+type TestRecord = Record<string, number[][]>;
+const TESTS: TestRecord = {
   linear: [[2, 0], [3, -1], [4, -2]],
   easeInQuad: [[2, 4], [3, 9]],
   easeOutQuad: [[2, 0], [3, -3], [4, -8]],
@@ -22,7 +23,7 @@ const TESTS = {
 
 describe('easing', () => {
   // test easing methods
-  Object.keys(TESTS).forEach((name) => {
+  Object.keys(TESTS).forEach((name: string) => {
     const values = TESTS[name];
 
     test(`easingFunctions.${name}()`, () => {
@@ -34,16 +35,23 @@ describe('easing', () => {
 
   test('createEasing()', () => {
     const OriginalDate = global.Date;
+
     const ELAPSED = chance.integer({ min: 0, max: 100 });
     const DURATION = chance.integer({ min: ELAPSED, max: 300 });
-    global.Date = jest.fn(() => new OriginalDate(0));
+
+    // global.Date = jest.fn(() => new OriginalDate(0));
+    global.Date.now = jest.fn(() => new Date(0).getTime());
 
     const ease = createEasing('linear', DURATION);
     expect(ease()).toBe(0);
 
-    global.Date = jest.fn(
-      () => new OriginalDate((1970, 1, 1, 0, 0, 0, ELAPSED)),
+    // global.Date = jest.fn(
+    //   () => new OriginalDate(1970, 1, 1, 0, 0, 0, ELAPSED),
+    // );
+    global.Date.now = jest.fn(
+      () => new OriginalDate(1970, 1, 1, 0, 0, 0, ELAPSED).getTime(),
     );
+
     expect(ease()).toBe(ELAPSED / DURATION);
 
     global.Date = OriginalDate;
