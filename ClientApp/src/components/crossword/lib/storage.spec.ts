@@ -1,6 +1,14 @@
 import { local, session } from '../lib/storage';
 
-const IO = [
+interface IIO {
+  key: string,
+  data: {},
+  expected: {},
+  options: { expires?: Date },
+  find?: (key: string) => string,
+}
+
+const IO: IIO[] = [
   {
     key: 'test-1',
     data: 'string',
@@ -43,7 +51,8 @@ declare global {
   interface Window {
     getItem: any,
     setItem: any,
-    removeItem: any
+    removeItem: any,
+    [index: string]: any
   }
 }
 
@@ -52,17 +61,17 @@ const testStorage = (storageName: string, fn: any) => {
 
   beforeAll(() => {
     // jsdom doesn't support localStorage/ sessionStorage
-    window[`${storageName}Storage` as any] = {
+    window[`${storageName}Storage` as string] = {
       ...window,
-      getItem: jest.fn((key: any) => {
-        const item = IO.find((io: any) => io.key === key);
+      getItem: jest.fn((key: string) => {
+        const item = IO.find((io: IIO) => io.key === key);
         return item && item.expected;
       }),
       setItem: jest.fn(),
       removeItem: jest.fn(),
     };
 
-    engine.storage = window[`${storageName}Storage` as any];
+    engine.storage = window[`${storageName}Storage` as string];
   });
 
   beforeEach(() => {
