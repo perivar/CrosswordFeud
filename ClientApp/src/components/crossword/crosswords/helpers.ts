@@ -229,7 +229,7 @@ const getClearableCellsForClue = (grid: IGrid, clueMap: IClueMap, entries: IClue
 /**
  * Builds the initial state of the grid given the number of rows, columns, and a list of clues.
  */
-const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: IGrid): IGrid => {
+const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: string[][]): IGrid => {
 
   const grid = range(columns).map(x => range(rows).map(y => ({
     isHighlighted: false,

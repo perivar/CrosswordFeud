@@ -59,7 +59,8 @@
     "eslint-plugin-react-hooks": "^1.6.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
-    "chance": "^1.0.18"
+    "chance": "^1.0.18",
+    "mockdate": "^2.0.3"
   },
   "eslintConfig": {
     "extends": "react-app"

@@ -58,10 +58,12 @@ const easingFunctions: EasingRecord = {
 
 const createEasing = (type: string, duration: number) => {
   const startTime = new Date().getTime();
+  // const startTime = Date.now();
   const ease = easingFunctions[type];
 
   return () => {
     const elapsed = new Date().getTime() - startTime;
+    // const elapsed = Date.now() - startTime;
     return ease(Math.min(1, elapsed / duration));
   };
 };

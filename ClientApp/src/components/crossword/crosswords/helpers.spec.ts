@@ -13,27 +13,26 @@ import {
   getNumbersForGroupedEntries,
   getClueForGroupedEntries,
   getAllSeparatorsForGroup,
-  getTtotalLengthOfGroup,
+  getTotalLengthOfGroup,
   cluesAreInGroup,
   checkClueHasBeenAnswered,
   getClearableCellsForClue,
 } from './helpers';
 
-import { IGrid } from './grid';
-import { IClue } from './clues';
+import { IClue } from '../types';
+import { ICell } from '../types';
 
-const stubCellWithValue = (value: string): IGrid => ({
+const stubCellWithValue = (value: string): ICell => ({
   number: 1,
   isHighlighted: false,
   isEditable: false,
   isError: false,
   isAnimating: false,
-  value
+  value: value
 });
 
-const stubClue = (options: Partial<IClue> = {}): IClue => (
+const stubClue = (options: any): IClue => ( // Partial<IClue> gives me error messages
   {
-    ...options,
     id: '',
     number: 0,
     humanNumber: '',
@@ -44,10 +43,11 @@ const stubClue = (options: Partial<IClue> = {}): IClue => (
     direction: 'across',
     length: 0,
     solution: '',
+    ...options
   }
 );
 
-const entryFixture = stubClue({
+const entryFixture: IClue = stubClue({
   id: '',
   number: 15,
   humanNumber: '',
@@ -415,9 +415,9 @@ describe('Helpers', () => {
     });
   });
 
-  describe('getTtotalLengthOfGroup', () => {
+  describe('getTotalLengthOfGroup', () => {
     it('should get the total length of a group', () => {
-      expect(getTtotalLengthOfGroup(groupFixture)).toBe(30);
+      expect(getTotalLengthOfGroup(groupFixture)).toBe(30);
     });
   });
 
