@@ -1,5 +1,5 @@
 import MockDate from "mockdate";
-import { local, session } from '../lib/storage';
+import { local, session, IStorage } from '../lib/storage';
 
 interface StorageIO {
   key: string,
@@ -50,9 +50,10 @@ const IO: StorageIO[] = [
 
 
 // https://gist.github.com/mayank23/7b994385eb030f1efb7075c4f1f6ac4c
-const testStorage = (storageName: string, fn: any) => {
+const testStorage = (storageName: string, fn: IStorage) => {
   const engine = fn;
 
+  // jsdom doesn't support localStorage/ sessionStorage
   const property = `${storageName}Storage`;
   const { [property]: originalProperty } = window;
   delete window[property];
@@ -71,30 +72,16 @@ const testStorage = (storageName: string, fn: any) => {
       }
     });
 
-    // jsdom doesn't support localStorage/ sessionStorage
-    // window[`${storageName}Storage`] = {
-    // getItem: jest.fn((key: string): {} | undefined => {
-    //   const item = IO.find((io: StorageIO) => io.key === key);
-    //   return item && item.expected;
-    // }),
-    // setItem: jest.fn(),
-    // removeItem: jest.fn(),
-    // };
-
     engine.storage = window[property];
   });
 
   beforeEach(() => {
     engine.available = true;
     // jest.spyOn(engine.storage, 'setItem');
-    // jest.spyOn(engine.storage, 'getItem');
-    // jest.spyOn(engine.storage, 'removeItem');
   });
 
   afterEach(() => {
     // engine.storage.setItem.mockRestore();
-    // engine.storage.getItem.mockRestore();
-    // engine.storage.removeItem.mockRestore();
   })
 
   afterAll(() => {
@@ -134,15 +121,15 @@ const testStorage = (storageName: string, fn: any) => {
     IO.forEach(({
       key, data, expected, options,
     }) => {
-      engine.storage.setItem.mockClear();
-      engine.set(key, data, options);
+      (engine.storage.setItem as jest.Mock).mockClear();
+      engine.setItem(key, data, options);
       expect(engine.storage.setItem).toHaveBeenCalledWith(key, expected);
     });
   });
 
   test(`${storageName} - get()`, () => {
     IO.forEach(({ key, data }) => {
-      expect(engine.get(key)).toEqual(data);
+      expect(engine.getItem(key)).toEqual(data);
     });
   });
 
@@ -154,9 +141,9 @@ const testStorage = (storageName: string, fn: any) => {
         // set expired
         MockDate.set(new Date(2100, 1, 2, 0, 0, 0, 0));
 
-        expect(engine.get(key)).toEqual(null);
+        expect(engine.getItem(key)).toEqual(null);
         expect(engine.storage.removeItem).toHaveBeenCalledWith(key);
-        engine.storage.removeItem.mockClear();
+        (engine.storage.removeItem as jest.Mock).mockClear();
 
         // reset
         MockDate.reset();
@@ -172,9 +159,9 @@ const testStorage = (storageName: string, fn: any) => {
         // set non-expired
         MockDate.set(new Date(2099, 1, 1, 0, 0, 0, 0));
 
-        expect(engine.get(key)).toEqual(data);
+        expect(engine.getItem(key)).toEqual(data);
         expect(engine.storage.removeItem).not.toHaveBeenCalled();
-        engine.storage.removeItem.mockClear();
+        (engine.storage.removeItem as jest.Mock).mockClear();
 
         // reset
         MockDate.reset();
@@ -190,8 +177,8 @@ const testStorage = (storageName: string, fn: any) => {
 
   test(`${storageName} - remove()`, () => {
     IO.forEach(({ key }) => {
-      engine.storage.removeItem.mockClear();
-      engine.remove(key);
+      (engine.storage.removeItem as jest.Mock).mockClear();
+      engine.removeItem(key);
       expect(engine.storage.removeItem).toHaveBeenCalledWith(key);
     });
   });

@@ -7,10 +7,21 @@ declare global {
   }
 }
 
-class Storage {
+export interface IStorage {
+  storage: Window;
+  available: boolean | undefined;
+  isAvailable: () => boolean;
+  getItem: (key: string) => any;
+  setItem: (key: string, value: any, options: any) => boolean | void;
+  removeItem: (key: string) => void;
+  setIfNotExists: (key: string, value: any, options: any) => boolean | void;
+  getRaw: (key: string) => string | undefined;
+}
 
-  private storage: Window;
-  private available: boolean | undefined;
+class Storage implements IStorage {
+
+  public storage: Window;
+  public available: boolean | undefined;
 
   constructor(type: string) {
     this.storage = window[type];
