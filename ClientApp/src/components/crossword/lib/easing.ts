@@ -14,6 +14,7 @@ const easeOut = (power: number) => (t: number) => 1 - Math.abs((t - 1) ** power)
 const easeInOut = (power: number) => (t: number) => (t < 0.5 ? easeIn(power)(t * 2) / 2 : easeOut(power)(t * 2 - 1) / 2 + 0.5);
 
 type EasingRecord = Record<string, any>;
+
 // #? these probably should not be generated on parse but on being called
 const easingFunctions: EasingRecord = {
   // no easing, no acceleration
@@ -57,14 +58,12 @@ const easingFunctions: EasingRecord = {
 };
 
 const createEasing = (type: string, duration: number) => {
-  const startTime = new Date().getTime();
-  // const startTime = Date.now();
+  const startTimeMS = new Date().getTime();
   const ease = easingFunctions[type];
 
   return () => {
-    const elapsed = new Date().getTime() - startTime;
-    // const elapsed = Date.now() - startTime;
-    return ease(Math.min(1, elapsed / duration));
+    const elapsedMS = new Date().getTime() - startTimeMS;
+    return ease(Math.min(1, elapsedMS / duration));
   };
 };
 

@@ -1,14 +1,23 @@
+declare global {
+  interface Window {
+    getItem(key: string): any,
+    setItem(key: string, value: any): boolean | void,
+    removeItem(key: string): void,
+    [index: string]: any
+  }
+}
+
 class Storage {
 
-  private storage: any;
+  private storage: Window;
   private available: boolean | undefined;
 
-  constructor(type: any) {
-    this.storage = (window as any)[type];
+  constructor(type: string) {
+    this.storage = window[type];
     this.available = this.isAvailable();
   }
 
-  isAvailable() {
+  isAvailable(): boolean {
     const key = 'local-storage-module-test';
 
     if (this.available !== undefined) {
@@ -28,7 +37,7 @@ class Storage {
     return this.available;
   }
 
-  getItem(key: string) {
+  getItem(key: string): any {
     if (!this.available) {
       return;
     }
@@ -62,7 +71,7 @@ class Storage {
     return data.value;
   }
 
-  setItem(key: string, value: any, options: any = {}) {
+  setItem(key: string, value: any, options: any = {}): boolean | void {
     if (!this.available) {
       return;
     }
@@ -76,7 +85,7 @@ class Storage {
     );
   }
 
-  setIfNotExists(key: string, value: any, options: any = {}) {
+  setIfNotExists(key: string, value: any, options: any = {}): boolean | void {
     if (!this.available) {
       return;
     }
@@ -94,13 +103,13 @@ class Storage {
     );
   }
 
-  getRaw(key: string) {
+  getRaw(key: string): string | undefined {
     if (this.available) {
       return this.storage.getItem(key);
     }
   }
 
-  removeItem(key: string) {
+  removeItem(key: string): void {
     if (this.available) {
       return this.storage.removeItem(key);
     }

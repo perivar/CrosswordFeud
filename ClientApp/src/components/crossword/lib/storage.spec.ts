@@ -1,6 +1,7 @@
+import MockDate from "mockdate";
 import { local, session } from '../lib/storage';
 
-interface IIO {
+interface StorageIO {
   key: string,
   data: {},
   expected: {},
@@ -8,7 +9,7 @@ interface IIO {
   find?: (key: string) => string,
 }
 
-const IO: IIO[] = [
+const IO: StorageIO[] = [
   {
     key: 'test-1',
     data: 'string',
@@ -47,35 +48,57 @@ const IO: IIO[] = [
   },
 ];
 
-declare global {
-  interface Window {
-    getItem: any,
-    setItem: any,
-    removeItem: any,
-    [index: string]: any
-  }
-}
 
+// https://gist.github.com/mayank23/7b994385eb030f1efb7075c4f1f6ac4c
 const testStorage = (storageName: string, fn: any) => {
   const engine = fn;
 
+  const property = `${storageName}Storage`;
+  const { [property]: originalProperty } = window;
+  delete window[property];
   beforeAll(() => {
-    // jsdom doesn't support localStorage/ sessionStorage
-    window[`${storageName}Storage` as string] = {
-      ...window,
-      getItem: jest.fn((key: string) => {
-        const item = IO.find((io: IIO) => io.key === key);
-        return item && item.expected;
-      }),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-    };
 
-    engine.storage = window[`${storageName}Storage` as string];
+    Object.defineProperty(window, property, {
+      configurable: true,
+      writable: true,
+      value: {
+        getItem: jest.fn((key: string): {} | undefined => {
+          const item = IO.find((io: StorageIO) => io.key === key);
+          return item && item.expected;
+        }),
+        setItem: jest.fn(),
+        removeItem: jest.fn(),
+      }
+    });
+
+    // jsdom doesn't support localStorage/ sessionStorage
+    // window[`${storageName}Storage`] = {
+    // getItem: jest.fn((key: string): {} | undefined => {
+    //   const item = IO.find((io: StorageIO) => io.key === key);
+    //   return item && item.expected;
+    // }),
+    // setItem: jest.fn(),
+    // removeItem: jest.fn(),
+    // };
+
+    engine.storage = window[property];
   });
 
   beforeEach(() => {
     engine.available = true;
+    // jest.spyOn(engine.storage, 'setItem');
+    // jest.spyOn(engine.storage, 'getItem');
+    // jest.spyOn(engine.storage, 'removeItem');
+  });
+
+  afterEach(() => {
+    // engine.storage.setItem.mockRestore();
+    // engine.storage.getItem.mockRestore();
+    // engine.storage.removeItem.mockRestore();
+  })
+
+  afterAll(() => {
+    window[property] = originalProperty;
   });
 
   test(`${storageName} - isAvailable()`, () => {
@@ -127,23 +150,16 @@ const testStorage = (storageName: string, fn: any) => {
     IO.filter(item => item.options && item.options.expires).forEach(
       (expired) => {
         const { key } = expired;
-        const OriginalDate = global.Date;
 
-        // const dateExpiredStub = jest.fn(
-        //   dateString => new OriginalDate(dateString || '2100-01-02').getTime()
-        // );
-
-        // global.Date.now = dateExpiredStub;
-
-        // const dateExpiredStub = jest.fn(() => 1530518207007);
-        const dateExpiredStub = jest.fn(() => new Date('2100-01-02').getTime());
-        global.Date.now = dateExpiredStub;
+        // set expired
+        MockDate.set(new Date(2100, 1, 2, 0, 0, 0, 0));
 
         expect(engine.get(key)).toEqual(null);
         expect(engine.storage.removeItem).toHaveBeenCalledWith(key);
         engine.storage.removeItem.mockClear();
 
-        global.Date = OriginalDate;
+        // reset
+        MockDate.reset();
       },
     );
   });
@@ -152,21 +168,16 @@ const testStorage = (storageName: string, fn: any) => {
     IO.filter(item => item.options && item.options.expires).forEach(
       (expired) => {
         const { key, data } = expired;
-        const OriginalDate = global.Date;
 
-        // global.Date = jest.fn(
-        //   dateString => new OriginalDate(dateString || '2099-01-01'),
-        // );
-
-        // const dateNonExpiredStub = jest.fn(() => 1530518207007);
-        const dateNonExpiredStub = jest.fn(() => new Date('2099-01-01').getTime());
-        global.Date.now = dateNonExpiredStub;
+        // set non-expired
+        MockDate.set(new Date(2099, 1, 1, 0, 0, 0, 0));
 
         expect(engine.get(key)).toEqual(data);
         expect(engine.storage.removeItem).not.toHaveBeenCalled();
         engine.storage.removeItem.mockClear();
 
-        global.Date = OriginalDate;
+        // reset
+        MockDate.reset();
       },
     );
   });
