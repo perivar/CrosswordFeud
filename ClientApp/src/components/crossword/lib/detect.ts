@@ -79,6 +79,8 @@ const findBreakpoint = (tweakpoint: string) => {
 };
 
 const updateBreakpoint = (breakpoint: IBreakPoint) => {
+  if(breakpoint === undefined) return;
+
   currentTweakpoint = breakpoint.name;
 
   if (breakpoint.isTweakpoint) {

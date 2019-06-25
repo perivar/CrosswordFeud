@@ -11,6 +11,8 @@ jest.mock('react-dom', () => ({
   }),
 }));
 
+jest.mock('ReactComponent');
+
 const CASES = [
   {
     entries: ['', '', '', '', 'l', '', 'e'],
