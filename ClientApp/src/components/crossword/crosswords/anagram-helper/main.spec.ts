@@ -1,4 +1,8 @@
 import sortBy from 'lodash/sortBy';
+
+// have to mock the svg import before importing AnagramHelper
+jest.mock('../../svgs/close.svg', () => ('Close'));
+
 import { AnagramHelper } from './main';
 
 jest.mock('react', () => ({
@@ -11,9 +15,18 @@ jest.mock('react-dom', () => ({
   }),
 }));
 
-jest.mock('ReactComponent');
+interface IExpectedResult {
+  value: string,
+  entered: boolean
+}
 
-const CASES = [
+interface ITestCase {
+  entries: string[],
+  word: string,
+  expected: IExpectedResult[]
+}
+
+const TestCases: ITestCase[] = [
   {
     entries: ['', '', '', '', 'l', '', 'e'],
     word: 'liberal',
@@ -51,10 +64,10 @@ const CASES = [
 
 describe('Anagram Helper', () => {
   test('marks the correct letters as entered', () => {
-    const sort = (x: any) => x.value + x.entered.toString();
+    const sort = (x: IExpectedResult) => x.value + x.entered.toString();
 
-    CASES.forEach((testCase) => {
-      const entries = testCase.entries.map((e: any) => ({ value: e }));
+    TestCases.forEach((testCase: ITestCase) => {
+      const entries = testCase.entries.map((e: string) => ({ value: e }));
       const result = new AnagramHelper(AnagramHelper.defaultProps).shuffleWord(
         testCase.word,
         entries,
