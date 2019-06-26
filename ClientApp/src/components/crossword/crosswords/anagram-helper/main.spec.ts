@@ -1,9 +1,8 @@
 import sortBy from 'lodash/sortBy';
-
-// have to mock the svg import before importing AnagramHelper
-jest.mock('../../svgs/close.svg', () => ('Close'));
-
 import { AnagramHelper } from './main';
+
+// used by AnagramHelper
+jest.mock('../../svgs/close.svg', () => ('Close'));
 
 jest.mock('react', () => ({
   Component: function Component() { },
