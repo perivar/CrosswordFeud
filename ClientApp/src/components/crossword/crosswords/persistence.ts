@@ -1,9 +1,8 @@
 import { local as localStorage } from '../lib/storage';
-import { IGrid } from '../types';
 
 const localStorageKey = (id: string) => `crosswords.${id}`;
 
-const saveGridState = (id: string, grid: IGrid): boolean | void => {
+const saveGridState = (id: string, grid: string[][]): boolean | void => {
   // Take only the entries from the grid. Other state information like what
   // cells are highlighted ought not to be persisted.
   try {
@@ -13,7 +12,7 @@ const saveGridState = (id: string, grid: IGrid): boolean | void => {
   }
 };
 
-const loadGridState = (id: string): IGrid =>
+const loadGridState = (id: string): string[][] =>
   localStorage.getItem(localStorageKey(id));
 
 export { saveGridState, loadGridState };

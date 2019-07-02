@@ -41,9 +41,9 @@ import zip from 'lodash/zip';
 
 export interface ICrosswordProps {
   data: ICrosswordData,
-  loadGrid: (id: string) => IGrid,
+  loadGrid: (id: string) => string[][],
   onMove: (move: IMove) => void,
-  saveGrid: (id: string, entries: IGrid) => void,
+  saveGrid: (id: string, entries: string[][]) => void,
 }
 
 export interface IMove {
@@ -907,7 +907,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 Crossword.defaultProps = {
   onMove: (move: IMove) => { },
   loadGrid: (id: string) => loadGridState(id),
-  saveGrid: (id: string, grid: IGrid) => saveGridState(id, grid),
+  saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid),
   data: {
     id: '',
     number: 0,

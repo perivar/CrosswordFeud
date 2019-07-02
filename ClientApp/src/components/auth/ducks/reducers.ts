@@ -5,7 +5,7 @@ import { UserActionTypes, UserActions } from './types';
 import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from "../types";
 // import { Action } from 'redux';
 
-let user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
+const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
 const initialAuthState: IAuthState = user ? { loggingIn: false, loggedIn: true, logon: user, logonUserName: '' } : { loggingIn: false, loggedIn: false, logon: user, logonUserName: '' };
 
@@ -106,7 +106,7 @@ const usersReducer = function users(state = initialUserState, action: UserAction
                 items: state.items.map((user: IUser) => {
                     if (user.id === action.id) {
                         // make copy of user without 'deleting:true' property
-                        const { deleting, ...userCopy } = user;
+                        const { ...userCopy } = user;
                         // return copy of user with 'deleteError:[error]' property
                         return { ...userCopy, deleteError: action.error };
                     }

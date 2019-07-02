@@ -6,7 +6,7 @@ const config = { apiUrl: process.env.REACT_APP_API };
 
 function authHeader(): Headers {
     // return authorization header with jwt token
-    let user = JSON.parse(localStorage.getItem('user') || '{}');
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     if (user && user.token) {
         return { 'Authorization': 'Bearer ' + user.token } as any;

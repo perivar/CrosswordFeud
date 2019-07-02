@@ -15,14 +15,15 @@ const forecastReducer = (state = initialForecastState, action: any) => {
         loading: true,
         loadError: null
       };
-    case types.GET_FORECAST_SUCCESS:
+    case types.GET_FORECAST_SUCCESS: {
       const forecasts = action.response.map((f: any) => f as IForecast);
       return {
         ...state,
         forecasts,
         loading: false
       };
-    case types.GET_FORECAST_FAILURE:
+    }
+    case types.GET_FORECAST_FAILURE: {
       const error = action.error;
       return {
         ...state,
@@ -30,6 +31,7 @@ const forecastReducer = (state = initialForecastState, action: any) => {
         loading: false,
         loadError: error.message
       };
+    }
     default:
       return state;
   }

@@ -244,7 +244,7 @@ describe('Helpers', () => {
             ['', '', '', 'W', ''],
             ['', '', '', '', ''],
             ['', '', '', '', ''],
-          ],
+          ]
         );
 
         expect(grid[2][3].value).toBe('W');
@@ -582,40 +582,14 @@ describe('Helpers', () => {
 
     const gridFixture = [
       [
-        'R',
-        'I',
-        'V',
-        'E',
-        'R',
-        '',
-        'C',
-        '',
-        'L',
-        'U',
-        'S',
-        'T',
-        'R',
-        'E',
+        'R', 'I', 'V', 'E', 'R', '', 'C', '', 'L', 'U', 'S', 'T', 'R', 'E',
       ].map(stubCellWithValue),
-      ['', '', '', '', '', '', 'L', '', 'I', '', '', '', '', ''].map(
-        stubCellWithValue,
-      ),
       [
-        'S',
-        'A',
-        'N',
-        'T',
-        'A',
-        '',
-        'A',
-        '',
-        'G',
-        'I',
-        'S',
-        'T',
-        '',
-        '',
-      ].map(stubCellWithValue),
+        '', '', '', '', '', '', 'L', '', 'I', '', '', '', '', ''].map(
+          stubCellWithValue,
+        ),
+      [
+        'S', 'A', 'N', 'T', 'A', '', 'A', '', 'G', 'I', 'S', 'T', '', '',].map(stubCellWithValue),
       ['', '', '', '', '', '', 'U', '', 'H', '', 'O', '', '', ''].map(
         stubCellWithValue,
       ),
@@ -629,21 +603,7 @@ describe('Helpers', () => {
         stubCellWithValue,
       ),
       [
-        '',
-        'R',
-        'A',
-        'I',
-        'L',
-        'R',
-        'O',
-        'A',
-        'D',
-        '',
-        'E',
-        '',
-        '',
-        '',
-      ].map(stubCellWithValue),
+        '', 'R', 'A', 'I', 'L', 'R', 'O', 'A', 'D', '', 'E', '', '', '',].map(stubCellWithValue),
       ['', 'T', '', 'G', '', '', '', '', '', 'C', 'R', 'O', 'S', 'S'].map(
         stubCellWithValue,
       ),
@@ -654,21 +614,7 @@ describe('Helpers', () => {
         stubCellWithValue,
       ),
       [
-        '',
-        'R',
-        '',
-        'S',
-        'O',
-        'U',
-        'T',
-        'H',
-        'E',
-        'R',
-        'N',
-        '',
-        '',
-        '',
-      ].map(stubCellWithValue),
+        '', 'R', '', 'S', 'O', 'U', 'T', 'H', 'E', 'R', 'N', '', '', '',].map(stubCellWithValue),
       ['', 'N', '', '', '', '', '', '', '', '', '', '', '', ''].map(
         stubCellWithValue,
       ),
