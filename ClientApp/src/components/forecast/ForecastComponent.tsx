@@ -1,16 +1,15 @@
-import React, { Component } from "react";
-import { IForecast, IForecastProps } from "./types";
+import React, { Component } from 'react';
+import { IForecast, IForecastProps } from './types';
 
-import "./ForecastComponent.scss";
+import './ForecastComponent.scss';
 
 export default class ForecastComponent extends Component<IForecastProps> {
-
   public componentDidMount() {
     this.props.getForecasts();
   }
 
   public renderForecastsTable(forecasts: IForecast[]) {
-    const rows = forecasts.map((forecast) => (
+    const rows = forecasts.map(forecast => (
       <tr key={forecast.dateFormatted}>
         <td>{forecast.dateFormatted}</td>
         <td>{forecast.temperatureC}</td>
@@ -29,21 +28,21 @@ export default class ForecastComponent extends Component<IForecastProps> {
             <th>Summary</th>
           </tr>
         </thead>
-        <tbody>
-          {rows}
-        </tbody>
+        <tbody>{rows}</tbody>
       </table>
     );
   }
 
   public render() {
-    const contents = this.props.loading
-      ? <p><em>Loading...</em></p>
-      : this.renderForecastsTable(this.props.forecasts);
+    const contents = this.props.loading ? (
+      <p>
+        <em>Loading...</em>
+      </p>
+    ) : (
+      this.renderForecastsTable(this.props.forecasts)
+    );
 
-    const error = this.props.loadError != null
-      ? <span className="error">{this.props.loadError}</span>
-      : <span></span>;
+    const error = this.props.loadError != null ? <span className="error">{this.props.loadError}</span> : <span></span>;
 
     return (
       <div>

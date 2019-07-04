@@ -1,5 +1,5 @@
-import { IForecast, IForecastState } from "../types";
-import * as types from "./types";
+import { IForecast, IForecastState } from '../types';
+import * as types from './types';
 
 const initialForecastState: IForecastState = {
   forecasts: [] as IForecast[],

@@ -1,5 +1,5 @@
 import Chance from 'chance';
-import MockDate from "mockdate";
+import MockDate from 'mockdate';
 import { easingFunctions, createEasing } from './easing';
 
 const chance = new Chance();
@@ -19,7 +19,7 @@ const TESTS: TestRecord = {
   easeInOutQuart: [[0.3, 0.0648], [0.5, 0.5], [2, -7], [3, -127]],
   easeInQuint: [[2, 32], [3, 243], [4, 1024]],
   easeOutQuint: [[2, 0], [3, -31], [4, -242]],
-  easeInOutQuint: [[0.3, 0.03888], [0.5, 0.5], [2, -15], [3, -511]],
+  easeInOutQuint: [[0.3, 0.03888], [0.5, 0.5], [2, -15], [3, -511]]
 };
 
 describe('easing', () => {

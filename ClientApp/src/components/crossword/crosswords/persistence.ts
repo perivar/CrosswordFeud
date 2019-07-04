@@ -12,7 +12,6 @@ const saveGridState = (id: string, grid: string[][]): boolean | void => {
   }
 };
 
-const loadGridState = (id: string): string[][] =>
-  localStorage.getItem(localStorageKey(id));
+const loadGridState = (id: string): string[][] => localStorage.getItem(localStorageKey(id));
 
 export { saveGridState, loadGridState };

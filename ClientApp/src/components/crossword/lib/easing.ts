@@ -11,7 +11,8 @@ const easeIn = (power: number) => (t: number) => t ** power;
 
 const easeOut = (power: number) => (t: number) => 1 - Math.abs((t - 1) ** power);
 
-const easeInOut = (power: number) => (t: number) => (t < 0.5 ? easeIn(power)(t * 2) / 2 : easeOut(power)(t * 2 - 1) / 2 + 0.5);
+const easeInOut = (power: number) => (t: number) =>
+  t < 0.5 ? easeIn(power)(t * 2) / 2 : easeOut(power)(t * 2 - 1) / 2 + 0.5;
 
 type EasingRecord = Record<string, any>;
 
@@ -54,7 +55,7 @@ const easingFunctions: EasingRecord = {
   easeOutQuint: easeOut(5),
 
   // acceleration until halfway, then deceleration
-  easeInOutQuint: easeInOut(5),
+  easeInOutQuint: easeInOut(5)
 };
 
 const createEasing = (type: string, duration: number) => {

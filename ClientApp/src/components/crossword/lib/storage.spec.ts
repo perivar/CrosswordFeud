@@ -1,12 +1,12 @@
-import MockDate from "mockdate";
+import MockDate from 'mockdate';
 import { local, session, IStorage } from '../lib/storage';
 
 interface StorageIO {
-  key: string,
-  data: {},
-  expected: {},
-  options: { expires?: Date },
-  find?: (key: string) => string,
+  key: string;
+  data: {};
+  expected: {};
+  options: { expires?: Date };
+  find?: (key: string) => string;
 }
 
 const IO: StorageIO[] = [
@@ -14,40 +14,39 @@ const IO: StorageIO[] = [
     key: 'test-1',
     data: 'string',
     expected: '{"value":"string"}',
-    options: {},
+    options: {}
   },
 
   {
     key: 'test-2',
     data: { foo: 'bar' },
     expected: '{"value":{"foo":"bar"}}',
-    options: {},
+    options: {}
   },
 
   {
     key: 'test-3',
     data: [true, 2, 'bar'],
     expected: '{"value":[true,2,"bar"]}',
-    options: {},
+    options: {}
   },
 
   {
     key: 'test-4',
     data: 'test-4',
     options: {
-      expires: new Date('2100-01-01'),
+      expires: new Date('2100-01-01')
     },
-    expected: '{"value":"test-4","expires":"2100-01-01T00:00:00.000Z"}',
+    expected: '{"value":"test-4","expires":"2100-01-01T00:00:00.000Z"}'
   },
 
   {
     key: 'test-5',
     data: false,
     expected: '{"value":false}',
-    options: {},
-  },
+    options: {}
+  }
 ];
-
 
 // https://gist.github.com/mayank23/7b994385eb030f1efb7075c4f1f6ac4c
 const testStorage = (storageName: string, fn: IStorage) => {
@@ -58,7 +57,6 @@ const testStorage = (storageName: string, fn: IStorage) => {
   const { [property]: originalProperty } = window;
   delete window[property];
   beforeAll(() => {
-
     Object.defineProperty(window, property, {
       configurable: true,
       writable: true,
@@ -68,7 +66,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
           return item && item.expected;
         }),
         setItem: jest.fn(),
-        removeItem: jest.fn(),
+        removeItem: jest.fn()
       }
     });
 
@@ -82,7 +80,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
 
   afterEach(() => {
     // engine.storage.setItem.mockRestore();
-  })
+  });
 
   afterAll(() => {
     window[property] = originalProperty;
@@ -92,10 +90,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
     engine.available = undefined;
     expect(engine.isAvailable()).toBe(true);
     expect(engine.available).toBe(true);
-    expect(engine.storage.setItem).toHaveBeenCalledWith(
-      'local-storage-module-test',
-      'graun',
-    );
+    expect(engine.storage.setItem).toHaveBeenCalledWith('local-storage-module-test', 'graun');
   });
 
   test(`${storageName} - is(Not)Available()`, () => {
@@ -118,9 +113,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
   });
 
   test(`${storageName} - set()`, () => {
-    IO.forEach(({
-      key, data, expected, options,
-    }) => {
+    IO.forEach(({ key, data, expected, options }) => {
       (engine.storage.setItem as jest.Mock).mockClear();
       engine.setItem(key, data, options);
       expect(engine.storage.setItem).toHaveBeenCalledWith(key, expected);
@@ -134,39 +127,35 @@ const testStorage = (storageName: string, fn: IStorage) => {
   });
 
   test(`${storageName} - get() with expired item`, () => {
-    IO.filter(item => item.options && item.options.expires).forEach(
-      (expired) => {
-        const { key } = expired;
+    IO.filter(item => item.options && item.options.expires).forEach(expired => {
+      const { key } = expired;
 
-        // set expired
-        MockDate.set(new Date(2100, 1, 2, 0, 0, 0, 0));
+      // set expired
+      MockDate.set(new Date(2100, 1, 2, 0, 0, 0, 0));
 
-        expect(engine.getItem(key)).toEqual(null);
-        expect(engine.storage.removeItem).toHaveBeenCalledWith(key);
-        (engine.storage.removeItem as jest.Mock).mockClear();
+      expect(engine.getItem(key)).toEqual(null);
+      expect(engine.storage.removeItem).toHaveBeenCalledWith(key);
+      (engine.storage.removeItem as jest.Mock).mockClear();
 
-        // reset
-        MockDate.reset();
-      },
-    );
+      // reset
+      MockDate.reset();
+    });
   });
 
   test(`${storageName} - get() with non-expired item`, () => {
-    IO.filter(item => item.options && item.options.expires).forEach(
-      (expired) => {
-        const { key, data } = expired;
+    IO.filter(item => item.options && item.options.expires).forEach(expired => {
+      const { key, data } = expired;
 
-        // set non-expired
-        MockDate.set(new Date(2099, 1, 1, 0, 0, 0, 0));
+      // set non-expired
+      MockDate.set(new Date(2099, 1, 1, 0, 0, 0, 0));
 
-        expect(engine.getItem(key)).toEqual(data);
-        expect(engine.storage.removeItem).not.toHaveBeenCalled();
-        (engine.storage.removeItem as jest.Mock).mockClear();
+      expect(engine.getItem(key)).toEqual(data);
+      expect(engine.storage.removeItem).not.toHaveBeenCalled();
+      (engine.storage.removeItem as jest.Mock).mockClear();
 
-        // reset
-        MockDate.reset();
-      },
-    );
+      // reset
+      MockDate.reset();
+    });
   });
 
   test(`${storageName} - getRaw()`, () => {

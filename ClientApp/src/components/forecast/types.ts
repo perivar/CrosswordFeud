@@ -1,4 +1,3 @@
-
 export interface IForecast {
   dateFormatted: string;
   temperatureC: number;

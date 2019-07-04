@@ -2,27 +2,27 @@ import sortBy from 'lodash/sortBy';
 import { AnagramHelper } from './main';
 
 // used by AnagramHelper
-jest.mock('../../svgs/close.svg', () => ('Close'));
+jest.mock('../../svgs/close.svg', () => 'Close');
 
 jest.mock('react', () => ({
-  Component: function Component() { },
+  Component: function Component() {}
 }));
 
 jest.mock('react-dom', () => ({
   findDOMNode: () => ({
-    focus: () => { },
-  }),
+    focus: () => {}
+  })
 }));
 
 interface IExpectedResult {
-  value: string,
-  entered: boolean
+  value: string;
+  entered: boolean;
 }
 
 interface ITestCase {
-  entries: string[],
-  word: string,
-  expected: IExpectedResult[]
+  entries: string[];
+  word: string;
+  expected: IExpectedResult[];
 }
 
 const TestCases: ITestCase[] = [
@@ -36,8 +36,8 @@ const TestCases: ITestCase[] = [
       { value: 'e', entered: true },
       { value: 'r', entered: false },
       { value: 'a', entered: false },
-      { value: 'l', entered: false },
-    ],
+      { value: 'l', entered: false }
+    ]
   },
 
   // when there's an incorrect entry we should still highlight the correct ones
@@ -56,9 +56,9 @@ const TestCases: ITestCase[] = [
       { value: 'u', entered: false },
       { value: 't', entered: false },
       { value: 'o', entered: false },
-      { value: 'r', entered: false },
-    ],
-  },
+      { value: 'r', entered: false }
+    ]
+  }
 ];
 
 describe('Anagram Helper', () => {
@@ -67,14 +67,9 @@ describe('Anagram Helper', () => {
 
     TestCases.forEach((testCase: ITestCase) => {
       const entries = testCase.entries.map((e: string) => ({ value: e }));
-      const result = new AnagramHelper(AnagramHelper.defaultProps).shuffleWord(
-        testCase.word,
-        entries,
-      );
+      const result = new AnagramHelper(AnagramHelper.defaultProps).shuffleWord(testCase.word, entries);
 
-      expect(sortBy(result, sort)).toEqual(
-        sortBy(testCase.expected, sort),
-      );
+      expect(sortBy(result, sort)).toEqual(sortBy(testCase.expected, sort));
     });
   });
 });

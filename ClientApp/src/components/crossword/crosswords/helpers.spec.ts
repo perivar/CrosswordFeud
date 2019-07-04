@@ -16,7 +16,7 @@ import {
   getTotalLengthOfGroup,
   cluesAreInGroup,
   checkClueHasBeenAnswered,
-  getClearableCellsForClue,
+  getClearableCellsForClue
 } from './helpers';
 
 import { IClue } from '../types';
@@ -31,21 +31,20 @@ const stubCellWithValue = (value: string): ICell => ({
   value: value
 });
 
-const stubClue = (options: any): IClue => ( // Partial<IClue> gives me error messages
-  {
-    id: '',
-    number: 0,
-    humanNumber: '',
-    group: [],
-    clue: '',
-    position: { x: 0, y: 0 },
-    separatorLocations: {},
-    direction: 'across',
-    length: 0,
-    solution: '',
-    ...options
-  }
-);
+const stubClue = (options: any): IClue => ({
+  // Partial<IClue> gives me error messages
+  id: '',
+  number: 0,
+  humanNumber: '',
+  group: [],
+  clue: '',
+  position: { x: 0, y: 0 },
+  separatorLocations: {},
+  direction: 'across',
+  length: 0,
+  solution: '',
+  ...options
+});
 
 const entryFixture: IClue = stubClue({
   id: '',
@@ -56,7 +55,7 @@ const entryFixture: IClue = stubClue({
   group: ['2-across'],
   position: {
     x: 2,
-    y: 3,
+    y: 3
   },
   solution: 'IT'
 });
@@ -80,7 +79,7 @@ const entriesFixture: IClue[] = [
     clue: 'Lionel, a hot favourite at Christmas? (7)',
     group: ['8-across'],
     position: { x: 8, y: 1 },
-    separatorLocations: {},
+    separatorLocations: {}
   },
   {
     id: '10-across',
@@ -90,7 +89,7 @@ const entriesFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 5, y: 3 },
-    separatorLocations: { ',': [3, 9] },
+    separatorLocations: { ',': [3, 9] }
   },
   {
     id: '21-across',
@@ -100,7 +99,7 @@ const entriesFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 1, y: 11 },
-    separatorLocations: { ',': [4, 7] },
+    separatorLocations: { ',': [4, 7] }
   },
   {
     id: '2-down',
@@ -111,7 +110,7 @@ const entriesFixture: IClue[] = [
       'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 3, y: 0 },
-    separatorLocations: { ',': [4, 8] },
+    separatorLocations: { ',': [4, 8] }
   },
   {
     id: '21-down',
@@ -121,7 +120,7 @@ const entriesFixture: IClue[] = [
     clue: 'Patsys English, looked down on by Irish party (4)',
     group: ['21-down'],
     position: { x: 1, y: 11 },
-    separatorLocations: {},
+    separatorLocations: {}
   },
   {
     id: '23-down',
@@ -131,8 +130,8 @@ const entriesFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 13, y: 11 },
-    separatorLocations: { ',': [4] },
-  },
+    separatorLocations: { ',': [4] }
+  }
 ].map(stubClue);
 
 const groupFixture: IClue[] = [
@@ -145,7 +144,7 @@ const groupFixture: IClue[] = [
       'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 3, y: 0 },
-    separatorLocations: { ',': [4, 8] },
+    separatorLocations: { ',': [4, 8] }
   },
   {
     id: '10-across',
@@ -155,7 +154,7 @@ const groupFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 5, y: 3 },
-    separatorLocations: { ',': [3, 9] },
+    separatorLocations: { ',': [3, 9] }
   },
   {
     id: '23-down',
@@ -165,7 +164,7 @@ const groupFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 13, y: 11 },
-    separatorLocations: { ',': [4] },
+    separatorLocations: { ',': [4] }
   },
   {
     id: '21-across',
@@ -175,8 +174,8 @@ const groupFixture: IClue[] = [
     clue: 'See 2',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 1, y: 11 },
-    separatorLocations: { ',': [4, 7] },
-  },
+    separatorLocations: { ',': [4, 7] }
+  }
 ].map(stubClue);
 
 describe('Helpers', () => {
@@ -185,9 +184,9 @@ describe('Helpers', () => {
       expect(
         isAcross(
           stubClue({
-            direction: 'across',
-          }),
-        ),
+            direction: 'across'
+          })
+        )
       ).toBe(true);
     });
 
@@ -203,9 +202,7 @@ describe('Helpers', () => {
 
     describe('buildGrid', () => {
       it('should build a grid with the correct number of rows', () => {
-        expect(
-          buildGrid(5, 6, [], []).every(({ length }) => length === 5),
-        ).toBe(true);
+        expect(buildGrid(5, 6, [], []).every(({ length }) => length === 5)).toBe(true);
       });
 
       it('should build a grid with the correct number of columns', () => {
@@ -215,9 +212,7 @@ describe('Helpers', () => {
       it('should set entries to not editable by default', () => {
         const grid = buildGrid(5, 6, [], []);
 
-        expect(
-          grid.every(column => column.every(({ isEditable }) => isEditable === false)),
-        ).toBe(true);
+        expect(grid.every(column => column.every(({ isEditable }) => isEditable === false))).toBe(true);
       });
 
       it('should make cells that belong to an entry editable', () => {
@@ -243,7 +238,7 @@ describe('Helpers', () => {
             ['', '', '', '', ''],
             ['', '', '', 'W', ''],
             ['', '', '', '', ''],
-            ['', '', '', '', ''],
+            ['', '', '', '', '']
           ]
         );
 
@@ -333,11 +328,11 @@ describe('Helpers', () => {
         group: ['2-across', '15 accross'],
         position: {
           x: 2,
-          y: 3,
+          y: 3
         },
         direction: 'across',
         length: 2,
-        number: 2,
+        number: 2
       });
       expect(clueIsInGroup(entryFixtureWithGroup)).toBe(true);
     });
@@ -345,9 +340,7 @@ describe('Helpers', () => {
 
   describe('getAnagramClueData', () => {
     it('should return the clue for a non grouped clue', () => {
-      expect(getAnagramClueData(entriesFixture, entryFixture)).toEqual(
-        entryFixture,
-      );
+      expect(getAnagramClueData(entriesFixture, entryFixture)).toEqual(entryFixture);
     });
 
     it('should return the correct data when the clue is part of a group', () => {
@@ -357,11 +350,11 @@ describe('Helpers', () => {
         length: 30,
         separatorLocations: {
           ',': [4, 8, 11, 17, 21, 25, 28],
-          '-': [],
+          '-': []
         },
         direction: '',
         clue:
-          'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
+          'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)'
       };
       const clue = stubClue({
         id: '10-across',
@@ -370,26 +363,23 @@ describe('Helpers', () => {
         clue: 'See 2',
         group: ['2-down', '10-across', '23-down', '21-across'],
         position: { x: 5, y: 3 },
-        separatorLocations: { ',': [3, 9] },
+        separatorLocations: { ',': [3, 9] }
       });
-      expect(getAnagramClueData(entriesFixture, clue)).toEqual(
-        expectedData,
-      );
+      expect(getAnagramClueData(entriesFixture, clue)).toEqual(expectedData);
     });
   });
 
   describe('getGroupEntriesForClue', () => {
     it('should return the entries for a clue in the group in the correct order', () => {
       const group = ['2-down', '10-across', '23-down', '21-across'];
-      expect(getGroupEntriesForClue(entriesFixture, group)).toEqual(
-        groupFixture,
-      );
+      expect(getGroupEntriesForClue(entriesFixture, group)).toEqual(groupFixture);
     });
   });
 
   describe('getClueForGroupedEntries', () => {
     it('should get the clue for a group', () => {
-      const expectedClue = 'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)';
+      const expectedClue =
+        'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)';
       expect(getClueForGroupedEntries(groupFixture)).toBe(expectedClue);
     });
   });
@@ -397,9 +387,7 @@ describe('Helpers', () => {
   describe('getNumbersForGroupedEntries', () => {
     it('should get correct numerical description for grouped clue', () => {
       const expectedNumber = '2,10,23,21across';
-      expect(getNumbersForGroupedEntries(groupFixture)).toBe(
-        expectedNumber,
-      );
+      expect(getNumbersForGroupedEntries(groupFixture)).toBe(expectedNumber);
     });
   });
 
@@ -407,11 +395,9 @@ describe('Helpers', () => {
     it('should get the correct separators for the whole clue grouup', () => {
       const expectedSeparators = {
         ',': [4, 8, 11, 17, 21, 25, 28],
-        '-': [],
+        '-': []
       };
-      expect(getAllSeparatorsForGroup(groupFixture)).toEqual(
-        expectedSeparators,
-      );
+      expect(getAllSeparatorsForGroup(groupFixture)).toEqual(expectedSeparators);
     });
   });
 
@@ -423,10 +409,7 @@ describe('Helpers', () => {
 
   describe('cellsForClue', () => {
     it('should return all the cells for a single entry', () => {
-      expect(cellsForClue(entriesFixture, entryFixture)).toEqual([
-        { x: 2, y: 3 },
-        { x: 3, y: 3 },
-      ]);
+      expect(cellsForClue(entriesFixture, entryFixture)).toEqual([{ x: 2, y: 3 }, { x: 3, y: 3 }]);
     });
 
     it('should return all cells for a grouped entry', () => {
@@ -437,7 +420,7 @@ describe('Helpers', () => {
         clue: 'See 2',
         group: ['2-down', '10-across', '23-down', '21-across'],
         position: { x: 5, y: 3 },
-        separatorLocations: { ',': [3, 9] },
+        separatorLocations: { ',': [3, 9] }
       });
 
       const expectedCells = [
@@ -470,7 +453,7 @@ describe('Helpers', () => {
         { x: 6, y: 11 },
         { x: 7, y: 11 },
         { x: 8, y: 11 },
-        { x: 9, y: 11 },
+        { x: 9, y: 11 }
       ];
       expect(cellsForClue(entriesFixture, clue)).toEqual(expectedCells);
     });
@@ -479,29 +462,25 @@ describe('Helpers', () => {
   describe('areCluesInAGroup', () => {
     const thisEntryFixture = stubClue({
       id: '2-across',
-      group: ['2-across', '10-down'],
+      group: ['2-across', '10-down']
     });
 
     const thatEntryFixture = stubClue({
       id: '10-down',
-      group: ['2-across', '10-down'],
+      group: ['2-across', '10-down']
     });
 
     const otherEntryFixture = stubClue({
       id: '10-across',
-      group: ['10-across', '12-down'],
+      group: ['10-across', '12-down']
     });
 
     it('should return true when two clues are part of the same group', () => {
-      expect(cluesAreInGroup(thisEntryFixture, thatEntryFixture)).toBe(
-        true,
-      );
+      expect(cluesAreInGroup(thisEntryFixture, thatEntryFixture)).toBe(true);
     });
 
     it('should return false when two clues are not part of the same group', () => {
-      expect(cluesAreInGroup(thatEntryFixture, otherEntryFixture)).toBe(
-        false,
-      );
+      expect(cluesAreInGroup(thatEntryFixture, otherEntryFixture)).toBe(false);
     });
   });
 
@@ -512,7 +491,7 @@ describe('Helpers', () => {
       ['', '', '', '', '', ''].map(stubCellWithValue),
       ['', '', '', '', '', ''].map(stubCellWithValue),
       ['', 'T', '2', '0', '', ''].map(stubCellWithValue),
-      ['', '', '', '', '', ''].map(stubCellWithValue),
+      ['', '', '', '', '', ''].map(stubCellWithValue)
     ];
 
     const answeredEntryFixture = stubClue({
@@ -520,42 +499,33 @@ describe('Helpers', () => {
       solution: 'RIVER',
       position: { x: 0, y: 0 },
       direction: 'down',
-      length: 5,
+      length: 5
     });
     const answeredEntryWithNumbersFixture = stubClue({
       id: '2-down',
       solution: 'T20',
       position: { x: 4, y: 1 },
       direction: 'down',
-      length: 3,
+      length: 3
     });
     const unAnsweredEntryFixture = stubClue({
       id: '1-across',
       solution: 'IDIOT',
       position: { x: 0, y: 1 },
       direction: 'across',
-      length: 5,
+      length: 5
     });
 
     it('should return true when the clue has been answered', () => {
-      expect(
-        checkClueHasBeenAnswered(gridFixture, answeredEntryFixture),
-      ).toBe(true);
+      expect(checkClueHasBeenAnswered(gridFixture, answeredEntryFixture)).toBe(true);
     });
 
     it('should return true when a clue that contains numbers has been answered', () => {
-      expect(
-        checkClueHasBeenAnswered(
-          gridFixture,
-          answeredEntryWithNumbersFixture,
-        ),
-      ).toBe(true);
+      expect(checkClueHasBeenAnswered(gridFixture, answeredEntryWithNumbersFixture)).toBe(true);
     });
 
     it('should return false when the clue has not been answered', () => {
-      expect(
-        checkClueHasBeenAnswered(gridFixture, unAnsweredEntryFixture),
-      ).toBe(false);
+      expect(checkClueHasBeenAnswered(gridFixture, unAnsweredEntryFixture)).toBe(false);
     });
   });
 
@@ -581,43 +551,19 @@ describe('Helpers', () => {
          */
 
     const gridFixture = [
-      [
-        'R', 'I', 'V', 'E', 'R', '', 'C', '', 'L', 'U', 'S', 'T', 'R', 'E',
-      ].map(stubCellWithValue),
-      [
-        '', '', '', '', '', '', 'L', '', 'I', '', '', '', '', ''].map(
-          stubCellWithValue,
-        ),
-      [
-        'S', 'A', 'N', 'T', 'A', '', 'A', '', 'G', 'I', 'S', 'T', '', '',].map(stubCellWithValue),
-      ['', '', '', '', '', '', 'U', '', 'H', '', 'O', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      ['', '', '', '', '', '', 'S', '', 'T', '', 'u', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      ['', 'N', '', '', '', '', 'E', '', 'S', '', 'T', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      ['', 'O', '', 'F', '', '', '', '', '', '', 'H', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      [
-        '', 'R', 'A', 'I', 'L', 'R', 'O', 'A', 'D', '', 'E', '', '', '',].map(stubCellWithValue),
-      ['', 'T', '', 'G', '', '', '', '', '', 'C', 'R', 'O', 'S', 'S'].map(
-        stubCellWithValue,
-      ),
-      ['', 'H', '', 'H', '', '', '', '', '', '', 'N', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      ['', 'E', '', 'T', '', '', '', '', '', '', '', '', '', ''].map(
-        stubCellWithValue,
-      ),
-      [
-        '', 'R', '', 'S', 'O', 'U', 'T', 'H', 'E', 'R', 'N', '', '', '',].map(stubCellWithValue),
-      ['', 'N', '', '', '', '', '', '', '', '', '', '', '', ''].map(
-        stubCellWithValue,
-      ),
+      ['R', 'I', 'V', 'E', 'R', '', 'C', '', 'L', 'U', 'S', 'T', 'R', 'E'].map(stubCellWithValue),
+      ['', '', '', '', '', '', 'L', '', 'I', '', '', '', '', ''].map(stubCellWithValue),
+      ['S', 'A', 'N', 'T', 'A', '', 'A', '', 'G', 'I', 'S', 'T', '', ''].map(stubCellWithValue),
+      ['', '', '', '', '', '', 'U', '', 'H', '', 'O', '', '', ''].map(stubCellWithValue),
+      ['', '', '', '', '', '', 'S', '', 'T', '', 'u', '', '', ''].map(stubCellWithValue),
+      ['', 'N', '', '', '', '', 'E', '', 'S', '', 'T', '', '', ''].map(stubCellWithValue),
+      ['', 'O', '', 'F', '', '', '', '', '', '', 'H', '', '', ''].map(stubCellWithValue),
+      ['', 'R', 'A', 'I', 'L', 'R', 'O', 'A', 'D', '', 'E', '', '', ''].map(stubCellWithValue),
+      ['', 'T', '', 'G', '', '', '', '', '', 'C', 'R', 'O', 'S', 'S'].map(stubCellWithValue),
+      ['', 'H', '', 'H', '', '', '', '', '', '', 'N', '', '', ''].map(stubCellWithValue),
+      ['', 'E', '', 'T', '', '', '', '', '', '', '', '', '', ''].map(stubCellWithValue),
+      ['', 'R', '', 'S', 'O', 'U', 'T', 'H', 'E', 'R', 'N', '', '', ''].map(stubCellWithValue),
+      ['', 'N', '', '', '', '', '', '', '', '', '', '', '', ''].map(stubCellWithValue)
     ];
 
     const oneDownFixture = stubClue({
@@ -626,7 +572,7 @@ describe('Helpers', () => {
       solution: 'RIVER',
       position: { x: 0, y: 0 },
       direction: 'down',
-      length: 5,
+      length: 5
     });
     const twoDownFixture = stubClue({
       id: '2-down',
@@ -634,7 +580,7 @@ describe('Helpers', () => {
       solution: 'SANTA',
       position: { x: 2, y: 0 },
       direction: 'down',
-      length: 5,
+      length: 5
     });
     const threeDownFixture = stubClue({
       id: '3-down',
@@ -642,7 +588,7 @@ describe('Helpers', () => {
       solution: 'RAILROAD',
       position: { x: 7, y: 1 },
       direction: 'down',
-      length: 8,
+      length: 8
     });
 
     // Unanswered clue
@@ -652,7 +598,7 @@ describe('Helpers', () => {
       solution: 'HEATHEN',
       position: { x: 10, y: 0 },
       direction: 'down',
-      length: 7,
+      length: 7
     });
     const fiveDownFixture = stubClue({
       id: '5-down',
@@ -660,7 +606,7 @@ describe('Helpers', () => {
       solution: 'LUSTRE',
       position: { x: 0, y: 8 },
       direction: 'down',
-      length: 6,
+      length: 6
     });
     const sixDownFixture = stubClue({
       id: '6-down',
@@ -668,7 +614,7 @@ describe('Helpers', () => {
       solution: 'GIST',
       position: { x: 2, y: 8 },
       direction: 'down',
-      length: 4,
+      length: 4
     });
     const sevenDownFixture = stubClue({
       id: '7-down',
@@ -676,7 +622,7 @@ describe('Helpers', () => {
       solution: 'CROSS',
       position: { x: 8, y: 9 },
       direction: 'down',
-      length: 5,
+      length: 5
     });
 
     const oneAcrossFixture = stubClue({
@@ -685,7 +631,7 @@ describe('Helpers', () => {
       solution: 'CLAUSE',
       position: { x: 0, y: 6 },
       direction: 'across',
-      length: 6,
+      length: 6
     });
     const twoAcrossFixture = stubClue({
       id: '2-across',
@@ -693,7 +639,7 @@ describe('Helpers', () => {
       solution: 'LIGHTS',
       position: { x: 0, y: 8 },
       direction: 'across',
-      length: 6,
+      length: 6
     });
     const threeAcrossFixture = stubClue({
       id: '3-across',
@@ -701,7 +647,7 @@ describe('Helpers', () => {
       solution: 'NORTHERN',
       position: { x: 5, y: 1 },
       direction: 'across',
-      length: 8,
+      length: 8
     });
 
     const fourAcrossFixture = stubClue({
@@ -710,7 +656,7 @@ describe('Helpers', () => {
       solution: 'FIGHTS',
       position: { x: 6, y: 3 },
       direction: 'across',
-      length: 6,
+      length: 6
     });
     const fiveAcrossFixture = stubClue({
       id: '5-across',
@@ -718,7 +664,7 @@ describe('Helpers', () => {
       solution: 'SOUTHERN',
       position: { x: 2, y: 10 },
       direction: 'across',
-      length: 8,
+      length: 8
     });
 
     const theEntriesFixture = [
@@ -733,7 +679,7 @@ describe('Helpers', () => {
       twoAcrossFixture,
       threeAcrossFixture,
       fourAcrossFixture,
-      fiveAcrossFixture,
+      fiveAcrossFixture
     ];
 
     const clueMapFixture = {
@@ -824,45 +770,23 @@ describe('Helpers', () => {
       '8_10': { across: fiveAcrossFixture, down: sevenDownFixture }, // Intersects SOUTHERN
       '8_11': { down: sevenDownFixture },
       '8_12': { down: sevenDownFixture },
-      '8_13': { down: sevenDownFixture },
+      '8_13': { down: sevenDownFixture }
     };
 
     // duplicate cells' - a cell which is used by more than one completed clue
     it('should return all cells for an ungrouped clue which does not intersect other answered clues', () => {
-      const expectedCells = [
-        { x: 0, y: 0 },
-        { x: 0, y: 1 },
-        { x: 0, y: 2 },
-        { x: 0, y: 3 },
-        { x: 0, y: 4 },
-      ];
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          oneDownFixture,
-        ),
-      ).toEqual(expectedCells);
+      const expectedCells = [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }, { x: 0, y: 4 }];
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, oneDownFixture)).toEqual(
+        expectedCells
+      );
     });
 
     // F GHTS because 'RAILROAD' has been answered, because 'HEATHEN' hasnt
     it('should return all correct cells for an ungrouped clue which intersects an unanswered clue', () => {
-      const expectedCells = [
-        { x: 6, y: 3 },
-        { x: 8, y: 3 },
-        { x: 9, y: 3 },
-        { x: 10, y: 3 },
-        { x: 11, y: 3 },
-      ];
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          fourAcrossFixture,
-        ),
-      ).toEqual(expectedCells);
+      const expectedCells = [{ x: 6, y: 3 }, { x: 8, y: 3 }, { x: 9, y: 3 }, { x: 10, y: 3 }, { x: 11, y: 3 }];
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, fourAcrossFixture)).toEqual(
+        expectedCells
+      );
     });
 
     // SANTACLAUSE
@@ -878,24 +802,14 @@ describe('Helpers', () => {
         { x: 2, y: 6 },
         { x: 3, y: 6 },
         { x: 4, y: 6 },
-        { x: 5, y: 6 },
+        { x: 5, y: 6 }
       ];
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          twoDownFixture,
-        ),
-      ).toEqual(expectedCells);
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          oneAcrossFixture,
-        ),
-      ).toEqual(expectedCells);
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, twoDownFixture)).toEqual(
+        expectedCells
+      );
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, oneAcrossFixture)).toEqual(
+        expectedCells
+      );
     });
 
     // NORTHERN 5, 1 LIGHTS  0 8
@@ -912,24 +826,14 @@ describe('Helpers', () => {
         { x: 1, y: 8 },
         { x: 3, y: 8 },
         { x: 4, y: 8 },
-        { x: 5, y: 8 },
+        { x: 5, y: 8 }
       ];
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          twoAcrossFixture,
-        ),
-      ).toEqual(expectedCells);
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          threeAcrossFixture,
-        ),
-      ).toEqual(expectedCells);
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, twoAcrossFixture)).toEqual(
+        expectedCells
+      );
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, threeAcrossFixture)).toEqual(
+        expectedCells
+      );
     });
 
     // SOUTHERN  8, 9, CROSS 8. 9
@@ -946,24 +850,14 @@ describe('Helpers', () => {
         { x: 8, y: 9 },
         { x: 8, y: 11 },
         { x: 8, y: 12 },
-        { x: 8, y: 13 },
+        { x: 8, y: 13 }
       ];
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          fiveAcrossFixture,
-        ),
-      ).toEqual(expectedCells);
-      expect(
-        getClearableCellsForClue(
-          gridFixture,
-          clueMapFixture,
-          theEntriesFixture,
-          sevenDownFixture,
-        ),
-      ).toEqual(expectedCells);
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, fiveAcrossFixture)).toEqual(
+        expectedCells
+      );
+      expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, sevenDownFixture)).toEqual(
+        expectedCells
+      );
     });
   });
 });

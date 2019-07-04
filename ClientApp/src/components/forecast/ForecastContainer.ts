@@ -1,8 +1,8 @@
-import { connect } from "react-redux";
-import ForecastComponent from "./ForecastComponent";
+import { connect } from 'react-redux';
+import ForecastComponent from './ForecastComponent';
 
-import * as operations from "./ducks/operations";
-import { IStoreState } from "../../state/store";
+import * as operations from './ducks/operations';
+import { IStoreState } from '../../state/store';
 
 const mapStateToProps = (state: IStoreState) => {
   return {

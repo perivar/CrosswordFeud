@@ -1,14 +1,13 @@
-import React, { Component } from "react";
-import { Link } from "react-router-dom";
-import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from "reactstrap";
-import "./NavMenu.css";
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { Collapse, Container, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import './NavMenu.css';
 
 interface ILocalState {
   collapsed: boolean;
 }
 
 export class NavMenu extends Component<{}, ILocalState> {
-  
   constructor(props: any) {
     super(props);
 
@@ -29,24 +28,36 @@ export class NavMenu extends Component<{}, ILocalState> {
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" light={true}>
           <Container>
-            <NavbarBrand tag={Link} to="/">CrosswordFeud.Web</NavbarBrand>
+            <NavbarBrand tag={Link} to="/">
+              CrosswordFeud.Web
+            </NavbarBrand>
             <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
             <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar={true}>
               <ul className="navbar-nav flex-grow">
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/">Home</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/">
+                    Home
+                  </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/counter">Counter</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/counter">
+                    Counter
+                  </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/crossword">Crossword</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/crossword">
+                    Crossword
+                  </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/forecast">Fetch data</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/forecast">
+                    Fetch data
+                  </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/login">Login</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/login">
+                    Login
+                  </NavLink>
                 </NavItem>
               </ul>
             </Collapse>

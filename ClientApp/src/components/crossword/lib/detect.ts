@@ -1,9 +1,9 @@
 import mediator from '../lib/mediator';
 
 interface IBreakPoint {
-  name: string,
-  isTweakpoint: boolean,
-  width: number
+  name: string;
+  isTweakpoint: boolean;
+  width: number;
 }
 
 // These should match those defined in:
@@ -13,43 +13,43 @@ const breakpoints: IBreakPoint[] = [
   {
     name: 'mobile',
     isTweakpoint: false,
-    width: 0,
+    width: 0
   },
   {
     name: 'mobileMedium',
     isTweakpoint: true,
-    width: 375,
+    width: 375
   },
   {
     name: 'mobileLandscape',
     isTweakpoint: true,
-    width: 480,
+    width: 480
   },
   {
     name: 'phablet',
     isTweakpoint: true,
-    width: 660,
+    width: 660
   },
   {
     name: 'tablet',
     isTweakpoint: false,
-    width: 740,
+    width: 740
   },
   {
     name: 'desktop',
     isTweakpoint: false,
-    width: 980,
+    width: 980
   },
   {
     name: 'leftCol',
     isTweakpoint: true,
-    width: 1140,
+    width: 1140
   },
   {
     name: 'wide',
     isTweakpoint: false,
-    width: 1300,
-  },
+    width: 1300
+  }
 ];
 
 let currentBreakpoint: string;
@@ -57,14 +57,15 @@ let currentTweakpoint: string;
 let supportsPushState: boolean;
 
 // #?: Consider dropping support for vendor-specific implementations
-let pageVisibility = document.visibilityState
+let pageVisibility =
+  document.visibilityState ||
   // @ts-ignore
-  || document.webkitVisibilityState
+  document.webkitVisibilityState ||
   // @ts-ignore
-  || document.mozVisibilityState
+  document.mozVisibilityState ||
   // @ts-ignore
-  || document.msVisibilityState
-  || 'visible';
+  document.msVisibilityState ||
+  'visible';
 
 const breakpointNames = breakpoints.map((breakpoint: IBreakPoint) => breakpoint.name);
 
@@ -79,7 +80,7 @@ const findBreakpoint = (tweakpoint: string) => {
 };
 
 const updateBreakpoint = (breakpoint: IBreakPoint) => {
-  if(breakpoint === undefined) return;
+  if (breakpoint === undefined) return;
 
   currentTweakpoint = breakpoint.name;
 
@@ -104,10 +105,7 @@ const updateBreakpoints = () => {
   // on a pseudo-element
   const bodyStyle = window.getComputedStyle(document.body, '::after');
   const bodyStyleContent = bodyStyle.content as string;
-  const breakpointName = bodyStyleContent.substring(
-    1,
-    bodyStyleContent.length - 1,
-  );
+  const breakpointName = bodyStyleContent.substring(1, bodyStyleContent.length - 1);
   const breakpointIndex = breakpointNames.indexOf(breakpointName);
   updateBreakpoint(breakpoints[breakpointIndex]);
 };
@@ -118,12 +116,10 @@ const initMediaQueryListeners = () => {
     // to facilitate the breakpoint/tweakpoint logic.
     const minWidth = `(min-width: ${bp.width}px)`;
 
-    bp.mql = index < bps.length - 1
-      ? window.matchMedia(
-        `${minWidth} and (max-width: ${bps[index + 1].width
-        - 1}px)`,
-      )
-      : window.matchMedia(minWidth);
+    bp.mql =
+      index < bps.length - 1
+        ? window.matchMedia(`${minWidth} and (max-width: ${bps[index + 1].width - 1}px)`)
+        : window.matchMedia(minWidth);
 
     bp.listener = onMatchingBreakpoint.bind(bp);
 
@@ -147,33 +143,25 @@ const initBreakpoints = () => {
 };
 
 const getViewport = () => {
-  if (
-    !window.innerWidth
-    || !(document && document.body && document.body.clientWidth)
-  ) {
+  if (!window.innerWidth || !(document && document.body && document.body.clientWidth)) {
     return {
       height: 0,
-      width: 0,
+      width: 0
     };
   }
 
   return {
     width: window.innerWidth || document.body.clientWidth,
-    height: window.innerHeight || document.body.clientHeight,
+    height: window.innerHeight || document.body.clientHeight
   };
 };
 
-const getBreakpoint = (includeTweakpoint: boolean) =>
-  (includeTweakpoint ? currentTweakpoint : currentBreakpoint);
+const getBreakpoint = (includeTweakpoint: boolean) => (includeTweakpoint ? currentTweakpoint : currentBreakpoint);
 
 const isBreakpoint = (criteria: any) => {
   const indexMin = criteria.min ? breakpointNames.indexOf(criteria.min) : 0;
-  const indexMax = criteria.max
-    ? breakpointNames.indexOf(criteria.max)
-    : breakpointNames.length - 1;
-  const indexCur = breakpointNames.indexOf(
-    currentTweakpoint || currentBreakpoint,
-  );
+  const indexMax = criteria.max ? breakpointNames.indexOf(criteria.max) : breakpointNames.length - 1;
+  const indexCur = breakpointNames.indexOf(currentTweakpoint || currentBreakpoint);
 
   return indexMin <= indexCur && indexCur <= indexMax;
 };
@@ -209,9 +197,7 @@ const hasPushStateSupport = () => {
     supportsPushState = true;
     // Android stock browser lies about its HistoryAPI support.
     if (window.navigator.userAgent.match(/Android/i)) {
-      supportsPushState = !!window.navigator.userAgent.match(
-        /(Chrome|Firefox)/i,
-      );
+      supportsPushState = !!window.navigator.userAgent.match(/(Chrome|Firefox)/i);
     }
   }
 
@@ -227,14 +213,14 @@ const initPageVisibility = () => {
       pageshow: v,
       blur: 'hidden',
       focusout: 'hidden',
-      pagehide: 'hidden',
+      pagehide: 'hidden'
     };
 
     const e = evt as Event;
     if (e.type in evtMap) {
       pageVisibility = evtMap[e.type];
     } else {
-      // @ts-ignore      
+      // @ts-ignore
       pageVisibility = window && window.hidden ? 'hidden' : 'visible';
     }
   };
@@ -275,9 +261,7 @@ const getUserAgent = (() => {
 
   const ua = navigator.userAgent;
   let tem;
-  let M = ua.match(
-    /(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i,
-  ) || [];
+  let M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
 
   if (M && M[1] && /trident/i.test(M[1])) {
     tem = /\brv[ :]+(\d+)/g.exec(ua);
@@ -295,9 +279,7 @@ const getUserAgent = (() => {
     }
   }
 
-  M = M && M[2]
-    ? [M[1], M[2]]
-    : [navigator.appName, navigator.appVersion, '-?'];
+  M = M && M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
   tem = ua.match(/version\/(\d+)/i);
 
   if (tem && tem[1]) {
@@ -306,7 +288,7 @@ const getUserAgent = (() => {
 
   return {
     browser: M[0],
-    version: M[1],
+    version: M[1]
   };
 })();
 
@@ -326,5 +308,5 @@ export {
   pageVisible,
   breakpoints,
   isEnhanced,
-  getReferrer,
+  getReferrer
 };

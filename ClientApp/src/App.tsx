@@ -1,23 +1,22 @@
-import React, { Component } from "react";
-import { Route, Router } from "react-router-dom";
+import React, { Component } from 'react';
+import { Route, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { Counter } from "./components/counter/Counter";
-import ForecastContainer from "./components/forecast/ForecastContainer";
+import { Counter } from './components/counter/Counter';
+import ForecastContainer from './components/forecast/ForecastContainer';
 // import { Home } from "./components/Home";
-import { Layout } from "./components/shared/Layout";
+import { Layout } from './components/shared/Layout';
 
 import LoginContainer from './components/auth/LoginContainer';
 import RegisterContainer from './components/auth/RegisterContainer';
 import HomeContainer from './components/auth/HomeContainer';
-import PrivateRoute from "./components/auth/PrivateRouteComponent";
-import CrosswordContainer from "./components/crossword/CrosswordContainer";
+import PrivateRoute from './components/auth/PrivateRouteComponent';
+import CrosswordContainer from './components/crossword/CrosswordContainer';
 import * as alertActions from './components/alert/ducks/actions';
 
 import { history } from './history';
 
 class App extends Component<any, any> {
-
   constructor(props: any) {
     super(props);
 
@@ -31,17 +30,17 @@ class App extends Component<any, any> {
     const { alert, loggedIn } = this.props;
     return (
       <div>
-        {
-          alert && alert.message &&
-          <div className={`alert ${alert.className}`} role="alert">{alert.message}</div>
-        }
-        {
-          loggedIn &&
+        {alert && alert.message && (
+          <div className={`alert ${alert.className}`} role="alert">
+            {alert.message}
+          </div>
+        )}
+        {loggedIn && (
           <div>
             <h1>Display when logged in</h1>
           </div>
-        }
-        <Router history={history} >
+        )}
+        <Router history={history}>
           <div>
             <Layout>
               {/* <Route exact={true} path="/" component={Home} /> */}
@@ -53,7 +52,7 @@ class App extends Component<any, any> {
               <Route path="/crossword" component={CrosswordContainer} />
             </Layout>
           </div>
-        </Router >
+        </Router>
       </div>
     );
   }
@@ -70,13 +69,13 @@ function mapStateToProps(state: any) {
 const mapDispatchToProps = (dispatch: any) => {
   return {
     // dispatch,
-    clearAlerts: () => dispatch(alertActions.clear()),
+    clearAlerts: () => dispatch(alertActions.clear())
   };
-}
+};
 
 const connectedApp = connect(
   mapStateToProps,
   mapDispatchToProps
 )(App);
 
-export default connectedApp; 
+export default connectedApp;

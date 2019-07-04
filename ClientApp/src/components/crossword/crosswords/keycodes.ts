@@ -1,4 +1,3 @@
-
 const keycodes = {
   backspace: 8,
   tab: 9,
@@ -6,7 +5,7 @@ const keycodes = {
   up: 38,
   right: 39,
   down: 40,
-  delete: 46,
+  delete: 46
 };
 
 export { keycodes };

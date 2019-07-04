@@ -1,9 +1,9 @@
 declare global {
   interface Window {
-    getItem(key: string): any,
-    setItem(key: string, value: any): boolean | void,
-    removeItem(key: string): void,
-    [index: string]: any
+    getItem(key: string): any;
+    setItem(key: string, value: any): boolean | void;
+    removeItem(key: string): void;
+    [index: string]: any;
   }
 }
 
@@ -19,7 +19,6 @@ export interface IStorage {
 }
 
 class Storage implements IStorage {
-
   public storage: Window;
   public available: boolean | undefined;
 
@@ -91,8 +90,8 @@ class Storage implements IStorage {
       key,
       JSON.stringify({
         value,
-        expires: options.expires,
-      }),
+        expires: options.expires
+      })
     );
   }
 
@@ -109,8 +108,8 @@ class Storage implements IStorage {
       key,
       JSON.stringify({
         value,
-        expires: options.expires,
-      }),
+        expires: options.expires
+      })
     );
   }
 

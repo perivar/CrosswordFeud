@@ -3,14 +3,13 @@ import { findDOMNode } from 'react-dom';
 import { IClue } from '../../types';
 
 export interface IClueInputProps {
-  value: string,
-  clue: IClue,
-  onChange: (value: string) => void,
-  onEnter: () => void
+  value: string;
+  clue: IClue;
+  onChange: (value: string) => void;
+  onEnter: () => void;
 }
 
 class ClueInput extends Component<IClueInputProps> {
-
   componentDidMount() {
     const el = findDOMNode(this) as HTMLInputElement;
     if (el) {

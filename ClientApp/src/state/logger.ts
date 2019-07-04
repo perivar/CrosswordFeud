@@ -1,8 +1,8 @@
 // https://redux.js.org/advanced/middleware#the-final-approach
 
 export const logger = (store: any) => (next: any) => (action: any) => {
-  console.log('dispatching', action)
-  const result = next(action)
-  console.log('next state', store.getState())
-  return result
-}
+  console.log('dispatching', action);
+  const result = next(action);
+  console.log('next state', store.getState());
+  return result;
+};

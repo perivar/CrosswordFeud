@@ -3,7 +3,20 @@ import flattenDeep from 'lodash/flattenDeep';
 import range from 'lodash/range';
 import uniqBy from 'lodash/uniqBy';
 
-import { Direction, IPosition, IGrid, IClue, SeparatorLocations, Axis, Separator, IGroupClue, ICluesIntersect, IClueMap, ISeparatorMap, ICell } from '../types';
+import {
+  Direction,
+  IPosition,
+  IGrid,
+  IClue,
+  SeparatorLocations,
+  Axis,
+  Separator,
+  IGroupClue,
+  ICluesIntersect,
+  IClueMap,
+  ISeparatorMap,
+  ICell
+} from '../types';
 
 // const flattenDeep = (arr: any): any => Array.isArray(arr)
 //   ? arr.reduce((a, b) => a.concat(flattenDeep(b)), [])
@@ -43,10 +56,9 @@ import { Direction, IPosition, IGrid, IClue, SeparatorLocations, Axis, Separator
 const isAcross = (clue: IClue): boolean => clue.direction === 'across';
 
 const getLastCellInClue = (clue: IClue): IPosition => {
-
   const ax: any = {
     true: 'x',
-    false: 'y',
+    false: 'y'
   };
 
   const axis: Axis = ax[String(isAcross(clue))];
@@ -88,7 +100,6 @@ const getPreviousClueInGroup = (entries: IClue[], clue: IClue): IClue | undefine
 
 const getGroupEntriesForClue = (entries: IClue[], group: string[]): IClue[] =>
   group.reduce((acc: IClue[], clueId: string) => {
-
     const entry = entries.find(e => e.id === clueId);
 
     if (entry) {
@@ -101,7 +112,6 @@ const getGroupEntriesForClue = (entries: IClue[], group: string[]): IClue[] =>
 const clueIsInGroup = (clue: IClue): boolean => clue.group.length !== 1;
 
 const getAllSeparatorsForGroup = (clues: IClue[]): SeparatorLocations => {
-
   const k: any = {};
 
   // have to allocate the type to an array at runtime
@@ -118,7 +128,7 @@ const getAllSeparatorsForGroup = (clues: IClue[]): SeparatorLocations => {
         cnt += clue.length;
 
         return seps;
-      }),
+      })
     );
 
     k[separator] = flattenedSeparators;
@@ -135,7 +145,6 @@ const getTotalLengthOfGroup = (clueGroup: IClue[]): number =>
   clueGroup.reduce((total: number, clue: IClue): number => total + clue.length, 0);
 
 const getAnagramClueData = (entries: IClue[], clue: IClue): IClue | IGroupClue => {
-
   if (clueIsInGroup(clue)) {
     const groupEnts = getGroupEntriesForClue(entries, clue.group);
     const groupClue: IGroupClue = {
@@ -144,7 +153,7 @@ const getAnagramClueData = (entries: IClue[], clue: IClue): IClue | IGroupClue =
       length: getTotalLengthOfGroup(groupEnts),
       separatorLocations: getAllSeparatorsForGroup(groupEnts),
       direction: '',
-      clue: getClueForGroupedEntries(groupEnts),
+      clue: getClueForGroupedEntries(groupEnts)
     };
 
     return groupClue;
@@ -153,28 +162,23 @@ const getAnagramClueData = (entries: IClue[], clue: IClue): IClue | IGroupClue =
   return clue;
 };
 
-const cluesAreInGroup = (clue: IClue, otherClue: IClue): boolean =>
-  otherClue.group.includes(clue.id);
+const cluesAreInGroup = (clue: IClue, otherClue: IClue): boolean => otherClue.group.includes(clue.id);
 
 const cellsForEntry = (entry: IClue): IPosition[] =>
-  (isAcross(entry)
+  isAcross(entry)
     ? range(entry.position.x, entry.position.x + entry.length).map((x: number) => ({
-      x,
-      y: entry.position.y,
-    }))
+        x,
+        y: entry.position.y
+      }))
     : range(entry.position.y, entry.position.y + entry.length).map((y: number) => ({
-      x: entry.position.x,
-      y,
-    }))
-  );
+        x: entry.position.x,
+        y
+      }));
 
 const checkClueHasBeenAnswered = (grid: IGrid, entry: IClue): boolean =>
-  cellsForEntry(entry).every((position: IPosition) =>
-    /^.$/.test(grid[position.x][position.y].value)
-  );
+  cellsForEntry(entry).every((position: IPosition) => /^.$/.test(grid[position.x][position.y].value));
 
-const otherDirection = (direction: Direction): Direction =>
-  (direction === 'across' ? 'down' : 'across');
+const otherDirection = (direction: Direction): Direction => (direction === 'across' ? 'down' : 'across');
 
 const cellsForClue = (entries: IClue[], clue: IClue): IPosition[] => {
   if (clueIsInGroup(clue)) {
@@ -189,8 +193,7 @@ const cellsForClue = (entries: IClue[], clue: IClue): IPosition[] => {
 /** Hash key for the cell at x, y in the clue map */
 const clueMapKey = (x: number, y: number): string => `${x}_${y}`;
 
-const cluesFor = (clueMap: any, x: number, y: number): ICluesIntersect =>
-  clueMap[clueMapKey(x, y)];
+const cluesFor = (clueMap: any, x: number, y: number): ICluesIntersect => clueMap[clueMapKey(x, y)];
 
 const getClearableCellsForEntry = (grid: IGrid, clueMap: IClueMap, entries: IClue[], entry: IClue): IPosition[] => {
   const direction = otherDirection(entry.direction);
@@ -200,10 +203,7 @@ const getClearableCellsForEntry = (grid: IGrid, clueMap: IClueMap, entries: IClu
     const otherClue = clues[direction];
 
     if (otherClue) {
-      return (
-        cluesAreInGroup(entry, otherClue)
-        || !checkClueHasBeenAnswered(grid, otherClue)
-      );
+      return cluesAreInGroup(entry, otherClue) || !checkClueHasBeenAnswered(grid, otherClue);
     }
 
     return true;
@@ -211,15 +211,14 @@ const getClearableCellsForEntry = (grid: IGrid, clueMap: IClueMap, entries: IClu
 };
 
 const getClearableCellsForClue = (grid: IGrid, clueMap: IClueMap, entries: IClue[], clue: IClue): IPosition[] => {
-
   if (clueIsInGroup(clue)) {
     const entriesForClue = getGroupEntriesForClue(entries, clue.group);
 
     return uniqBy(
       flattenDeep(
-        entriesForClue.map((entry: IClue) => getClearableCellsForEntry(grid, clueMap, entries, entry)),
+        entriesForClue.map((entry: IClue) => getClearableCellsForEntry(grid, clueMap, entries, entry))
       ) as IPosition[],
-      (cell: IPosition) => [cell.x, cell.y].join(),
+      (cell: IPosition) => [cell.x, cell.y].join()
     );
   }
 
@@ -230,17 +229,15 @@ const getClearableCellsForClue = (grid: IGrid, clueMap: IClueMap, entries: IClue
  * Builds the initial state of the grid given the number of rows, columns, and a list of clues.
  */
 const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: string[][]): IGrid => {
-
-  const grid = range(columns).map(x => range(rows).map(y => ({
-    isHighlighted: false,
-    isEditable: false,
-    isError: false,
-    isAnimating: false,
-    value:
-      savedState && savedState[x] && savedState[x][y]
-        ? savedState[x][y]
-        : '',
-  }))) as IGrid;
+  const grid = range(columns).map(x =>
+    range(rows).map(y => ({
+      isHighlighted: false,
+      isEditable: false,
+      isError: false,
+      isAnimating: false,
+      value: savedState && savedState[x] && savedState[x][y] ? savedState[x][y] : ''
+    }))
+  ) as IGrid;
 
   entries.forEach((entry: IClue) => {
     const { x, y } = entry.position;
@@ -258,11 +255,10 @@ const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: 
 
 /** A map for looking up clues that a given cell relates to */
 const buildClueMap = (clues: IClue[]): IClueMap => {
-
   type ClueMapType = Record<string, any>;
   const map: ClueMapType = {};
 
-  clues.forEach((clue) => {
+  clues.forEach(clue => {
     cellsForEntry(clue).forEach((cell: IPosition) => {
       const key = clueMapKey(cell.x, cell.y);
 
@@ -294,28 +290,24 @@ const buildSeparatorMap = (clues: IClue[]): ISeparatorMap => {
   };
 
   return clues
-    .map((clue: IClue) => Object.keys(clue.separatorLocations).map((separatorStr) => {
-      const separator = separatorStr as Separator;
-      const locations = (clue.separatorLocations as SeparatorLocations)[separator];
+    .map((clue: IClue) =>
+      Object.keys(clue.separatorLocations).map(separatorStr => {
+        const separator = separatorStr as Separator;
+        const locations = (clue.separatorLocations as SeparatorLocations)[separator];
 
-      return locations.map((location: any) => {
-        const key = isAcross(clue)
-          ? clueMapKey(
-            clue.position.x + location,
-            clue.position.y,
-          )
-          : clueMapKey(
-            clue.position.x,
-            clue.position.y + location,
-          );
+        return locations.map((location: any) => {
+          const key = isAcross(clue)
+            ? clueMapKey(clue.position.x + location, clue.position.y)
+            : clueMapKey(clue.position.x, clue.position.y + location);
 
-        return {
-          key,
-          direction: clue.direction,
-          separator,
-        };
-      });
-    }))
+          return {
+            key,
+            direction: clue.direction,
+            separator
+          };
+        });
+      })
+    )
     .reduce(flattenReducer, [])
     .reduce((map: any, d: any) => {
       if (!d) {
@@ -336,11 +328,9 @@ const entryHasCell = (entry: IClue, x: number, y: number): boolean =>
   cellsForEntry(entry).some((cell: IPosition) => cell.x === x && cell.y === y);
 
 /** Can be used for width or height, as the cell height == cell width */
-const gridSize = (cells: number): number =>
-  cells * (constants.cellSize + constants.borderSize) + constants.borderSize;
+const gridSize = (cells: number): number => cells * (constants.cellSize + constants.borderSize) + constants.borderSize;
 
-const mapGrid = (grid: IGrid, f: (cell: ICell, gridX: number, gridY: number) =>
-  ICell): IGrid =>
+const mapGrid = (grid: IGrid, f: (cell: ICell, gridX: number, gridY: number) => ICell): IGrid =>
   grid.map((col, x: number) => col.map((cell: any, y: number) => f(cell, x, y)));
 
 export {
@@ -370,5 +360,5 @@ export {
   getTotalLengthOfGroup,
   cluesAreInGroup,
   checkClueHasBeenAnswered,
-  getClearableCellsForClue,
+  getClearableCellsForClue
 };

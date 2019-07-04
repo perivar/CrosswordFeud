@@ -13,12 +13,12 @@ const getPosition = (angle: number, i: number) => {
 
   return {
     left: `${diameter + round(diameter * Math.sin(theta))}%`,
-    top: `${diameter + round(diameter * Math.cos(theta))}%`,
+    top: `${diameter + round(diameter * Math.cos(theta))}%`
   };
 };
 
 export interface IRingProps {
-  letters: any
+  letters: any;
 }
 
 class Ring extends Component<IRingProps> {
@@ -29,12 +29,9 @@ class Ring extends Component<IRingProps> {
       <div className="crossword__anagram-helper-shuffler">
         {this.props.letters.map((letter: any, i: number) => (
           <div
-            className={`crossword__anagram-helper-shuffler__letter ${
-              letter.entered ? 'entered' : ''
-              }`}
+            className={`crossword__anagram-helper-shuffler__letter ${letter.entered ? 'entered' : ''}`}
             style={getPosition(angle, i)}
-            key={`${letter.value}-${i}`}
-          >
+            key={`${letter.value}-${i}`}>
             {letter.value}
           </div>
         ))}

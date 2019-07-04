@@ -7,7 +7,7 @@ import { IAlertState } from '../../auth/types';
 const initialAlertState: IAlertState = {
   className: '',
   message: ''
-}
+};
 
 const alertReducer = function alert(state = initialAlertState, action: AlertActions): IAlertState {
   switch (action.type) {
@@ -27,9 +27,9 @@ const alertReducer = function alert(state = initialAlertState, action: AlertActi
         message: ''
       };
     default:
-      return state
+      return state;
   }
-}
+};
 
 export default {
   alert: alertReducer

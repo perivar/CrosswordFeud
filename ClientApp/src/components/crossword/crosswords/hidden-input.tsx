@@ -2,16 +2,15 @@ import React, { Component } from 'react';
 import Crossword from './crossword';
 
 export interface IHiddenInputProps {
-  value: string,
-  crossword: Crossword
+  value: string;
+  crossword: Crossword;
 }
 
 export interface IHiddenInputState {
-  value: string
+  value: string;
 }
 
 class HiddenInput extends Component<IHiddenInputProps, IHiddenInputState> {
-
   // make sure the ref objects are public
   public wrapper: React.RefObject<HTMLDivElement>;
   public input: React.RefObject<HTMLInputElement>;
@@ -19,7 +18,7 @@ class HiddenInput extends Component<IHiddenInputProps, IHiddenInputState> {
   constructor(props: IHiddenInputProps) {
     super(props);
     this.state = {
-      value: this.props.value,
+      value: this.props.value
     };
 
     this.wrapper = React.createRef();
@@ -53,16 +52,13 @@ class HiddenInput extends Component<IHiddenInputProps, IHiddenInputState> {
   handleChange(event: React.ChangeEvent<HTMLInputElement>) {
     this.props.crossword.insertCharacter(event.target.value);
     this.setState({
-      value: '',
+      value: ''
     });
   }
 
   render() {
     return (
-      <div
-        className="crossword__hidden-input-wrapper"
-        ref={this.wrapper}
-      >
+      <div className="crossword__hidden-input-wrapper" ref={this.wrapper}>
         <input
           key="1"
           type="text"

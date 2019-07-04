@@ -16,7 +16,7 @@ import {
   gridSize,
   checkClueHasBeenAnswered,
   buildSeparatorMap,
-  cellsForEntry,
+  cellsForEntry
 } from './helpers';
 
 import { saveGridState, loadGridState } from './persistence';
@@ -40,28 +40,27 @@ import { scrollTo } from '../lib/scroller';
 import zip from 'lodash/zip';
 
 export interface ICrosswordProps {
-  data: ICrosswordData,
-  loadGrid: (id: string) => string[][],
-  onMove: (move: IMove) => void,
-  saveGrid: (id: string, entries: string[][]) => void,
+  data: ICrosswordData;
+  loadGrid: (id: string) => string[][];
+  onMove: (move: IMove) => void;
+  saveGrid: (id: string, entries: string[][]) => void;
 }
 
 export interface IMove {
-  x: number,
-  y: number,
-  value: string,
-  previousValue: string
+  x: number;
+  y: number;
+  value: string;
+  previousValue: string;
 }
 
 export interface ICrosswordState {
-  grid: IGrid,
-  cellInFocus?: IPosition,
-  directionOfEntry?: Direction,
-  showAnagramHelper: boolean
+  grid: IGrid;
+  cellInFocus?: IPosition;
+  directionOfEntry?: Direction;
+  showAnagramHelper: boolean;
 }
 
 class Crossword extends Component<ICrosswordProps, ICrosswordState> {
-
   static defaultProps: ICrosswordProps;
 
   // ref variables
@@ -91,11 +90,11 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         dimensions.rows,
         dimensions.cols,
         this.props.data.entries,
-        this.props.loadGrid(this.props.data.id),
+        this.props.loadGrid(this.props.data.id)
       ),
       cellInFocus: undefined,
       directionOfEntry: undefined,
-      showAnagramHelper: false,
+      showAnagramHelper: false
     };
 
     this.game = React.createRef();
@@ -110,7 +109,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   componentDidMount() {
-
     // mediator.on(
     //   'window:resize',
     //   debounce(this.setGridHeight.bind(this), 200),
@@ -138,10 +136,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   componentDidUpdate(prevProps: ICrosswordProps, prevState: ICrosswordState): void {
     // return focus to active cell after exiting anagram helper
-    if (
-      !this.state.showAnagramHelper
-      && this.state.showAnagramHelper !== prevState.showAnagramHelper
-    ) {
+    if (!this.state.showAnagramHelper && this.state.showAnagramHelper !== prevState.showAnagramHelper) {
       this.focusCurrentCell();
     }
   }
@@ -150,10 +145,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const cell = this.state.cellInFocus;
 
     if (!event.metaKey && !event.ctrlKey && !event.altKey) {
-      if (
-        event.keyCode === keycodes.backspace ||
-        event.keyCode === keycodes.delete
-      ) {
+      if (event.keyCode === keycodes.backspace || event.keyCode === keycodes.delete) {
         event.preventDefault();
         if (cell) {
           if (this.cellIsEmpty(cell.x, cell.y)) {
@@ -186,40 +178,29 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const focusedClue = this.clueInFocus();
     let newDirection: Direction;
 
-    const isInsidefocusedClue = (): boolean =>
-      (focusedClue ? entryHasCell(focusedClue, x, y) : false);
+    const isInsidefocusedClue = (): boolean => (focusedClue ? entryHasCell(focusedClue, x, y) : false);
 
-    if (
-      cellInFocus
-      && cellInFocus.x === x
-      && cellInFocus.y === y
-      && this.state.directionOfEntry
-    ) {
+    if (cellInFocus && cellInFocus.x === x && cellInFocus.y === y && this.state.directionOfEntry) {
       // User has clicked again on the highlighted cell, meaning we ought to swap direction
       newDirection = otherDirection(this.state.directionOfEntry);
 
       if (clue[newDirection]) {
         this.focusClue(x, y, newDirection);
       }
-
     } else if (isInsidefocusedClue() && this.state.directionOfEntry) {
       // If we've clicked inside the currently highlighted clue, then we ought to just shift the cursor
       //  to the new cell, not change direction or anything funny.
       this.focusClue(x, y, this.state.directionOfEntry);
-
     } else {
       this.setState({
         cellInFocus: {
           x,
-          y,
+          y
         }
       });
 
       const isStartOfClue = (sourceClue: IClue | undefined): boolean =>
-        !!sourceClue &&
-        sourceClue.position.x === x &&
-        sourceClue.position.y === y;
-
+        !!sourceClue && sourceClue.position.x === x && sourceClue.position.y === y;
 
       // If the user clicks on the start of a down clue midway through an across clue, we should
       //  prefer to highlight the down clue.
@@ -262,10 +243,13 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         const previousValue = cell.value;
         cell.value = '';
         this.props.onMove({
-          x: gridX, y: gridY, value: '', previousValue,
+          x: gridX,
+          y: gridY,
+          value: '',
+          previousValue
         });
         return cell;
-      }),
+      })
     });
 
     this.saveGrid();
@@ -281,22 +265,23 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         this.state.grid,
         this.clueMap,
         this.props.data.entries,
-        clueInFocus,
+        clueInFocus
       );
 
       this.setState({
         grid: mapGrid(this.state.grid, (cell: any, gridX: number, gridY: number) => {
-          if (
-            cellsInFocus.some((c: any) => c.x === gridX && c.y === gridY)
-          ) {
+          if (cellsInFocus.some((c: any) => c.x === gridX && c.y === gridY)) {
             const previousValue = cell.value;
             cell.value = '';
             this.props.onMove({
-              x: gridX, y: gridY, value: '', previousValue,
+              x: gridX,
+              y: gridY,
+              value: '',
+              previousValue
             });
           }
           return cell;
-        }),
+        })
       });
 
       this.saveGrid();
@@ -308,12 +293,12 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     if (!this.state.showAnagramHelper) {
       if (this.clueInFocus()) {
         this.setState({
-          showAnagramHelper: true,
+          showAnagramHelper: true
         });
       }
     } else {
       this.setState({
-        showAnagramHelper: false,
+        showAnagramHelper: false
       });
     }
   }
@@ -329,14 +314,13 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     // We need to handle touch seperately as touching an input on iPhone does not fire the
     // click event - listen for a touchStart and preventDefault to avoid calling onSelect twice on
-    // devices that fire click AND touch events. The click event doesn't fire only when the input is already focused 
+    // devices that fire click AND touch events. The click event doesn't fire only when the input is already focused
     if (event.type === 'touchstart') {
       event.preventDefault();
     }
   }
 
   handleScroll(): void {
-
     // Sticky clue
     const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
 
@@ -356,7 +340,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const scrollY = window.scrollY;
 
     fastdom.mutate(() => {
-
       // Clear previous state
       $stickyClueWrapper.removeAttribute('style');
       $stickyClueWrapper.classList.remove('is-fixed');
@@ -383,7 +366,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   setGridHeight(): void {
-
     const $gridWrapper = this.gridWrapper.current as HTMLDivElement;
 
     if (!$gridWrapper) {
@@ -392,7 +374,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     if (
       isBreakpoint({
-        max: 'tablet',
+        max: 'tablet'
       })
     ) {
       fastdom.measure(() => {
@@ -419,13 +401,16 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
           if (triggerOnMoveCallback) {
             this.props.onMove({
-              x, y, value, previousValue,
+              x,
+              y,
+              value,
+              previousValue
             });
           }
         }
 
         return cell;
-      }),
+      })
     });
   }
 
@@ -439,23 +424,14 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   updateGrid(gridState: any) {
     this.setState({
-      grid: buildGrid(
-        this.rows,
-        this.columns,
-        this.props.data.entries,
-        gridState,
-      ),
+      grid: buildGrid(this.rows, this.columns, this.props.data.entries, gridState)
     });
   }
 
   insertCharacter(character: string) {
     const characterUppercase = character.toUpperCase();
     const cell = this.state.cellInFocus;
-    if (
-      /[A-Za-zÀ-ÿ0-9]/.test(characterUppercase) &&
-      characterUppercase.length === 1 &&
-      cell
-    ) {
+    if (/[A-Za-zÀ-ÿ0-9]/.test(characterUppercase) && characterUppercase.length === 1 && cell) {
       this.setCellValue(cell.x, cell.y, characterUppercase);
       this.saveGrid();
       this.focusNext();
@@ -469,7 +445,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   goToReturnPosition(event: React.FocusEvent<HTMLInputElement>): void {
     if (
       isBreakpoint({
-        max: 'mobile',
+        max: 'mobile'
       })
     ) {
       if (this.returnPosition) {
@@ -489,11 +465,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     if (i !== -1) {
       const newClue = entries[i === 0 ? entries.length - 1 : i - 1];
-      this.focusClue(
-        newClue.position.x,
-        newClue.position.y,
-        newClue.direction,
-      );
+      this.focusClue(newClue.position.x, newClue.position.y, newClue.direction);
     }
   }
 
@@ -503,11 +475,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     if (i !== -1) {
       const newClue = entries[i === entries.length - 1 ? 0 : i + 1];
-      this.focusClue(
-        newClue.position.x,
-        newClue.position.y,
-        newClue.direction,
-      );
+      this.focusClue(newClue.position.x, newClue.position.y, newClue.direction);
     }
   }
 
@@ -522,11 +490,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const y = cell.y + deltaY;
     let direction: Direction = 'down';
 
-    if (
-      this.state.grid[x]
-      && this.state.grid[x][y]
-      && this.state.grid[x][y].isEditable
-    ) {
+    if (this.state.grid[x] && this.state.grid[x][y] && this.state.grid[x][y].isEditable) {
       if (deltaY !== 0) {
         direction = 'down';
       } else if (deltaX !== 0) {
@@ -546,10 +510,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     if (cell && clue) {
       if (isFirstCellInClue(cell, clue)) {
-        const newClue = getPreviousClueInGroup(
-          this.props.data.entries,
-          clue,
-        );
+        const newClue = getPreviousClueInGroup(this.props.data.entries, clue);
         if (newClue) {
           const newCell = getLastCellInClue(newClue) as IPosition;
           this.focusClue(newCell.x, newCell.y, newClue.direction);
@@ -568,16 +529,9 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     if (cell && clue) {
       if (isLastCellInClue(cell, clue)) {
-        const newClue = getNextClueInGroup(
-          this.props.data.entries,
-          clue,
-        );
+        const newClue = getNextClueInGroup(this.props.data.entries, clue);
         if (newClue) {
-          this.focusClue(
-            newClue.position.x,
-            newClue.position.y,
-            newClue.direction,
-          );
+          this.focusClue(newClue.position.x, newClue.position.y, newClue.direction);
         }
       } else if (this.isAcross()) {
         this.moveFocus(1, 0);
@@ -593,12 +547,11 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     return {
       x: (100 * x) / width,
-      y: (100 * y) / height,
+      y: (100 * y) / height
     };
   }
 
   focusHiddenInput(x: number, y: number): void {
-
     const hiddenNode = this.hiddenInputComponent.current as HiddenInput;
     const hiddenWrapperNode = hiddenNode.wrapper.current as HTMLDivElement;
 
@@ -629,17 +582,13 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         grid: this.state.grid,
         cellInFocus: {
           x,
-          y,
+          y
         },
-        directionOfEntry: direction,
+        directionOfEntry: direction
       });
 
       // Side effect
-      window.history.replaceState(
-        undefined,
-        document.title,
-        `#${clue.id} `,
-      );
+      window.history.replaceState(undefined, document.title, `#${clue.id} `);
     }
   }
 
@@ -657,20 +606,13 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   focusCurrentCell(): void {
     if (this.state.cellInFocus) {
-      this.focusHiddenInput(
-        this.state.cellInFocus.x,
-        this.state.cellInFocus.y,
-      );
+      this.focusHiddenInput(this.state.cellInFocus.x, this.state.cellInFocus.y);
     }
   }
 
   clueInFocus(): IClue | null {
     if (this.state.cellInFocus) {
-      const cluesForCell = cluesFor(
-        this.clueMap,
-        this.state.cellInFocus.x,
-        this.state.cellInFocus.y,
-      );
+      const cluesForCell = cluesFor(this.clueMap, this.state.cellInFocus.x, this.state.cellInFocus.y);
 
       if (this.state.directionOfEntry) {
         return cluesForCell[this.state.directionOfEntry] as IClue;
@@ -685,20 +627,11 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   clueIsInFocusGroup(clue: IClue): boolean {
     if (this.state.cellInFocus) {
-      const cluesForCell = cluesFor(
-        this.clueMap,
-        this.state.cellInFocus.x,
-        this.state.cellInFocus.y,
-      );
+      const cluesForCell = cluesFor(this.clueMap, this.state.cellInFocus.x, this.state.cellInFocus.y);
 
-      if (
-        this.state.directionOfEntry &&
-        cluesForCell[this.state.directionOfEntry]
-      ) {
+      if (this.state.directionOfEntry && cluesForCell[this.state.directionOfEntry]) {
         const cluesIntersect = cluesForCell[this.state.directionOfEntry] as IClue;
-        return cluesIntersect.group.includes(
-          clue.id,
-        );
+        return cluesIntersect.group.includes(clue.id);
       }
     }
     return false;
@@ -706,10 +639,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   cluesData(): IClueEntry[] {
     return this.props.data.entries.map((entry: IClue) => {
-      const hasAnswered = checkClueHasBeenAnswered(
-        this.state.grid,
-        entry
-      );
+      const hasAnswered = checkClueHasBeenAnswered(this.state.grid, entry);
       return {
         entry,
         hasAnswered,
@@ -725,18 +655,19 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       this.setState({
         grid: mapGrid(this.state.grid, (cell: any, x: number, y: number) => {
           if (cells.some((c: IPosition) => c.x === x && c.y === y)) {
-            const n = entry.direction === 'across'
-              ? x - entry.position.x
-              : y - entry.position.y;
+            const n = entry.direction === 'across' ? x - entry.position.x : y - entry.position.y;
             const previousValue = cell.value;
             cell.value = entry.solution[n];
             this.props.onMove({
-              x, y, value: cell.value, previousValue,
+              x,
+              y,
+              value: cell.value,
+              previousValue
             });
           }
 
           return cell;
-        }),
+        })
       });
     }
   }
@@ -745,33 +676,30 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const cells = cellsForEntry(entry);
 
     if (entry.solution) {
-
       const badCells = zip(cells, entry.solution.split(''))
         .filter((cellAndSolution: any) => {
           const coords = cellAndSolution[0];
           const cell = this.state.grid[coords.x][coords.y];
           const solution = cellAndSolution[1];
-          return (
-            /^.$/.test(cell.value) && cell.value !== solution
-          );
+          return /^.$/.test(cell.value) && cell.value !== solution;
         })
         .map((cellAndSolution: any) => cellAndSolution[0]);
 
       this.setState({
-
         grid: mapGrid(this.state.grid, (cell: any, gridX: number, gridY: number) => {
-          if (
-            badCells.some((bad: IPosition) => bad.x === gridX && bad.y === gridY)
-          ) {
+          if (badCells.some((bad: IPosition) => bad.x === gridX && bad.y === gridY)) {
             const previousValue = cell.value;
             cell.value = '';
             this.props.onMove({
-              x: gridX, y: gridY, value: '', previousValue,
+              x: gridX,
+              y: gridY,
+              value: '',
+              previousValue
             });
           }
 
           return cell;
-        }),
+        })
       });
     }
   }
@@ -800,9 +728,9 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const focused = this.clueInFocus();
     return focused
       ? focused.group.some((id: string) => {
-        const entry = this.props.data.entries.find((e: IClue) => e.id === id) as IClue;
-        return entryHasCell(entry, x, y);
-      })
+          const entry = this.props.data.entries.find((e: IClue) => e.id === id) as IClue;
+          return entryHasCell(entry, x, y);
+        })
       : false;
   }
 
@@ -837,66 +765,38 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
     return (
       <div
-        className={`crossword__container crossword__container--${
-          this.props.data.crosswordType
-          } crossword__container--react`}
-        data-link-name="Crosswords"
-      >
-        <div
-          className="crossword__container__game"
-          ref={this.game}
-        >
-          <div
-            className="crossword__sticky-clue-wrapper"
-            ref={this.stickyClueWrapper}
-          >
+        className={`crossword__container crossword__container--${this.props.data.crosswordType} crossword__container--react`}
+        data-link-name="Crosswords">
+        <div className="crossword__container__game" ref={this.game}>
+          <div className="crossword__sticky-clue-wrapper" ref={this.stickyClueWrapper}>
             <div
               className={classNames({
                 'crossword__sticky-clue': true,
-                'is-hidden': !focused,
-              })}
-            >
+                'is-hidden': !focused
+              })}>
               {focused && (
                 <div className="crossword__sticky-clue__inner">
                   <div className="crossword__sticky-clue__inner__inner">
                     <strong>
-                      {focused.number}
-                      {' '}
-                      <span className="crossword__sticky-clue__direction">
-                        {focused.direction}
-                      </span>
-                    </strong>
-                    {' '}
+                      {focused.number} <span className="crossword__sticky-clue__direction">{focused.direction}</span>
+                    </strong>{' '}
                     {focused.clue}
                   </div>
                 </div>
               )}
             </div>
           </div>
-          <div
-            className="crossword__container__grid-wrapper"
-            ref={this.gridWrapper}
-          >
+          <div className="crossword__container__grid-wrapper" ref={this.gridWrapper}>
             {Grid(gridProps)}
-            <HiddenInput
-              crossword={this}
-              value={this.hiddenInputValue()}
-              ref={this.hiddenInputComponent}
-            />
+            <HiddenInput crossword={this} value={this.hiddenInputValue()} ref={this.hiddenInputComponent} />
             {anagramHelper}
           </div>
         </div>
-        <Controls
-          hasSolutions={this.hasSolutions()}
-          clueInFocus={focused}
-          crossword={this}
-        />
+        <Controls hasSolutions={this.hasSolutions()} clueInFocus={focused} crossword={this} />
         <Clues
           clues={this.cluesData()}
           focused={focused}
-          focusFirstCellInClueById={this.focusFirstCellInClueById.bind(
-            this,
-          )}
+          focusFirstCellInClueById={this.focusFirstCellInClueById.bind(this)}
           setReturnPosition={this.setReturnPosition.bind(this)}
         />
       </div>
@@ -905,7 +805,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 }
 
 Crossword.defaultProps = {
-  onMove: (move: IMove) => { },
+  onMove: (move: IMove) => {},
   loadGrid: (id: string) => loadGridState(id),
   saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid),
   data: {

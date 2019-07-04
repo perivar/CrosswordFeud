@@ -1,78 +1,78 @@
 export interface IHomeProps {
-    users: IUserState,
-    logon: ILogon,
-    getAll: () => void,
-    delete: (id: string) => void
+  users: IUserState;
+  logon: ILogon;
+  getAll: () => void;
+  delete: (id: string) => void;
 }
 
 export interface ILoginProps {
-    username: string,
-    password: string,
-    submitted: boolean,
-    loggingIn: boolean,
-    login: (username: string, password: string) => void,
-    logout: () => void
+  username: string;
+  password: string;
+  submitted: boolean;
+  loggingIn: boolean;
+  login: (username: string, password: string) => void;
+  logout: () => void;
 }
 
 export interface ILoginState {
-    username: string,
-    password: string,
-    submitted: boolean
+  username: string;
+  password: string;
+  submitted: boolean;
 }
 
 export interface IRegisterProps {
-    register: (user: IUser) => void,
-    registering: boolean,
-    submitted: boolean
+  register: (user: IUser) => void;
+  registering: boolean;
+  submitted: boolean;
 }
 
 export interface IRegisterState {
-    user: IUser,
-    submitted: boolean,
-    registering?: boolean // only used by the reducer
+  user: IUser;
+  submitted: boolean;
+  registering?: boolean; // only used by the reducer
 }
 
 export interface IAlertState {
-    className: string;
-    message: string;
+  className: string;
+  message: string;
 }
 
 export interface IUserState {
-    items: IUser[],
-    loading: boolean,
-    error: string
+  items: IUser[];
+  loading: boolean;
+  error: string;
 }
 
 export interface IAuthState {
-    loggingIn: boolean,
-    loggedIn: boolean,
-    logon: ILogon,
-    logonUserName: string
+  loggingIn: boolean;
+  loggedIn: boolean;
+  logon: ILogon;
+  logonUserName: string;
 }
 
 export interface IUser {
-    id: string,
-    userName: string,
-    password: string,
-    email: string,
-    phoneNumber: string,
-    error?: boolean,
-    deleting?: boolean,
-    deleteError?: string
+  id: string;
+  userName: string;
+  password: string;
+  email: string;
+  phoneNumber: string;
+  error?: boolean;
+  deleting?: boolean;
+  deleteError?: string;
 }
 
 export interface IClaim {
-    issuer: string,
-    originalIssuer: string,
-    properties: any,
-    subject: string,
-    type: string,
-    value: string,
-    valueType: string
+  issuer: string;
+  originalIssuer: string;
+  properties: any;
+  subject: string;
+  type: string;
+  value: string;
+  valueType: string;
 }
 
 export interface ILogon {
-    user: IUser,
-    claims: IClaim[],
-    token: string
+  user: IUser;
+  claims: IClaim[];
+  token: string;
 }

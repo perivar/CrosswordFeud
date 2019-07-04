@@ -2,16 +2,12 @@
 let supportsOptions = false;
 
 try {
-  const options = Object.defineProperty(
-    {},
-    'passive',
-    {
-      // eslint-disable-next-line getter-return
-      get() {
-        supportsOptions = true;
-      },
-    },
-  );
+  const options = Object.defineProperty({}, 'passive', {
+    // eslint-disable-next-line getter-return
+    get() {
+      supportsOptions = true;
+    }
+  });
 
   window.addEventListener('test', options, options);
 } catch (e) {
@@ -22,9 +18,8 @@ const addMyEventListener = (
   node: any,
   name: string,
   handler: EventListener,
-  { passive = false, capture = false, once = false } = {},
+  { passive = false, capture = false, once = false } = {}
 ) => {
-
   if (supportsOptions) {
     node.addEventListener(name, handler, { passive, capture, once });
   } else if (once) {
@@ -35,7 +30,7 @@ const addMyEventListener = (
         handler.call(this, evt);
         node.removeEventListener(name, boundHandler);
       },
-      capture,
+      capture
     );
   } else {
     node.addEventListener(name, handler, capture);

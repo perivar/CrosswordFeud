@@ -1,4 +1,4 @@
-import * as types from "./types";
+import * as types from './types';
 
 const getForecast = () => ({
   type: types.GET_FORECAST_STARTED
@@ -14,8 +14,4 @@ const getForecastFailure = (error: any) => ({
   error
 });
 
-export {
-  getForecast,
-  getForecastSuccess,
-  getForecastFailure
-};
+export { getForecast, getForecastSuccess, getForecastFailure };

@@ -11,13 +11,7 @@
 import { createEasing } from '../lib/easing';
 import fastdom from 'fastdom';
 
-const scrollTo = (
-  offset: number,
-  duration = 0,
-  easeFn = 'easeOutQuad',
-  container = document.body,
-) => {
-
+const scrollTo = (offset: number, duration = 0, easeFn = 'easeOutQuad', container = document.body) => {
   const $container = container;
   const from = $container.scrollTop;
   const distance = offset - from;
@@ -26,7 +20,7 @@ const scrollTo = (
   const scrollFn = () => {
     fastdom.mutate(() => $container.scroll(0, from + ease() * distance));
   };
-  
+
   const interval = setInterval(scrollFn, 15);
 
   setTimeout(() => {

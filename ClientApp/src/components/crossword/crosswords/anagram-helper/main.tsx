@@ -17,22 +17,20 @@ import { IClue, IGrid, IPosition, ICell } from '../../types';
 // }
 
 export interface IAnagramHelperProps {
-  entries: IClue[],
-  crossword?: Crossword, // make sure it can be undefined
-  grid: IGrid,
-  focusedEntry: any
-  close: any
+  entries: IClue[];
+  crossword?: Crossword; // make sure it can be undefined
+  grid: IGrid;
+  focusedEntry: any;
+  close: any;
 }
 
 export interface IAnagramHelperState {
-  letters: any,
-  clueInput: string,
-  showInput: boolean
+  letters: any;
+  clueInput: string;
+  showInput: boolean;
 }
 
-
 class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> {
-
   static defaultProps: IAnagramHelperProps;
 
   constructor(props: IAnagramHelperProps) {
@@ -41,27 +39,27 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     this.state = {
       letters: [],
       clueInput: '',
-      showInput: true,
+      showInput: true
     };
   }
 
   onClueInput(text: string) {
     if (!/\s|\d/g.test(text)) {
       this.setState({
-        clueInput: text,
+        clueInput: text
       });
     }
   }
 
   /**
-     * Shuffle the letters in the user's input.
-     *
-     * First, create an array of input characters that have already been entered
-     * into the grid. Then build a new collection of letters, using the first
-     * array to flag letters that are already entered in the puzzle, and
-     * shuffle it.
-     *
-     */
+   * Shuffle the letters in the user's input.
+   *
+   * First, create an array of input characters that have already been entered
+   * into the grid. Then build a new collection of letters, using the first
+   * array to flag letters that are already entered in the puzzle, and
+   * shuffle it.
+   *
+   */
   shuffleWord(word: string, entries: any) {
     const wordEntries = entries
       .map((entry: any) => entry.value.toLowerCase())
@@ -82,16 +80,16 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
             return {
               letters: acc.letters.concat({
                 value: letter,
-                entered,
+                entered
               }),
-              entries: entered ? tail : acc.entries,
+              entries: entered ? tail : acc.entries
             };
           },
           {
             letters: [],
-            entries: wordEntries,
-          },
-        ).letters,
+            entries: wordEntries
+          }
+        ).letters
     );
   }
 
@@ -99,7 +97,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     if (this.canShuffle()) {
       this.setState({
         letters: this.shuffleWord(this.state.clueInput, this.entries()),
-        showInput: false,
+        showInput: false
       });
     }
   }
@@ -108,7 +106,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     if (this.state.clueInput) {
       this.setState({
         clueInput: '',
-        showInput: true,
+        showInput: true
       });
     }
   }
@@ -118,24 +116,18 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
   }
 
   entries(): ICluePreview[] {
+    const cells = cellsForClue(this.props.entries, this.props.focusedEntry);
 
-    const cells = cellsForClue(
-      this.props.entries,
-      this.props.focusedEntry,
+    return cells.map((coords: IPosition) =>
+      Object.assign({}, this.props.grid[coords.x][coords.y], {
+        key: `${coords.x},${coords.y}`,
+        solved: false
+      })
     );
-
-    return cells.map((coords: IPosition) => Object.assign({}, this.props.grid[coords.x][coords.y], {
-      key: `${coords.x},${coords.y}`,
-      solved: false
-    }));
   }
 
   render() {
-
-    const clue = getAnagramClueData(
-      this.props.entries,
-      this.props.focusedEntry,
-    ) as IClue;
+    const clue = getAnagramClueData(this.props.entries, this.props.focusedEntry) as IClue;
 
     const inner = this.state.showInput ? (
       <ClueInput
@@ -145,20 +137,16 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
         onEnter={this.shuffle.bind(this)}
       />
     ) : (
-        <Ring letters={this.state.letters} />
-      );
+      <Ring letters={this.state.letters} />
+    );
 
     return (
-      <div
-        className="crossword__anagram-helper-outer"
-        data-link-name="Anagram Helper"
-      >
+      <div className="crossword__anagram-helper-outer" data-link-name="Anagram Helper">
         <div className="crossword__anagram-helper-inner">{inner}</div>
         <button
           className="button button--large button--tertiary crossword__anagram-helper-close"
           onClick={this.props.close.bind(this.props.crossword)}
-          data-link-name="Close"
-        >
+          data-link-name="Close">
           <Close />
         </button>
         <CluePreview
@@ -168,21 +156,15 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
           hasShuffled={!this.state.showInput}
         />
         <button
-          className={`button button--large ${
-            !this.state.clueInput ? 'button--tertiary' : ''
-            }`}
+          className={`button button--large ${!this.state.clueInput ? 'button--tertiary' : ''}`}
           onClick={this.reset.bind(this)}
-          data-link-name="Start Again"
-        >
+          data-link-name="Start Again">
           Restart
         </button>
         <button
-          className={`button button--large ${
-            this.canShuffle() ? '' : 'button--tertiary'
-            }`}
+          className={`button button--large ${this.canShuffle() ? '' : 'button--tertiary'}`}
           onClick={this.shuffle.bind(this)}
-          data-link-name="Shuffle"
-        >
+          data-link-name="Shuffle">
           Shuffle
         </button>
       </div>

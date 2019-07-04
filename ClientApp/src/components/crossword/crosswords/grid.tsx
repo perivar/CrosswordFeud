@@ -7,13 +7,13 @@ import Crossword from './crossword';
 import { ISeparatorDescription, Direction, ISeparatorMap, ICell, IPosition, IGrid } from '../types';
 
 export interface IGridProps {
-  rows: number,
-  columns: number,
-  cells: IGrid,
-  separators: ISeparatorMap, //Record<string, ISeparatorDescription>,
-  crossword: Crossword,
-  focusedCell?: IPosition,
-  ref: React.RefObject<ICell>
+  rows: number;
+  columns: number;
+  cells: IGrid;
+  separators: ISeparatorMap; //Record<string, ISeparatorDescription>,
+  crossword: Crossword;
+  focusedCell?: IPosition;
+  ref: React.RefObject<ICell>;
 }
 
 // IPosition at end of previous cell
@@ -33,7 +33,8 @@ const createWordSeparator = (x: number, y: number, direction: Direction): React.
         height={constants.cellSize}
       />
     );
-  } if (direction === 'down') {
+  }
+  if (direction === 'down') {
     const height = 1;
     return (
       <rect
@@ -67,7 +68,8 @@ const createHyphenSeparator = (x: number, y: number, direction: Direction): Reac
         height={height}
       />
     );
-  } if (direction === 'down') {
+  }
+  if (direction === 'down') {
     width = 1;
     height = constants.cellSize / 4;
     return (
@@ -86,18 +88,17 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
   if (separatorDescription) {
     if (separatorDescription.separator === ',') {
       return createWordSeparator(x, y, separatorDescription.direction);
-    } if (separatorDescription.separator === '-') {
+    }
+    if (separatorDescription.separator === '-') {
       return createHyphenSeparator(x, y, separatorDescription.direction);
     }
   }
 };
 
 export const Grid = (props: IGridProps): React.ReactNode => {
-  const getSeparators = (x: number, y: number): ISeparatorDescription =>
-    props.separators[clueMapKey(x, y)];
+  const getSeparators = (x: number, y: number): ISeparatorDescription => props.separators[clueMapKey(x, y)];
 
-  const handleSelect = (x: number, y: number): void =>
-    props.crossword.onSelect(x, y);
+  const handleSelect = (x: number, y: number): void => props.crossword.onSelect(x, y);
 
   const width = gridSize(props.columns);
   const height = gridSize(props.rows);
@@ -106,42 +107,37 @@ export const Grid = (props: IGridProps): React.ReactNode => {
 
   const range = (n: number) => Array.from({ length: n }, (value, key) => key);
 
-  range(props.rows).forEach(y => range(props.columns).forEach((x: number) => {
-    const cellProps = props.cells[x][y] as ICell;
+  range(props.rows).forEach(y =>
+    range(props.columns).forEach((x: number) => {
+      const cellProps = props.cells[x][y] as ICell;
 
-    if (cellProps.isEditable) {
+      if (cellProps.isEditable) {
+        const isHighlighted = props.crossword.isHighlighted(x, y);
 
-      const isHighlighted = props.crossword.isHighlighted(x, y);
+        cells.push(
+          <GridCell
+            {...cellProps}
+            handleSelect={handleSelect}
+            x={x}
+            y={y}
+            key={`cell_${x}_${y}`}
+            isHighlighted={isHighlighted}
+            isFocused={props.focusedCell !== undefined && x === props.focusedCell.x && y === props.focusedCell.y}
+          />
+        );
 
-      cells.push(
-        <GridCell
-          {...cellProps}
-          handleSelect={handleSelect}
-          x={x}
-          y={y}
-          key={`cell_${x}_${y}`}
-          isHighlighted={isHighlighted}
-          isFocused={
-            (props.focusedCell !== undefined) &&
-            x === props.focusedCell.x &&
-            y === props.focusedCell.y}
-        />
-      );
-
-      separators = separators.concat(
-        createSeparator(x, y, getSeparators(x, y)),
-      );
-    }
-  }));
+        separators = separators.concat(createSeparator(x, y, getSeparators(x, y)));
+      }
+    })
+  );
 
   return (
     <svg
       viewBox={`0 0 ${width} ${height}`}
       className={classNames({
-        'crossword__grid': true,
-        'crossword__grid--focused': !!props.focusedCell,
-      })}
-    >
+        crossword__grid: true,
+        'crossword__grid--focused': !!props.focusedCell
+      })}>
       <rect
         x={0}
         y={0}

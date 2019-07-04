@@ -1,14 +1,14 @@
-import { applyMiddleware, combineReducers, createStore, Store } from "redux";
-import thunk from "redux-thunk";
-import { logger } from "./logger";
+import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import thunk from 'redux-thunk';
+import { logger } from './logger';
 
-import forecastReducer from "../components/forecast/ducks/reducers";
-import alertReducer from "../components/alert/ducks/reducers";
-import authenticationReducer from "../components/auth/ducks/reducers";
-import crosswordReducer from "../components/crossword/ducks/reducers"
-import { IAlertState, IAuthState, IRegisterState, IUserState } from "../components/auth/types";
-import { IForecastState } from "../components/forecast/types";
-import { ICrosswordContainerState } from "../components/crossword/types";
+import forecastReducer from '../components/forecast/ducks/reducers';
+import alertReducer from '../components/alert/ducks/reducers';
+import authenticationReducer from '../components/auth/ducks/reducers';
+import crosswordReducer from '../components/crossword/ducks/reducers';
+import { IAlertState, IAuthState, IRegisterState, IUserState } from '../components/auth/types';
+import { IForecastState } from '../components/forecast/types';
+import { ICrosswordContainerState } from '../components/crossword/types';
 
 const reducers = {
   ...forecastReducer,
@@ -18,8 +18,7 @@ const reducers = {
 };
 
 const initialCrosswordState: ICrosswordContainerState = {
-  data:
-  {
+  data: {
     id: 'crosswords/quick/15315',
     number: 15315,
     name: 'Quick crossword No 15,315',
@@ -33,9 +32,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Ear membrane — my MP a nut (anag) (8)',
         direction: 'across',
         length: 8,
-        group: [
-          '1-across'
-        ],
+        group: ['1-across'],
         position: {
           x: 0,
           y: 0
@@ -50,9 +47,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Sudden sharp feeling (4)',
         direction: 'across',
         length: 4,
-        group: [
-          '5-across'
-        ],
+        group: ['5-across'],
         position: {
           x: 9,
           y: 0
@@ -67,9 +62,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Tycoon — ski slope mound (5)',
         direction: 'across',
         length: 5,
-        group: [
-          '9-across'
-        ],
+        group: ['9-across'],
         position: {
           x: 0,
           y: 2
@@ -84,9 +77,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Gulf sheikhdom (7)',
         direction: 'across',
         length: 7,
-        group: [
-          '10-across'
-        ],
+        group: ['10-across'],
         position: {
           x: 6,
           y: 2
@@ -101,9 +92,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Grouchy (12)',
         direction: 'across',
         length: 12,
-        group: [
-          '11-across'
-        ],
+        group: ['11-across'],
         position: {
           x: 1,
           y: 4
@@ -118,9 +107,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Expresses audibly (6)',
         direction: 'across',
         length: 6,
-        group: [
-          '13-across'
-        ],
+        group: ['13-across'],
         position: {
           x: 0,
           y: 6
@@ -135,9 +122,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Calm (6)',
         direction: 'across',
         length: 6,
-        group: [
-          '14-across'
-        ],
+        group: ['14-across'],
         position: {
           x: 7,
           y: 6
@@ -152,9 +137,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Dinosaur with a long neck and tail (12)',
         direction: 'across',
         length: 12,
-        group: [
-          '17-across'
-        ],
+        group: ['17-across'],
         position: {
           x: 0,
           y: 8
@@ -169,9 +152,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'In the open air (7)',
         direction: 'across',
         length: 7,
-        group: [
-          '20-across'
-        ],
+        group: ['20-across'],
         position: {
           x: 0,
           y: 10
@@ -186,9 +167,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Dirty (5)',
         direction: 'across',
         length: 5,
-        group: [
-          '21-across'
-        ],
+        group: ['21-across'],
         position: {
           x: 8,
           y: 10
@@ -203,9 +182,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Boot (4)',
         direction: 'across',
         length: 4,
-        group: [
-          '22-across'
-        ],
+        group: ['22-across'],
         position: {
           x: 0,
           y: 12
@@ -220,9 +197,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'No 1 in the periodic table (8)',
         direction: 'across',
         length: 8,
-        group: [
-          '23-across'
-        ],
+        group: ['23-across'],
         position: {
           x: 5,
           y: 12
@@ -237,9 +212,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Hours clocked up? (4)',
         direction: 'down',
         length: 4,
-        group: [
-          '1-down'
-        ],
+        group: ['1-down'],
         position: {
           x: 0,
           y: 0
@@ -254,9 +227,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Person moving abroad (7)',
         direction: 'down',
         length: 7,
-        group: [
-          '2-down'
-        ],
+        group: ['2-down'],
         position: {
           x: 2,
           y: 0
@@ -271,9 +242,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Poetic rhyming device using words with the same initial letter (12)',
         direction: 'down',
         length: 12,
-        group: [
-          '3-down'
-        ],
+        group: ['3-down'],
         position: {
           x: 4,
           y: 0
@@ -288,9 +257,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Cultured (6)',
         direction: 'down',
         length: 6,
-        group: [
-          '4-down'
-        ],
+        group: ['4-down'],
         position: {
           x: 6,
           y: 0
@@ -305,9 +272,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Where Davy Crockett died, 1836 (5)',
         direction: 'down',
         length: 5,
-        group: [
-          '6-down'
-        ],
+        group: ['6-down'],
         position: {
           x: 10,
           y: 0
@@ -322,9 +287,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Hoodlum (8)',
         direction: 'down',
         length: 8,
-        group: [
-          '7-down'
-        ],
+        group: ['7-down'],
         position: {
           x: 12,
           y: 0
@@ -339,9 +302,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Fast food — begs cure here (anag) (12)',
         direction: 'down',
         length: 12,
-        group: [
-          '8-down'
-        ],
+        group: ['8-down'],
         position: {
           x: 8,
           y: 1
@@ -356,9 +317,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Skin cream to filter out ultraviolet light (8)',
         direction: 'down',
         length: 8,
-        group: [
-          '12-down'
-        ],
+        group: ['12-down'],
         position: {
           x: 0,
           y: 5
@@ -373,9 +332,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Droll (7)',
         direction: 'down',
         length: 7,
-        group: [
-          '15-down'
-        ],
+        group: ['15-down'],
         position: {
           x: 10,
           y: 6
@@ -390,9 +347,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Up the garden path? (6)',
         direction: 'down',
         length: 6,
-        group: [
-          '16-down'
-        ],
+        group: ['16-down'],
         position: {
           x: 6,
           y: 7
@@ -407,9 +362,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Device for measuring out spirits (5)',
         direction: 'down',
         length: 5,
-        group: [
-          '18-down'
-        ],
+        group: ['18-down'],
         position: {
           x: 2,
           y: 8
@@ -424,9 +377,7 @@ const initialCrosswordState: ICrosswordContainerState = {
         clue: 'Bluish green (4)',
         direction: 'down',
         length: 4,
-        group: [
-          '19-down'
-        ],
+        group: ['19-down'],
         position: {
           x: 12,
           y: 9
@@ -459,10 +410,10 @@ export default function configureStore(): Store<IStoreState> {
 }
 
 export interface IStoreState {
-  alert: IAlertState,
-  authentication: IAuthState,
-  crossword: ICrosswordContainerState,
-  forecast: IForecastState,
-  registration: IRegisterState,
-  users: IUserState
+  alert: IAlertState;
+  authentication: IAuthState;
+  crossword: ICrosswordContainerState;
+  forecast: IForecastState;
+  registration: IRegisterState;
+  users: IUserState;
 }

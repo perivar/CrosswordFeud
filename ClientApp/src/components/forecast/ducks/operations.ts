@@ -1,12 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
-import * as actions from "./actions";
+import * as actions from './actions';
 
 const getForecast = () => {
   return (dispatch: any) => {
     dispatch(actions.getForecast());
 
-    axios.get("/api/SampleData/WeatherForecasts")
+    axios
+      .get('/api/SampleData/WeatherForecasts')
       .then((response: any) => {
         dispatch(actions.getForecastSuccess(response.data));
       })
@@ -17,6 +18,4 @@ const getForecast = () => {
   };
 };
 
-export {
-  getForecast
-};
+export { getForecast };
