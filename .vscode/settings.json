@@ -4,6 +4,7 @@
   "editor.insertSpaces": false,
   "editor.tabSize": 4,
   "editor.formatOnSave": true,
+  "files.autoSave": "onFocusChange",
   "[javascript]": {
     "editor.formatOnSave": false,
     "editor.tabSize": 2
@@ -34,7 +35,9 @@
       "autoFix": true
     }
   ],
-  "sasslint.trace.server": "messages",
+  //   "sasslint.enable": false,
+  //   "sasslint.trace.server": "messages",
+  "scss.validate": false,
   "scss.showErrors": true,
   "backtix.languages": {
     "javascript": true,
@@ -50,9 +53,7 @@
     "javascript",
     "javascriptreact",
     "typescript",
-    "typescriptreact",
-    "css",
-    "scss",
-    "json"
-  ]
+    "typescriptreact"
+  ],
+  "prettier.stylelintIntegration": true
 }

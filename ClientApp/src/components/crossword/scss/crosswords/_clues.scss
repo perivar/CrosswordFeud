@@ -1,12 +1,13 @@
 .crossword__clues-header {
     @include fs-header(1);
     border-bottom: 1px solid #e1e4e8;
-    padding-bottom: $gs-baseline * .75;
+    padding-bottom: $gs-baseline * 0.75;
     text-transform: uppercase;
     color: $brightness-20;
 }
 
-.crossword__clues-list, ol.crossword__clues-list {
+.crossword__clues-list,
+ol.crossword__clues-list {
     padding: 0;
     margin: 0;
     margin-bottom: $gs-baseline;
@@ -17,9 +18,9 @@
     @include fs-textSans(4);
     text-decoration: none;
     position: relative;
-    padding: $gs-baseline * .25 $gs-baseline $gs-baseline * .25 0;
+    padding: $gs-baseline * 0.25 $gs-baseline $gs-baseline * 0.25 0;
     padding-left: 1rem;
-    margin: $gs-baseline * .25 0;
+    margin: $gs-baseline * 0.25 0;
     display: block;
 
     // Override link styles

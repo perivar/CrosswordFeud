@@ -31,7 +31,7 @@
     display: inline-block;
     opacity: 1;
     -webkit-font-smoothing: subpixel-antialiased;
-    transition: opacity .15s ease-in;
+    transition: opacity 0.15s ease-in;
 
     @each $xword, $cells in $xword-grid-sizes {
         .crossword__container--#{$xword} & {

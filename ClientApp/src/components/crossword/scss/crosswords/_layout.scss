@@ -1,9 +1,9 @@
 @function xword-grid-dimensions($cells) {
-    @return $cells * ($xword-cell-width + $xword-border-width)+$xword-border-width;
+    @return $cells * ($xword-cell-width + $xword-border-width) +
+        $xword-border-width;
 }
 
-@each $xword,
-$cells in $xword-grid-sizes {
+@each $xword, $cells in $xword-grid-sizes {
     $size: xword-grid-dimensions($cells);
 
     .crossword__container--#{$xword} {
@@ -47,7 +47,6 @@ $cells in $xword-grid-sizes {
     }
 }
 
-
 .crossword__container {
     clear: both;
     position: relative;
@@ -62,7 +61,6 @@ $cells in $xword-grid-sizes {
 
 // scrollable clues - only on tablets not in accessible view
 .crossword__container--react {
-
     & .crossword__clues--wrapper,
     & .crossword__clues {
         @include mq($from: tablet) {
@@ -71,7 +69,7 @@ $cells in $xword-grid-sizes {
     }
 
     @include mq($from: tablet) {
-    // @include mq($from: tablet, $until: leftCol) {
+        // @include mq($from: tablet, $until: leftCol) {
         & .crossword__clues {
             position: relative;
             overflow-y: scroll;

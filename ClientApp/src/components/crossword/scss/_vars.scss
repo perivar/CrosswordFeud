@@ -6,11 +6,10 @@
 // Note: Sass 3.3.0 adds Local and local vars
 // http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html#variables
 
-
 @import 'pasteup/grid-system/src';
 
-$right-column:     gs-span(4);
-$left-column:      gs-span(2); // Grows to 3 columns on wide viewports
+$right-column: gs-span(4);
+$left-column: gs-span(2); // Grows to 3 columns on wide viewports
 $left-column-wide: gs-span(3);
 
 // Breakpoints
@@ -29,14 +28,15 @@ $left-column-wide: gs-span(3);
 //   common/app/layout/Breakpoint.scala
 
 $mq-breakpoints: (
-    mobile:          gs-span(4)  + $gs-gutter,   // 320px
-    mobileMedium:    gs-span(5)  - $gs-gutter,   // 360px
-    mobileLandscape: gs-span(6)  + $gs-gutter,   // 480px
-    phablet:         gs-span(8)  + $gs-gutter*2, // 660px
-    tablet:          gs-span(9)  + $gs-gutter*2, // 740px
-    desktop:         gs-span(12) + $gs-gutter*2, // 980px
-    leftCol:         gs-span(14) + $gs-gutter*2, // 1140px
-    wide:            gs-span(16) + $gs-gutter*2, // 1300px
+    mobile: gs-span(4) + $gs-gutter,
+    //320px mobileMedium: gs-span(5) - $gs-gutter,
+    //360px mobileLandscape: gs-span(6) + $gs-gutter,
+    //480px phablet: gs-span(8) + $gs-gutter * 2,
+    //660px tablet: gs-span(9) + $gs-gutter * 2,
+    //740px desktop: gs-span(12) + $gs-gutter * 2,
+    //980px leftCol: gs-span(14) + $gs-gutter * 2,
+    //1140px wide: gs-span(16) + $gs-gutter * 2,
+    //1300px
 );
 
 // Show the current breakpoint in the top right corner of the viewport:
@@ -44,46 +44,43 @@ $mq-breakpoints: (
 // Uncomment to activate during development
 // $mq-show-breakpoints: (mobile, mobileLandscape, tablet, desktop, leftCol, wide);
 
-$guardian-brand:         #005689;
-$guardian-brand-light:   #94b1ca;
-$guardian-brand-dark:    #00456e;
+$guardian-brand: #005689;
+$guardian-brand-light: #94b1ca;
+$guardian-brand-dark: #00456e;
 
 // Neutrals ====================================================================
-$brightness-7:           #121417;
-$brightness-20:          #283236;
-$brightness-46:          #76797c;
-$brightness-60:          #99a2a5;
-$brightness-86:          #e1e4e8;
-$brightness-93:          #eef1f3;
-$brightness-97:          #f6f8fa;
-$brightness-100:         #ffffff;
-
+$brightness-7: #121417;
+$brightness-20: #283236;
+$brightness-46: #76797c;
+$brightness-60: #99a2a5;
+$brightness-86: #e1e4e8;
+$brightness-93: #eef1f3;
+$brightness-97: #f6f8fa;
+$brightness-100: #ffffff;
 
 // Highlight (yellow) ==========================================================
-$highlight-dark:         #ffbb50;
-$highlight-main:         #ffe500;
-
+$highlight-dark: #ffbb50;
+$highlight-main: #ffe500;
 
 // Pillars =====================================================================
 // News (Red)
-$news-dark:              #ab0613;
-$news-main:              #c70000;
-$news-bright:            #ff4e36;
-$news-pastel:            #ffbac8;
-$news-faded:             #fff4f2;
+$news-dark: #ab0613;
+$news-main: #c70000;
+$news-bright: #ff4e36;
+$news-pastel: #ffbac8;
+$news-faded: #fff4f2;
 
 // Lifestyle (Magenta)
-$lifestyle-dark:         #7d0068;
-$lifestyle-main:         #b03060; // Pantone 194C
-$lifestyle-bright:       #ffabdb;
-$lifestyle-pastel:       #fec8d3;
-$lifestyle-faded:        #feeef7;
+$lifestyle-dark: #7d0068;
+$lifestyle-main: #b03060; // Pantone 194C
+$lifestyle-bright: #ffabdb;
+$lifestyle-pastel: #fec8d3;
+$lifestyle-faded: #feeef7;
 
+$sport-dark: #005689;
+$sport-main: #0084c6;
+$sport-bright: #00b2ff;
+$sport-pastel: #90dcff;
+$sport-faded: #f1f8fc;
 
-$sport-dark:             #005689;
-$sport-main:             #0084c6;
-$sport-bright:           #00b2ff;
-$sport-pastel:           #90dcff;
-$sport-faded:            #f1f8fc;
-
-$light-teal: #B9D3DC;
+$light-teal: #b9d3dc;
