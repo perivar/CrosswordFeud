@@ -40,6 +40,11 @@ export class NavMenu extends Component<{}, ILocalState> {
                   </NavLink>
                 </NavItem>
                 <NavItem>
+                  <NavLink tag={Link} className="text-dark" to="/dictionary">
+                    Dictionary
+                  </NavLink>
+                </NavItem>
+                <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/counter">
                     Counter
                   </NavLink>

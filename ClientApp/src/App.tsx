@@ -12,6 +12,7 @@ import RegisterContainer from './components/auth/RegisterContainer';
 import HomeContainer from './components/auth/HomeContainer';
 import PrivateRoute from './components/auth/PrivateRouteComponent';
 import CrosswordContainer from './components/crossword/CrosswordContainer';
+import DictionaryContainer from './components/dictionary/DictionaryContainer';
 import * as alertActions from './components/alert/ducks/actions';
 
 import { history } from './history';
@@ -45,6 +46,7 @@ class App extends Component<any, any> {
             <Layout>
               {/* <Route exact={true} path="/" component={Home} /> */}
               <PrivateRoute exact path="/" component={HomeContainer} />
+              <Route path="/dictionary" component={DictionaryContainer} />
               <Route path="/counter" component={Counter} />
               <Route path="/forecast" component={ForecastContainer} />
               <Route path="/login" component={LoginContainer} />

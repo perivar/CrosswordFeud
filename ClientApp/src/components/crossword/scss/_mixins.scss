@@ -1,4 +1,6 @@
-@import '~sass-mq/_mq';
+// @import '~sass-mq/_mq'; // original line
+@import '~sass-mq';
+// @import '../../../../node_modules/sass-mq/mq';
 @import 'pasteup/src';
 
 // Clamps a block of text to a certain number of lines,

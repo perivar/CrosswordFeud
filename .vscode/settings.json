@@ -4,7 +4,7 @@
   "editor.insertSpaces": false,
   "editor.tabSize": 4,
   "editor.formatOnSave": true,
-  "files.autoSave": "onFocusChange",
+  //   "files.autoSave": "onFocusChange",
   "[javascript]": {
     "editor.formatOnSave": false,
     "editor.tabSize": 2
@@ -37,8 +37,10 @@
   ],
   //   "sasslint.enable": false,
   //   "sasslint.trace.server": "messages",
+  "css.validate": false,
+  "less.validate": false,
   "scss.validate": false,
-  "scss.showErrors": true,
+  "scss.showErrors": false,
   "backtix.languages": {
     "javascript": true,
     "typescript": true,
