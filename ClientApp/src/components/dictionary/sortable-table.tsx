@@ -1,19 +1,35 @@
-import React, { Component } from 'react';
+import React, { Component, CSSProperties } from 'react';
 import SortableTableHeader from './sortable-table-header';
 import SortableTableBody from './sortable-table-body';
 
+export type SortingType = 'desc' | 'asc' | 'both';
+
+export interface SortableTableColumn {
+  header: string;
+  key: string;
+  defaultSorting?: string; // ASC or asc or DESC or desc
+  headerStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
+  headerProps?: CSSProperties; // { className: 'align-left' },
+  dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
+  dataProps?: CSSProperties; // { className: 'align-right' },
+  sortable?: boolean;
+  render?: (id: number) => any;
+  descSortFunction?: (sortedData: any[], key: string) => any;
+  ascSortFunction?: (sortedData: any[], key: string) => any;
+}
+
 interface SortableTableProps {
   data: any[];
-  columns: any[];
-  style?: any;
-  iconStyle?: any;
+  columns: SortableTableColumn[];
+  style?: CSSProperties;
+  iconStyle?: CSSProperties;
   iconDesc?: any;
   iconAsc?: any;
   iconBoth?: any;
 }
 
 interface SortableTableState {
-  sortings: any;
+  sortings: SortingType[];
 }
 
 export default class SortableTable extends Component<SortableTableProps, SortableTableState> {
@@ -28,8 +44,8 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     this.onStateChange = this.onStateChange.bind(this);
   }
 
-  getDefaultSortings(props: SortableTableProps) {
-    return props.columns.map((column: any) => {
+  getDefaultSortings(props: SortableTableProps): SortingType[] {
+    return props.columns.map((column: SortableTableColumn) => {
       let sorting = 'both';
       if (column.defaultSorting) {
         const defaultSorting = column.defaultSorting.toLowerCase();
@@ -40,12 +56,13 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
           sorting = 'asc';
         }
       }
-      return sorting;
+      return sorting as SortingType;
     });
   }
 
-  sortData(data: any[], sortings: string[]) {
-    let sortedData = this.props.data;
+  sortData(data: any[], sortings: string[]): any[] {
+    // let sortedData = this.props.data;
+    let sortedData = data;
     for (var i in sortings) {
       const sorting = sortings[i];
       const column = this.props.columns[i];
@@ -98,13 +115,13 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  parseFloatable(value: any) {
+  parseFloatable(value: any): boolean {
     return typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, '')))
       ? true
       : false;
   }
 
-  parseIfFloat(value: any) {
+  parseIfFloat(value: any): number {
     return parseFloat(value.replace(/,/g, ''));
   }
 
@@ -117,7 +134,9 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
   }
 
   onStateChange(index: number) {
-    const sortings = this.state.sortings.map((sorting: any, i: number) => {
+    const sortings = this.state.sortings.map((sorting: SortingType, i: number) => {
+      // set next sorting type for the selected sorting
+      // the others need to be reset back to both
       if (i === index) {
         sorting = this.nextSortingState(sorting);
       } else {
@@ -132,7 +151,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  nextSortingState(state: string) {
+  nextSortingState(state: SortingType): SortingType {
     let next;
     switch (state) {
       case 'both':
@@ -145,7 +164,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
         next = 'both';
         break;
     }
-    return next;
+    return next as SortingType;
   }
 
   render() {

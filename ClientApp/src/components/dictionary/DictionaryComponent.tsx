@@ -192,11 +192,11 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
     ];
 
     const style = {
-      backgroundColor: '#eee'
+      // backgroundColor: '#eee'
     };
 
     const iconStyle = {
-      color: '#aaa',
+      // color: '#aaa',
       paddingLeft: '5px',
       paddingRight: '5px'
     };

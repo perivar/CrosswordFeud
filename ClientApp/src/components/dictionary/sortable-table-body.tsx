@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
+import { SortingType, SortableTableColumn } from './sortable-table';
 
 interface SortableTableRowProps {
   data: any[];
-  columns: any[];
+  columns: SortableTableColumn[];
 }
 
 class SortableTableRow extends Component<SortableTableRowProps, any> {
@@ -26,8 +27,8 @@ class SortableTableRow extends Component<SortableTableRowProps, any> {
 
 interface SortableTableBodyProps {
   data: any[];
-  columns: any[];
-  sortings: any[];
+  columns: SortableTableColumn[];
+  sortings: SortingType[];
 }
 
 export default class SortableTableBody extends Component<SortableTableBodyProps, any> {

@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { SortIconBoth, SortIconDesc, SortIconAsc } from './sortable-table-icons';
-
-type sortingType = 'desc' | 'asc' | 'both';
+import { SortingType, SortableTableColumn } from './sortable-table';
 
 interface SortableTableHeaderItemProps {
   headerProps?: any;
   sortable?: boolean;
-  sorting?: sortingType;
+  sorting?: SortingType;
   iconStyle?: any;
   iconDesc?: any;
   iconAsc?: any;
@@ -68,8 +67,8 @@ class SortableTableHeaderItem extends Component<SortableTableHeaderItemProps, an
 }
 
 interface SortableTableHeaderProps {
-  columns: any[];
-  sortings: any[];
+  columns: SortableTableColumn[];
+  sortings: SortingType[];
   onStateChange: (index: number) => void;
   iconStyle?: any;
   iconDesc?: any;
@@ -90,7 +89,7 @@ export default class SortableTableHeader extends Component<SortableTableHeaderPr
   }
 
   render() {
-    const headers = this.props.columns.map((column: any, index: number) => {
+    const headers = this.props.columns.map((column: SortableTableColumn, index: number) => {
       const sorting = this.props.sortings[index];
       return (
         <SortableTableHeaderItem
