@@ -8,7 +8,6 @@ import registerServiceWorker from './registerServiceWorker';
 import configureStore from './state/store';
 
 import 'bootstrap/dist/css/bootstrap.css';
-import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as string;
 const rootElement = document.getElementById('root');

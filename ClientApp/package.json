@@ -21,14 +21,9 @@
     "reactstrap": "^8.0.0",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
+    "redux-api-middleware": "^3.0.1",
     "rimraf": "^2.6.3",
-    "thunk": "^0.0.1",
-    "react-bootstrap-table-next": "^3.1.5",
-    "react-bootstrap-table2-editor": "^1.2.4",
-    "react-bootstrap-table2-paginator": "^2.0.7",
-    "react-bootstrap-table2-filter": "^1.1.10",
-    "classnames": "^2.2.6",
-    "prop-types": "^15.7.2"
+    "thunk": "^0.0.1"
   },
   "devDependencies": {
     "typescript": "^3.5.2",
