@@ -1,31 +1,27 @@
-import React, { Component } from 'react';
+import React, { Component, CSSProperties } from 'react';
 import { SortIconBoth, SortIconDesc, SortIconAsc } from './sortable-table-icons';
-import { SortingType, SortableTableColumn } from './sortable-table';
+import { SortingType, SortableTableColumn, SortableTableIconInfo } from './sortable-table';
 
-interface SortableTableHeaderItemProps {
+interface ISortableTableHeaderItemProps extends SortableTableIconInfo {
   headerProps?: any;
   sortable?: boolean;
   sorting?: SortingType;
-  iconStyle?: any;
-  iconDesc?: any;
-  iconAsc?: any;
-  iconBoth?: any;
 
   onClick: (index: number) => void;
   index: number;
-  style: any;
+  style: CSSProperties;
   header?: any;
 }
 
-class SortableTableHeaderItem extends Component<SortableTableHeaderItemProps, any> {
-  constructor(props: SortableTableHeaderItemProps) {
+class SortableTableHeaderItem extends Component<ISortableTableHeaderItemProps> {
+  constructor(props: ISortableTableHeaderItemProps) {
     super(props);
 
     // This binding is necessary to make `this` work in the callback
     this.onClick = this.onClick.bind(this);
   }
 
-  static defaultProps = {
+  static defaultProps: Partial<ISortableTableHeaderItemProps> = {
     headerProps: {},
     sortable: true
   };
@@ -66,14 +62,10 @@ class SortableTableHeaderItem extends Component<SortableTableHeaderItemProps, an
   }
 }
 
-interface SortableTableHeaderProps {
+interface SortableTableHeaderProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   sortings: SortingType[];
   onStateChange: (index: number) => void;
-  iconStyle?: any;
-  iconDesc?: any;
-  iconAsc?: any;
-  iconBoth?: any;
 }
 
 export default class SortableTableHeader extends Component<SortableTableHeaderProps, any> {

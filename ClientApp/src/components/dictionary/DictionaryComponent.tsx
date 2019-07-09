@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import SortableTable from './sortable-table';
+import SortableTable, { SortableTableData } from './sortable-table';
 
 let products: any = [
   {
@@ -34,7 +34,7 @@ interface DictionaryComponentProps {
 }
 
 interface DictionaryComponentState {
-  data: any[];
+  data: SortableTableData;
   page?: number;
   totalSize?: number;
   sizePerPage?: number;
@@ -62,7 +62,7 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
       mySortAsc[sortKey] = true;
     }
 
-    data!.sort((a, b) => this.sort(a[sortKey], b[sortKey], mySortAsc[sortKey]));
+    data!.sort((a: any, b: any) => this.sort(a[sortKey], b[sortKey], mySortAsc[sortKey]));
 
     // toggle the sort order
     mySortAsc[sortKey] = !mySortAsc[sortKey];

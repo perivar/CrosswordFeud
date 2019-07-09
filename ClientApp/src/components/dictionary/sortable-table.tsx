@@ -4,6 +4,10 @@ import SortableTableBody from './sortable-table-body';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
+export interface SortableTableData {
+  [key: string]: any;
+}
+
 export interface SortableTableColumn {
   header: string;
   key: string;
@@ -13,19 +17,22 @@ export interface SortableTableColumn {
   dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
   dataProps?: CSSProperties; // { className: 'align-right' },
   sortable?: boolean;
-  render?: (id: number) => any;
-  descSortFunction?: (sortedData: any[], key: string) => any;
-  ascSortFunction?: (sortedData: any[], key: string) => any;
+  render?: (id: number) => JSX.Element;
+  descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
+  ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
 
-interface SortableTableProps {
-  data: any[];
+export interface SortableTableIconInfo {
+  iconStyle?: CSSProperties;
+  iconDesc?: JSX.Element;
+  iconAsc?: JSX.Element;
+  iconBoth?: JSX.Element;
+}
+
+interface SortableTableProps extends SortableTableIconInfo {
+  data: SortableTableData;
   columns: SortableTableColumn[];
   style?: CSSProperties;
-  iconStyle?: CSSProperties;
-  iconDesc?: any;
-  iconAsc?: any;
-  iconBoth?: any;
 }
 
 interface SortableTableState {
@@ -60,7 +67,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  sortData(data: any[], sortings: string[]): any[] {
+  sortData(data: SortableTableData, sortings: string[]): SortableTableData {
     // let sortedData = this.props.data;
     let sortedData = data;
     for (var i in sortings) {
@@ -87,7 +94,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     return sortedData;
   }
 
-  ascSortData(data: any[], key: string): any[] {
+  ascSortData(data: SortableTableData, key: string): SortableTableData {
     return this.sortDataByKey(data, key, (a: any, b: any) => {
       if (this.parseFloatable(a) && this.parseFloatable(b)) {
         a = this.parseIfFloat(a);
@@ -101,7 +108,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  descSortData(data: any[], key: string): any[] {
+  descSortData(data: SortableTableData, key: string): SortableTableData {
     return this.sortDataByKey(data, key, (a: any, b: any) => {
       if (this.parseFloatable(a) && this.parseFloatable(b)) {
         a = this.parseIfFloat(a);
@@ -125,8 +132,8 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     return parseFloat(value.replace(/,/g, ''));
   }
 
-  sortDataByKey(data: any[], key: string, fn: any): any[] {
-    const clone = Array.apply(null, data);
+  sortDataByKey(data: SortableTableData, key: string, fn: any): SortableTableData {
+    const clone = Array.apply(null, data as any);
 
     return clone.sort((a: any, b: any) => {
       return fn(a[key], b[key]);
@@ -171,7 +178,7 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     const sortedData = this.sortData(this.props.data, this.state.sortings);
 
     return (
-      <table className="table" style={this.props.style}>
+      <table className="table table-bordered" style={this.props.style}>
         <SortableTableHeader
           columns={this.props.columns}
           sortings={this.state.sortings}
