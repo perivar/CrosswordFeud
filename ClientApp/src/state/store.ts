@@ -1,4 +1,5 @@
-import { applyMiddleware, combineReducers, createStore, Store } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { logger } from './logger';
 
@@ -400,12 +401,13 @@ const initialCrosswordState: ICrosswordContainerState = {
   error: ''
 };
 
-export default function configureStore(): Store<IStoreState> {
-  const rootReducer = combineReducers<IStoreState>(reducers);
+export default function configureStore() {
+  // : Store<IStoreState>
+  const rootReducer = combineReducers(reducers); //<IStoreState>
   return createStore<IStoreState, any, any, any>(
     rootReducer,
     { crossword: initialCrosswordState },
-    applyMiddleware(thunk, logger)
+    composeWithDevTools(applyMiddleware(thunk, logger))
   );
 }
 
