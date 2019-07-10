@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties } from 'react';
+import React, { Component, CSSProperties, ChangeEvent } from 'react';
 import SortableTableHeader from './sortable-table-header';
 import SortableTableBody from './sortable-table-body';
 
@@ -6,6 +6,10 @@ export type SortingType = 'desc' | 'asc' | 'both';
 
 export interface SortableTableData {
   [key: string]: any;
+}
+
+export interface SortableCheckboxMap {
+  [key: string]: boolean;
 }
 
 export interface SortableTableColumn {
@@ -17,7 +21,7 @@ export interface SortableTableColumn {
   dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
   dataProps?: CSSProperties; // { className: 'align-right' },
   sortable?: boolean;
-  render?: (id: number) => JSX.Element;
+  render?: (id: string) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -37,6 +41,8 @@ interface SortableTableProps extends SortableTableIconInfo {
 
 interface SortableTableState {
   sortings: SortingType[];
+  isAllSelected: boolean;
+  checkboxes: SortableCheckboxMap;
 }
 
 export default class SortableTable extends Component<SortableTableProps, SortableTableState> {
@@ -44,11 +50,22 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     super(props);
 
     this.state = {
-      sortings: this.getDefaultSortings(props)
+      sortings: this.getDefaultSortings(props),
+      // default all checkboxes to false
+      isAllSelected: false,
+      // the reduce function creates a map of ids and a boolean, initially false
+      checkboxes: this.props.data.reduce(
+        (options: any, option: any) => ({
+          ...options,
+          [option.id]: false
+        }),
+        {}
+      )
     };
 
     // This binding is necessary to make `this` work in the callback
-    this.onStateChange = this.onStateChange.bind(this);
+    // unless we use arrow functions
+    // this.onStateChange = this.onStateChange.bind(this);
   }
 
   getDefaultSortings(props: SortableTableProps): SortingType[] {
@@ -140,7 +157,8 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  onStateChange(index: number) {
+  // notice that this is an arrow function to avoid having to bind this in constructor.
+  onStateChange = (index: number) => {
     const sortings = this.state.sortings.map((sorting: SortingType, i: number) => {
       // set next sorting type for the selected sorting
       // the others need to be reset back to both
@@ -156,7 +174,39 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     this.setState({
       sortings
     });
-  }
+  };
+
+  // notice that this is an arrow function to avoid having to bind this in constructor.
+  handleCheckboxChange = (changeEvent: ChangeEvent<HTMLInputElement>) => {
+    const { name: id } = changeEvent.target;
+    const checkboxes = this.state.checkboxes;
+
+    if (id === 'checkAll') {
+      // toggle isAllSelected
+      const isAllSelected = !this.state.isAllSelected;
+
+      // and update all checkboxes
+      Object.keys(checkboxes).forEach(id => {
+        checkboxes[id] = isAllSelected;
+      });
+
+      this.setState({
+        checkboxes,
+        isAllSelected
+      });
+    } else {
+      // only toggle the given id
+      checkboxes[id] = !this.state.checkboxes[id];
+
+      // check if all is selected
+      const isAllSelected = Object.keys(checkboxes).every(id => checkboxes[id]);
+
+      this.setState({
+        checkboxes,
+        isAllSelected
+      });
+    }
+  };
 
   nextSortingState(state: SortingType): SortingType {
     let next;
@@ -183,12 +233,22 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
           columns={this.props.columns}
           sortings={this.state.sortings}
           onStateChange={this.onStateChange}
+          checkboxes={this.state.checkboxes}
+          onCheckboxChange={this.handleCheckboxChange}
+          isAllSelected={this.state.isAllSelected}
           iconStyle={this.props.iconStyle}
           iconDesc={this.props.iconDesc}
           iconAsc={this.props.iconAsc}
           iconBoth={this.props.iconBoth}
         />
-        <SortableTableBody columns={this.props.columns} data={sortedData} sortings={this.state.sortings} />
+        <SortableTableBody
+          columns={this.props.columns}
+          data={sortedData}
+          sortings={this.state.sortings}
+          checkboxes={this.state.checkboxes}
+          onCheckboxChange={this.handleCheckboxChange}
+          isAllSelected={this.state.isAllSelected}
+        />
       </table>
     );
   }

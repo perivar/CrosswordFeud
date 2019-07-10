@@ -57,5 +57,6 @@
     "typescript",
     "typescriptreact"
   ],
+  "prettier.eslintIntegration": true,
   "prettier.stylelintIntegration": true
 }

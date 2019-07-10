@@ -1,16 +1,33 @@
-import React, { Component } from 'react';
-import { SortingType, SortableTableColumn, SortableTableData } from './sortable-table';
+import React, { Component, ChangeEvent } from 'react';
+import { SortingType, SortableTableColumn, SortableTableData, SortableCheckboxMap } from './sortable-table';
+import Checkbox from './Checkbox';
 
 interface SortableTableRowProps {
+  index: number;
   data: SortableTableData;
   columns: SortableTableColumn[];
+  sortings: SortingType[];
+  onCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+  isSelected: boolean;
 }
 
 class SortableTableRow extends Component<SortableTableRowProps> {
+  // only render the row if the sorting or the checking has changed
+  shouldComponentUpdate(nextProps: SortableTableRowProps, nextState: SortableTableRowProps) {
+    if (this.props.isSelected !== nextProps.isSelected) {
+      return true;
+    }
+    if (this.props.sortings !== nextProps.sortings) {
+      return true;
+    }
+    return false;
+  }
+
   render() {
-    let myData = this.props.data;
-    var tds = this.props.columns.map(function(column: SortableTableColumn, index: number) {
-      var value = myData[column.key];
+    const { data, columns } = this.props;
+    console.log(`render TableRow :: ${data.id}`);
+    const tds = columns.map(function(column: SortableTableColumn, index: number) {
+      let value = data[column.key];
       if (column.render) {
         value = column.render(value);
       }
@@ -21,7 +38,23 @@ class SortableTableRow extends Component<SortableTableRowProps> {
       );
     });
 
-    return <tr>{tds}</tr>;
+    const checkbox = (
+      <td>
+        <Checkbox
+          key={this.props.data.id}
+          name={this.props.data.id.toString()}
+          isSelected={this.props.isSelected}
+          onCheckboxChange={this.props.onCheckboxChange}
+        />
+      </td>
+    );
+
+    return (
+      <tr>
+        {checkbox}
+        {tds}
+      </tr>
+    );
   }
 }
 
@@ -29,12 +62,25 @@ interface SortableTableBodyProps {
   data: SortableTableData;
   columns: SortableTableColumn[];
   sortings: SortingType[];
+  checkboxes: SortableCheckboxMap;
+  onCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+  isAllSelected: boolean;
 }
 
 export default class SortableTableBody extends Component<SortableTableBodyProps> {
   render() {
-    var bodies = this.props.data.map((item: any, index: number) => {
-      return <SortableTableRow key={index} data={item} columns={this.props.columns} />;
+    const bodies = this.props.data.map((item: any, index: number) => {
+      return (
+        <SortableTableRow
+          key={index}
+          index={index}
+          data={item}
+          columns={this.props.columns}
+          sortings={this.props.sortings}
+          onCheckboxChange={this.props.onCheckboxChange}
+          isSelected={this.props.checkboxes[item.id]}
+        />
+      );
     });
 
     return <tbody>{bodies}</tbody>;

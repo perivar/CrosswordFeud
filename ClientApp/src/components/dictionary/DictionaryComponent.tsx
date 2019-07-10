@@ -173,21 +173,21 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
         // headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
         // dataStyle: { fontSize: '15px', backgroundColor: '#FFDAB9' },
         // dataProps: { className: 'align-right' },
-        render: (id: number) => {
+        render: (id: string) => {
           return <a href={'user/' + id}>{id}</a>;
         }
+      },
+      {
+        header: 'PRICE',
+        key: 'price'
+        // headerStyle: { fontSize: '15px' },
+        // sortable: false
       },
       {
         header: 'NAME',
         key: 'name'
         // headerStyle: { fontSize: '15px' },
         // headerProps: { className: 'align-left' }
-      },
-      {
-        header: 'PRICE',
-        key: 'price'
-        // headerStyle: { fontSize: '15px' },
-        // sortable: true
       }
     ];
 
