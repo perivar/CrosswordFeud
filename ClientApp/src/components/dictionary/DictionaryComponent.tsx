@@ -1,206 +1,397 @@
 import React, { Component } from 'react';
-import SortableTable, { SortableTableData } from './sortable-table';
+import ReactTable, { Column, RowInfo } from 'react-table';
+import selectTableHOC, { SelectTableAdditionalProps } from 'react-table/lib/hoc/selectTable';
 
-let products: any = [
-  {
-    id: 1,
-    name: 'King Kong',
-    price: 156.23
-  },
-  {
-    id: 3,
-    name: 'Baby Boomer',
-    price: 26.13
-  },
-  {
-    id: 4,
-    name: 'Whats Up?',
-    price: 0.12
-  },
-  {
-    id: 5,
-    name: 'Yessir!',
-    price: 50.5
-  },
-  {
-    id: 2,
-    name: 'Wrong order?',
-    price: 25.15
-  }
-];
+import 'react-table/react-table.css';
+import './my-react-table.scss';
+
+interface IDictionary {
+  [key: string]: any;
+}
 
 interface DictionaryComponentProps {
-  dictionary: string;
+  empty: any;
 }
 
 interface DictionaryComponentState {
-  data: SortableTableData;
-  page?: number;
-  totalSize?: number;
-  sizePerPage?: number;
-  sortAsc?: Record<string, boolean>;
+  selection: any[];
+  selectAll: boolean;
 }
 
+const SelectTable = selectTableHOC(ReactTable);
+
+const selectTableAdditionalProps: SelectTableAdditionalProps = {
+  keyField: 'id',
+  selectType: 'checkbox',
+  selectWidth: 50
+};
+
+function getUniqueData() {
+  const result = makeData();
+
+  // we are adding a unique ID to the data for tracking the selected records
+  return result.map((item: any, index: number) => {
+    const id = index;
+    return {
+      id,
+      ...item
+    };
+  });
+}
+
+const columns: Column[] = [
+  { Header: 'ID', accessor: 'id' },
+  { Header: 'First Name', accessor: 'firstName' },
+  { Header: 'Last Name', accessor: 'lastName' },
+  { Header: 'Age', accessor: 'age' }
+];
+
 export default class DictionaryComponent extends Component<DictionaryComponentProps, DictionaryComponentState> {
+  selectTable: any = [];
+
   constructor(props: DictionaryComponentProps) {
     super(props);
     this.state = {
-      page: 1,
-      data: products.slice(0, 10),
-      totalSize: products.length,
-      sizePerPage: 10
+      selection: [],
+      selectAll: false
     };
-    this.onSort = this.onSort.bind(this);
   }
-
-  onSort(event: any, sortKey: string) {
-    let { data, sortAsc } = this.state;
-
-    const mySortAsc: Record<string, boolean> = { ...sortAsc };
-    if (sortAsc === undefined || sortAsc[sortKey] === undefined) {
-      // default to ascending
-      mySortAsc[sortKey] = true;
-    }
-
-    data!.sort((a: any, b: any) => this.sort(a[sortKey], b[sortKey], mySortAsc[sortKey]));
-
-    // toggle the sort order
-    mySortAsc[sortKey] = !mySortAsc[sortKey];
-
-    // and set updated state
-    this.setState({ data, sortAsc: mySortAsc });
-  }
-
-  // sort two objects
-  sort(a: any, b: any, asc: boolean) {
-    var result;
-
-    /* Default ascending order */
-    if (typeof asc == 'undefined') asc = true;
-
-    if (a === null) return 1;
-    if (b === null) return -1;
-    if (a === null && b === null) return 0;
-
-    result = a - b;
-
-    if (isNaN(result)) {
-      return asc ? a.toString().localeCompare(b) : b.toString().localeCompare(a);
+  toggleSelection = (key: string, shiftKeyPressed: boolean, row: string) => {
+    let selection = [...this.state.selection];
+    const keyIndex = selection.indexOf(key);
+    // check to see if the key exists
+    if (keyIndex >= 0) {
+      // it does exist so we will remove it using destructing
+      selection = [...selection.slice(0, keyIndex), ...selection.slice(keyIndex + 1)];
     } else {
-      return asc ? result : -result;
+      // it does not exist so add it
+      selection.push(key);
     }
-  }
+    // update the state
+    this.setState({ selection });
+  };
 
-  handleTableChange = (type: string, { page, sizePerPage, filters, sortField, sortOrder, cellEdit }: any) => {
-    const currentIndex = (page! - 1) * sizePerPage!;
+  toggleAll = () => {
+    const { keyField } = selectTableAdditionalProps;
+    const selectAll = this.state.selectAll ? false : true;
+    const selection = [] as any[];
+    if (selectAll) {
+      // we need to get at the internals of ReactTable
+      const wrappedInstance = this.selectTable.getWrappedInstance();
+      // the 'sortedData' property contains the currently accessible records based on the filter and sort
+      const currentRecords = wrappedInstance.getResolvedState().sortedData;
+      // we just push all the IDs onto the selection array
+      currentRecords.forEach((item: any) => {
+        if (item._original) {
+          selection.push(`select-${item._original[keyField!]}`);
+        }
+      });
+    }
+    this.setState({ selectAll, selection });
+  };
 
-    setTimeout(() => {
-      // Handle cell editing
-      if (type === 'cellEdit') {
-        const { rowId, dataField, newValue } = cellEdit!;
-        products = products.map((row: any) => {
-          if (row.id === rowId) {
-            const newRow = { ...row };
-            newRow[dataField] = newValue;
-            return newRow;
-          }
-          return row;
-        });
+  isSelected = (key: string) => {
+    return this.state.selection.includes(`select-${key}`);
+  };
+
+  rowFn = (
+    state: DictionaryComponentState,
+    rowInfo: RowInfo | undefined,
+    column: Column | undefined,
+    instance: any
+  ) => {
+    const { selection } = this.state;
+
+    return {
+      onClick: (e: any, handleOriginal: any) => {
+        console.log('It was in this row:', rowInfo);
+
+        // IMPORTANT! React-Table uses onClick internally to trigger
+        // events like expanding SubComponents and pivots.
+        // By default a custom 'onClick' handler will override this functionality.
+        // If you want to fire the original onClick handler, call the
+        // 'handleOriginal' function.
+        if (handleOriginal) {
+          handleOriginal();
+        }
+      },
+      style: {
+        background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
       }
-
-      // sort will mutate the original array
-      let result = products;
-
-      this.setState(() => ({
-        page,
-        data: result.slice(currentIndex, currentIndex + sizePerPage!),
-        totalSize: result.length,
-        sizePerPage
-      }));
-    }, 3000);
+    };
   };
 
   render() {
-    /*
-    const { data, sizePerPage, page, totalSize, sortAsc } = this.state;
-
-    // set correct sort icons
-    const mySortIcons: Record<string, JSX.Element> = {};
-
-    for (let keyField of ['id', 'name', 'price']) {
-      if (sortAsc == undefined || sortAsc[keyField] == undefined) {
-        mySortIcons[keyField] = <i className="fas fa-sort"></i>;
-      } else {
-        if (sortAsc[keyField]) {
-          mySortIcons[keyField] = <i className="fas fa-sort-up"></i>;
-        } else {
-          mySortIcons[keyField] = <i className="fas fa-sort-down"></i>;
-        }
-      }
-    }
-
     return (
-      <div>
-        <table className="table">
-          <thead className="thead-dark">
-            <tr>
-              <th onClick={e => this.onSort(e, 'id')}>Product Id {mySortIcons['id']}</th>
-              <th onClick={e => this.onSort(e, 'name')}>Product Name {mySortIcons['name']}</th>
-              <th onClick={e => this.onSort(e, 'price')}>Product Price {mySortIcons['price']}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data!.map(function(entry, index) {
-              return (
-                <tr key={index} data-item={entry}>
-                  <td data-title="Id">{entry.id}</td>
-                  <td data-title="Name">{entry.name}</td>
-                  <td data-title="Price">{entry.price}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-		);
-		*/
-
-    const columns = [
-      {
-        header: 'ID',
-        key: 'id',
-        defaultSorting: 'ASC',
-        // headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
-        // dataStyle: { fontSize: '15px', backgroundColor: '#FFDAB9' },
-        // dataProps: { className: 'align-right' },
-        render: (id: string) => {
-          return <a href={'user/' + id}>{id}</a>;
-        }
-      },
-      {
-        header: 'PRICE',
-        key: 'price'
-        // headerStyle: { fontSize: '15px' },
-        // sortable: false
-      },
-      {
-        header: 'NAME',
-        key: 'name'
-        // headerStyle: { fontSize: '15px' },
-        // headerProps: { className: 'align-left' }
-      }
-    ];
-
-    const style = {
-      // backgroundColor: '#eee'
-    };
-
-    const iconStyle = {
-      // color: '#aaa',
-      // paddingLeft: '5px',
-      // paddingRight: '5px'
-    };
-
-    return <SortableTable data={this.state.data} columns={columns} style={style} iconStyle={iconStyle} />;
+      <SelectTable
+        {...selectTableAdditionalProps}
+        data={getUniqueData()}
+        columns={columns}
+        ref={ref => {
+          this.selectTable = ref;
+        }}
+        toggleSelection={this.toggleSelection}
+        selectAll={this.state.selectAll}
+        toggleAll={this.toggleAll}
+        isSelected={this.isSelected}
+        getTrProps={this.rowFn}
+        className="-striped -highlight"
+      />
+    );
   }
+}
+
+function makeData() {
+  return [
+    {
+      firstName: 'judge',
+      lastName: 'babies',
+      age: 16
+    },
+    {
+      firstName: 'quarter',
+      lastName: 'driving',
+      age: 17
+    },
+    {
+      firstName: 'division',
+      lastName: 'society',
+      age: 3
+    },
+    {
+      firstName: 'lamp',
+      lastName: 'point',
+      age: 2
+    },
+    {
+      firstName: 'argument',
+      lastName: 'insurance',
+      age: 13
+    },
+    {
+      firstName: 'pets',
+      lastName: 'fan',
+      age: 27
+    },
+    {
+      firstName: 'learning',
+      lastName: 'board',
+      age: 9
+    },
+    {
+      firstName: 'observation',
+      lastName: 'drink',
+      age: 28
+    },
+    {
+      firstName: 'burst',
+      lastName: 'glove',
+      age: 1
+    },
+    {
+      firstName: 'acoustics',
+      lastName: 'animal',
+      age: 19
+    },
+    {
+      firstName: 'beetle',
+      lastName: 'branch',
+      age: 25
+    },
+    {
+      firstName: 'invention',
+      lastName: 'servant',
+      age: 14
+    },
+    {
+      firstName: 'letters',
+      lastName: 'driving',
+      age: 12
+    },
+    {
+      firstName: 'seashore',
+      lastName: 'metal',
+      age: 18
+    },
+    {
+      firstName: 'cat',
+      lastName: 'stranger',
+      age: 26
+    },
+    {
+      firstName: 'group',
+      lastName: 'dinner',
+      age: 20
+    },
+    {
+      firstName: 'mom',
+      lastName: 'pipe',
+      age: 27
+    },
+    {
+      firstName: 'desk',
+      lastName: 'pail',
+      age: 6
+    },
+    {
+      firstName: 'oranges',
+      lastName: 'interest',
+      age: 22
+    },
+    {
+      firstName: 'umbrella',
+      lastName: 'legs',
+      age: 9
+    },
+    {
+      firstName: 'carpenter',
+      lastName: 'apparel',
+      age: 19
+    },
+    {
+      firstName: 'seat',
+      lastName: 'wrench',
+      age: 14
+    },
+    {
+      firstName: 'carpenter',
+      lastName: 'steam',
+      age: 27
+    },
+    {
+      firstName: 'chess',
+      lastName: 'bread',
+      age: 21
+    },
+    {
+      firstName: 'men',
+      lastName: 'pie',
+      age: 5
+    },
+    {
+      firstName: 'group',
+      lastName: 'action',
+      age: 21
+    },
+    {
+      firstName: 'coil',
+      lastName: 'mine',
+      age: 11
+    },
+    {
+      firstName: 'care',
+      lastName: 'partner',
+      age: 17
+    },
+    {
+      firstName: 'queen',
+      lastName: 'cows',
+      age: 20
+    },
+    {
+      firstName: 'wilderness',
+      lastName: 'cracker',
+      age: 24
+    },
+    {
+      firstName: 'chair',
+      lastName: 'scarecrow',
+      age: 5
+    },
+    {
+      firstName: 'cast',
+      lastName: 'nation',
+      age: 16
+    },
+    {
+      firstName: 'fear',
+      lastName: 'wave',
+      age: 28
+    },
+    {
+      firstName: 'cook',
+      lastName: 'drug',
+      age: 2
+    },
+    {
+      firstName: 'thrill',
+      lastName: 'marble',
+      age: 25
+    },
+    {
+      firstName: 'ship',
+      lastName: 'muscle',
+      age: 29
+    },
+    {
+      firstName: 'drug',
+      lastName: 'suit',
+      age: 13
+    },
+    {
+      firstName: 'edge',
+      lastName: 'statement',
+      age: 19
+    },
+    {
+      firstName: 'chickens',
+      lastName: 'start',
+      age: 20
+    },
+    {
+      firstName: 'donkey',
+      lastName: 'laugh',
+      age: 14
+    },
+    {
+      firstName: 'tiger',
+      lastName: 'tendency',
+      age: 27
+    },
+    {
+      firstName: 'steam',
+      lastName: 'argument',
+      age: 17
+    },
+    {
+      firstName: 'riddle',
+      lastName: 'adjustment',
+      age: 15
+    },
+    {
+      firstName: 'silver',
+      lastName: 'women',
+      age: 2
+    },
+    {
+      firstName: 'month',
+      lastName: 'babies',
+      age: 13
+    },
+    {
+      firstName: 'van',
+      lastName: 'flowers',
+      age: 29
+    },
+    {
+      firstName: 'yak',
+      lastName: 'book',
+      age: 5
+    },
+    {
+      firstName: 'quicksand',
+      lastName: 'fall',
+      age: 11
+    },
+    {
+      firstName: 'beggar',
+      lastName: 'dinner',
+      age: 4
+    },
+    {
+      firstName: 'money',
+      lastName: 'mind',
+      age: 0
+    }
+  ];
 }
