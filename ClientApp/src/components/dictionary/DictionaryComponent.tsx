@@ -197,8 +197,8 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
 
     const iconStyle = {
       // color: '#aaa',
-      paddingLeft: '5px',
-      paddingRight: '5px'
+      // paddingLeft: '5px',
+      // paddingRight: '5px'
     };
 
     return <SortableTable data={this.state.data} columns={columns} style={style} iconStyle={iconStyle} />;

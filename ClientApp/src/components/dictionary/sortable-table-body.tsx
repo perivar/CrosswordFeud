@@ -50,7 +50,7 @@ class SortableTableRow extends Component<SortableTableRowProps> {
     );
 
     return (
-      <tr>
+      <tr className={this.props.isSelected ? ' table-active' : ''}>
         {checkbox}
         {tds}
       </tr>

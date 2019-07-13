@@ -228,28 +228,57 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     const sortedData = this.sortData(this.props.data, this.state.sortings);
 
     return (
-      <table className="table table-bordered" style={this.props.style}>
-        <SortableTableHeader
-          columns={this.props.columns}
-          sortings={this.state.sortings}
-          onStateChange={this.onStateChange}
-          checkboxes={this.state.checkboxes}
-          onCheckboxChange={this.handleCheckboxChange}
-          isAllSelected={this.state.isAllSelected}
-          iconStyle={this.props.iconStyle}
-          iconDesc={this.props.iconDesc}
-          iconAsc={this.props.iconAsc}
-          iconBoth={this.props.iconBoth}
-        />
-        <SortableTableBody
-          columns={this.props.columns}
-          data={sortedData}
-          sortings={this.state.sortings}
-          checkboxes={this.state.checkboxes}
-          onCheckboxChange={this.handleCheckboxChange}
-          isAllSelected={this.state.isAllSelected}
-        />
-      </table>
+      <>
+        <table className="table table-bordered" style={this.props.style}>
+          <SortableTableHeader
+            columns={this.props.columns}
+            sortings={this.state.sortings}
+            onStateChange={this.onStateChange}
+            checkboxes={this.state.checkboxes}
+            onCheckboxChange={this.handleCheckboxChange}
+            isAllSelected={this.state.isAllSelected}
+            iconStyle={this.props.iconStyle}
+            iconDesc={this.props.iconDesc}
+            iconAsc={this.props.iconAsc}
+            iconBoth={this.props.iconBoth}
+          />
+          <SortableTableBody
+            columns={this.props.columns}
+            data={sortedData}
+            sortings={this.state.sortings}
+            checkboxes={this.state.checkboxes}
+            onCheckboxChange={this.handleCheckboxChange}
+            isAllSelected={this.state.isAllSelected}
+          />
+        </table>
+        {/* <ul className="pagination justify-content-end">
+          <li className="page-item">
+            <a className="page-link" href="#">
+              Previous
+            </a>
+          </li>
+          <li className="page-item">
+            <a className="page-link" href="#">
+              1
+            </a>
+          </li>
+          <li className="page-item">
+            <a className="page-link" href="#">
+              ...
+            </a>
+          </li>
+          <li className="page-item active">
+            <a className="page-link" href="#">
+              100
+            </a>
+          </li>
+          <li className="page-item">
+            <a className="page-link" href="#">
+              Next
+            </a>
+          </li>
+        </ul> */}
+      </>
     );
   }
 }
