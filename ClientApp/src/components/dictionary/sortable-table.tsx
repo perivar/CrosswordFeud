@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties, ChangeEvent } from 'react';
+import React, { Component, CSSProperties, ChangeEvent, HTMLAttributes } from 'react';
 import SortableTableHeader from './sortable-table-header';
 import SortableTableBody from './sortable-table-body';
 
@@ -17,9 +17,9 @@ export interface SortableTableColumn {
   key: string;
   defaultSorting?: string; // ASC or asc or DESC or desc
   headerStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
-  headerProps?: CSSProperties; // { className: 'align-left' },
+  headerProps?: HTMLAttributes<HTMLElement>; // { className: 'align-left' },
   dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
-  dataProps?: CSSProperties; // { className: 'align-right' },
+  dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   render?: (id: string) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;

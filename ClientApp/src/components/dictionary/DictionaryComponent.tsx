@@ -8,6 +8,7 @@ import selectTableHOC, {
 
 import 'react-table/react-table.css';
 import './my-react-table.scss';
+// import SortableTable from './sortable-table';
 
 interface IDictionary {
   [key: string]: any;
@@ -181,6 +182,46 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
         className="-striped -highlight"
       />
     );
+    // const columns = [
+    //   {
+    //     header: 'Id',
+    //     key: 'id',
+    //     defaultSorting: 'ASC',
+    //     headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
+    //     dataStyle: { fontSize: '15px', backgroundColor: '#FFDAB9' },
+    //     dataProps: { className: 'align-right' },
+    //     render: (id: string) => {
+    //       return <a href={'user/' + id}>{id}</a>;
+    //     }
+    //   },
+    //   {
+    //     header: 'Age',
+    //     key: 'age',
+    //     headerStyle: { fontSize: '15px' },
+    //     sortable: false
+    //   },
+    //   {
+    //     header: 'First Name',
+    //     key: 'firstName',
+    //     headerStyle: { fontSize: '15px' },
+    //     headerProps: { className: 'align-left' }
+    //   },
+    //   {
+    //     header: 'Last Name',
+    //     key: 'lastName',
+    //     headerStyle: { fontSize: '15px' },
+    //     headerProps: { className: 'align-left' }
+    //   }
+    // ];
+    // const style = {
+    //   backgroundColor: '#eee'
+    // };
+    // const iconStyle = {
+    //   // color: '#aaa',
+    //   paddingLeft: '5px',
+    //   paddingRight: '5px'
+    // };
+    // return <SortableTable data={getUniqueData()} columns={columns} style={style} iconStyle={iconStyle} />;
   }
 }
 
