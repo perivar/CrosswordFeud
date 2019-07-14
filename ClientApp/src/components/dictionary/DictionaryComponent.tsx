@@ -1,12 +1,23 @@
 import React, { Component } from 'react';
 import ReactTable, { Column, RowInfo } from 'react-table';
-import selectTableHOC, { SelectTableAdditionalProps } from 'react-table/lib/hoc/selectTable';
+import selectTableHOC, {
+  SelectTableAdditionalProps,
+  SelectAllInputComponentProps,
+  SelectInputComponentProps
+} from 'react-table/lib/hoc/selectTable';
 
 import 'react-table/react-table.css';
 import './my-react-table.scss';
 
 interface IDictionary {
   [key: string]: any;
+}
+
+interface Data {
+  id?: number;
+  firstName: string;
+  lastName: string;
+  age: number;
 }
 
 interface DictionaryComponentProps {
@@ -20,24 +31,47 @@ interface DictionaryComponentState {
 
 const SelectTable = selectTableHOC(ReactTable);
 
+const SelectInput: React.StatelessComponent<SelectInputComponentProps> = ({
+  selectType,
+  onClick,
+  id,
+  checked,
+  row
+}) => (
+  <input
+    type={selectType || 'checkbox'}
+    aria-label={`${checked ? 'Un-select' : 'Select'} row with id:${id}`}
+    checked={checked}
+    id={id}
+    onClick={e => {
+      const { shiftKey } = e;
+      e.stopPropagation();
+      onClick(id, shiftKey, row);
+    }}
+    onChange={() => {}}
+  />
+);
+
+const SelectAllInput: React.StatelessComponent<SelectAllInputComponentProps> = ({ selectType, onClick, checked }) => (
+  <input
+    type={selectType || 'checkbox'}
+    aria-label={`${checked ? 'Un-select all' : 'Select all'}`}
+    checked={checked}
+    onClick={e => {
+      e.stopPropagation();
+      onClick();
+    }}
+    onChange={() => {}}
+  />
+);
+
 const selectTableAdditionalProps: SelectTableAdditionalProps = {
   keyField: 'id',
   selectType: 'checkbox',
-  selectWidth: 50
+  selectWidth: 50,
+  SelectInputComponent: SelectInput,
+  SelectAllInputComponent: SelectAllInput
 };
-
-function getUniqueData() {
-  const result = makeData();
-
-  // we are adding a unique ID to the data for tracking the selected records
-  return result.map((item: any, index: number) => {
-    const id = index;
-    return {
-      id,
-      ...item
-    };
-  });
-}
 
 const columns: Column[] = [
   { Header: 'ID', accessor: 'id' },
@@ -47,7 +81,7 @@ const columns: Column[] = [
 ];
 
 export default class DictionaryComponent extends Component<DictionaryComponentProps, DictionaryComponentState> {
-  selectTable: any = [];
+  private selectTable: any = null; // add any to avoid getWrappedInstance() might be null
 
   constructor(props: DictionaryComponentProps) {
     super(props);
@@ -102,23 +136,30 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
   ) => {
     const { selection } = this.state;
 
-    return {
-      onClick: (e: any, handleOriginal: any) => {
-        console.log('It was in this row:', rowInfo);
+    if (rowInfo && rowInfo !== undefined && rowInfo.row) {
+      return {
+        onClick: (e: any, handleOriginal: any) => {
+          console.log('It was in this row:', rowInfo);
 
-        // IMPORTANT! React-Table uses onClick internally to trigger
-        // events like expanding SubComponents and pivots.
-        // By default a custom 'onClick' handler will override this functionality.
-        // If you want to fire the original onClick handler, call the
-        // 'handleOriginal' function.
-        if (handleOriginal) {
-          handleOriginal();
+          // toggle selection
+          this.toggleSelection(`select-${rowInfo.original.id}`, false, '');
+
+          // IMPORTANT! React-Table uses onClick internally to trigger
+          // events like expanding SubComponents and pivots.
+          // By default a custom 'onClick' handler will override this functionality.
+          // If you want to fire the original onClick handler, call the
+          // 'handleOriginal' function.
+          if (handleOriginal) {
+            handleOriginal();
+          }
+        },
+        style: {
+          background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
         }
-      },
-      style: {
-        background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
-      }
-    };
+      };
+    } else {
+      return {};
+    }
   };
 
   render() {
@@ -127,6 +168,8 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
         {...selectTableAdditionalProps}
         data={getUniqueData()}
         columns={columns}
+        // norwmal ref won't work since we need the wrapped instance
+        // therefore use an arrow function to set the ref
         ref={ref => {
           this.selectTable = ref;
         }}
@@ -141,7 +184,20 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
   }
 }
 
-function makeData() {
+const getUniqueData = (): Data[] => {
+  const result = makeData();
+
+  // we are adding a unique ID to the data for tracking the selected records
+  return result.map((item: any, index: number) => {
+    const id = index;
+    return {
+      id,
+      ...item
+    };
+  });
+};
+
+const makeData = (): Data[] => {
   return [
     {
       firstName: 'judge',
@@ -394,4 +450,4 @@ function makeData() {
       age: 0
     }
   ];
-}
+};
