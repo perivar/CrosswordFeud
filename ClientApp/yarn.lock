@@ -9252,6 +9252,11 @@ react-dom@^16.8.6:
     prop-types "^15.6.2"
     scheduler "^0.13.6"
 
+react-editable-hooks@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/react-editable-hooks/-/react-editable-hooks-1.0.0.tgz#848354418e2a0b7302a63482a8d0a460a212ef41"
+  integrity sha512-u9H8M7zVJvwqvH2lQsSLSdiOeq2FM3HgZf5VaM+2C3vTA/GzIwaT00vLxEKobHFM4uiWK9cVQQTtsY+zbmf9DA==
+
 react-error-overlay@^5.1.6:
   version "5.1.6"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-5.1.6.tgz#0cd73407c5d141f9638ae1e0c63e7b2bf7e9929d"

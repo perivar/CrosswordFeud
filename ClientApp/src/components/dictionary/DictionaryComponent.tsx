@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
-import ReactTable, { Column, RowInfo } from 'react-table';
+import React, { Component, useState } from 'react';
+import ReactTable, { Column, RowInfo, CellInfo } from 'react-table';
 import selectTableHOC, {
   SelectTableAdditionalProps,
   SelectAllInputComponentProps,
   SelectInputComponentProps
 } from 'react-table/lib/hoc/selectTable';
+import { useEditableState, UseEditableStateArguments } from 'react-editable-hooks';
 
 import 'react-table/react-table.css';
 import './my-react-table.scss';
@@ -26,6 +27,7 @@ interface DictionaryComponentProps {
 }
 
 interface DictionaryComponentState {
+  data: any[];
   selection: any[];
   selectAll: boolean;
 }
@@ -66,6 +68,47 @@ const SelectAllInput: React.StatelessComponent<SelectAllInputComponentProps> = (
   />
 );
 
+const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<string>) => {
+  const {
+    onEditBegin,
+    onEditConfirm,
+    onEditCancel,
+    isEditing,
+    editValue,
+    setEditValue,
+    useDraft,
+    hasDraft
+  } = useEditableState({
+    value,
+    onValueChanged,
+    localStorageKey: 'dictionary.drafts.editable_text_field'
+  });
+
+  if (isEditing) {
+    return (
+      <div className="container">
+        <input className="content" value={editValue} onChange={e => setEditValue(e.target.value)} />
+        <div className="buttons">
+          <button onClick={onEditConfirm}>Confirm</button>
+          <button onClick={onEditCancel}>Cancel</button>
+        </div>
+      </div>
+    );
+  } else {
+    return (
+      <div>
+        <div className="container">
+          <div className="content">{value}</div>
+          <div className="buttons">
+            <button onClick={onEditBegin}>Edit</button>
+          </div>
+        </div>
+        {hasDraft ? <button onClick={useDraft}>Load draft</button> : null}
+      </div>
+    );
+  }
+};
+
 const selectTableAdditionalProps: SelectTableAdditionalProps = {
   keyField: 'id',
   selectType: 'checkbox',
@@ -74,23 +117,28 @@ const selectTableAdditionalProps: SelectTableAdditionalProps = {
   SelectAllInputComponent: SelectAllInput
 };
 
-const columns: Column[] = [
-  { Header: 'ID', accessor: 'id' },
-  { Header: 'First Name', accessor: 'firstName' },
-  { Header: 'Last Name', accessor: 'lastName' },
-  { Header: 'Age', accessor: 'age' }
-];
-
 export default class DictionaryComponent extends Component<DictionaryComponentProps, DictionaryComponentState> {
   private selectTable: any = null; // add any to avoid getWrappedInstance() might be null
 
   constructor(props: DictionaryComponentProps) {
     super(props);
     this.state = {
+      data: getUniqueData(),
       selection: [],
       selectAll: false
     };
   }
+
+  handleValueChanged = (cellInfo: CellInfo, newValue: string) => {
+    let data = [...this.state.data];
+    data[cellInfo.index][cellInfo.column.id!] = newValue;
+    this.setState({ data });
+  };
+
+  renderEditable = (cellInfo: CellInfo) => {
+    return <EditableTextField value={cellInfo.value} onValueChanged={this.handleValueChanged.bind(null, cellInfo)} />;
+  };
+
   toggleSelection = (key: string, shiftKeyPressed: boolean, row: string) => {
     let selection = [...this.state.selection];
     const keyIndex = selection.indexOf(key);
@@ -143,7 +191,7 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
           console.log('It was in this row:', rowInfo);
 
           // toggle selection
-          this.toggleSelection(`select-${rowInfo.original.id}`, false, '');
+          // this.toggleSelection(`select-${rowInfo.original.id}`, false, '');
 
           // IMPORTANT! React-Table uses onClick internally to trigger
           // events like expanding SubComponents and pivots.
@@ -164,10 +212,17 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
   };
 
   render() {
+    const columns: Column[] = [
+      { Header: 'ID', accessor: 'id' },
+      { Header: 'First Name', accessor: 'firstName', Cell: this.renderEditable },
+      { Header: 'Last Name', accessor: 'lastName', Cell: this.renderEditable },
+      { Header: 'Age', accessor: 'age' }
+    ];
+
     return (
       <SelectTable
         {...selectTableAdditionalProps}
-        data={getUniqueData()}
+        data={this.state.data}
         columns={columns}
         // norwmal ref won't work since we need the wrapped instance
         // therefore use an arrow function to set the ref
