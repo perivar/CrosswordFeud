@@ -152,3 +152,42 @@
 .ReactTable .rt-th.-sort-desc .rt-resizer:before {
     background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOCAzdjkuMTNMNCA4IDMgOWw2IDYgNi02LTEtMS00IDQuMTNWM3oiIGZpbGw9IiMzMzMiLz48L3N2Zz4=);
 }
+
+/* make sure the editable links are dashed */
+.editable-click,
+a.editable-click,
+a.editable-click:hover {
+    text-decoration: none;
+    border-bottom: dashed 1px #0088cc;
+}
+
+button.editable-clear {
+    background: none;
+    color: inherit;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+}
+
+.editable-clear {
+    opacity: 0.5;
+    align-items: center;
+    // background: #cecece;
+    // border-radius: 50%;
+    // color: rgba(0, 0, 0, 0.54);
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    z-index: 10;
+    height: 24px;
+    width: 24px;
+    bottom: 4px;
+    right: 1em;
+}
+
+.editable-clear:hover {
+    opacity: 1;
+}

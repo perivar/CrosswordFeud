@@ -26,8 +26,7 @@
     "rimraf": "^2.6.3",
     "thunk": "^0.0.1",
     "react-table": "^6.10.0",
-    "prop-types": "^15.7.2",
-    "react-editable-hooks": "^1.0.0"
+    "prop-types": "^15.7.2"
   },
   "devDependencies": {
     "typescript": "^3.5.2",

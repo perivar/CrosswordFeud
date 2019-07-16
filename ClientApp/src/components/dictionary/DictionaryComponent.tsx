@@ -1,14 +1,16 @@
-import React, { Component, useState } from 'react';
+import React, { Component, useEffect, useRef, SyntheticEvent, CSSProperties } from 'react';
 import ReactTable, { Column, RowInfo, CellInfo } from 'react-table';
 import selectTableHOC, {
   SelectTableAdditionalProps,
   SelectAllInputComponentProps,
   SelectInputComponentProps
 } from 'react-table/lib/hoc/selectTable';
-import { useEditableState, UseEditableStateArguments } from 'react-editable-hooks';
 
 import 'react-table/react-table.css';
 import './my-react-table.scss';
+import { useEditableState, UseEditableStateArguments, EditableState } from '../shared/hooks/editable-hook';
+import { useKeyboardEvent } from '../shared/hooks/keyboard-hook';
+import { useOutsideClick } from '../shared/hooks/outside-click-hook';
 // import SortableTable from './sortable-table';
 
 interface IDictionary {
@@ -68,6 +70,14 @@ const SelectAllInput: React.StatelessComponent<SelectAllInputComponentProps> = (
   />
 );
 
+const selectTableAdditionalProps: SelectTableAdditionalProps = {
+  keyField: 'id',
+  selectType: 'checkbox',
+  selectWidth: 50,
+  SelectInputComponent: SelectInput,
+  SelectAllInputComponent: SelectAllInput
+};
+
 const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<string>) => {
   const {
     onEditBegin,
@@ -75,46 +85,108 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
     onEditCancel,
     isEditing,
     editValue,
-    setEditValue,
-    useDraft,
-    hasDraft
-  } = useEditableState({
+    setEditValue
+  }: EditableState<string> = useEditableState({
     value,
-    onValueChanged,
-    localStorageKey: 'dictionary.drafts.editable_text_field'
+    onValueChanged
   });
+
+  // creating the ref by passing initial value null
+  // The type of our ref is an input element
+  const editInputRef = useRef<HTMLInputElement>(null);
+
+  // The function passed to useEffect will run after the render is committed to the screen.
+  // 1. If you don’t pass an array into the useEffect Hook, your component will continuously reload repeatedly.
+  // 2. If you pass an empty array, we are not watching any variables, and therefore it will only update state on the first render, exactly like componentDidMount.
+  // 3. By default, useEffect looks to see if the array values are different and if they are different, the arrow function is automatically called.
+  useEffect(() => {
+    if (editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  });
+
+  // add handlers for escape and return keys
+  const cancelEditHandler = (event: KeyboardEvent) => {
+    if (isEditing) {
+      onEditCancel();
+    }
+  };
+
+  const confirmEditHandler = (event: KeyboardEvent) => {
+    if (isEditing) {
+      onEditConfirm();
+    }
+  };
+
+  useKeyboardEvent('Escape', cancelEditHandler);
+  useKeyboardEvent('Enter', confirmEditHandler);
+
+  // add handlers for clicking outside the input element
+  const editWrapperRef = useRef<HTMLDivElement>(null);
+
+  // add handler for clicking outside the input
+  useOutsideClick(editWrapperRef, () => {
+    if (isEditing) {
+      onEditCancel();
+    }
+  });
+
+  // add onClick handler to the a href
+  const handleClick = (e: SyntheticEvent) => {
+    e.preventDefault();
+    onEditBegin();
+  };
+
+  const onEditClear = (e: SyntheticEvent) => {
+    e.preventDefault();
+    setEditValue('');
+  };
+
+  const inputStyle: CSSProperties = {
+    // width: '80%'
+  };
 
   if (isEditing) {
     return (
       <div className="container">
-        <input className="content" value={editValue} onChange={e => setEditValue(e.target.value)} />
-        <div className="buttons">
-          <button onClick={onEditConfirm}>Confirm</button>
-          <button onClick={onEditCancel}>Cancel</button>
-        </div>
+        <form>
+          <div className="form-group row" ref={editWrapperRef}>
+            <div className="col-sm-8">
+              <input
+                type="text"
+                className="form-control form-control-sm"
+                ref={editInputRef}
+                value={editValue}
+                onChange={event => setEditValue(event.target.value)}
+                style={inputStyle}
+              />
+              <button className="editable-clear" onClick={onEditClear}>
+                <i className="fas fa-times fa-xs"></i>
+              </button>
+            </div>
+            <div className="col-sm-4">
+              <button type="submit" className="btn btn-primary btn-sm editable-confirm" onClick={onEditConfirm}>
+                <i className="fas fa-check"></i>
+              </button>
+              <button type="button" className="btn btn-default btn-sm editable-cancel" onClick={onEditCancel}>
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </form>
       </div>
     );
   } else {
     return (
-      <div>
-        <div className="container">
-          <div className="content">{value}</div>
-          <div className="buttons">
-            <button onClick={onEditBegin}>Edit</button>
-          </div>
-        </div>
-        {hasDraft ? <button onClick={useDraft}>Load draft</button> : null}
-      </div>
+      // <button type="button" className="btn btn-link editable-click" onClick={onEditBegin}>
+      //   {value}
+      // </button>
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
+      <a href="#" className="editable-click" onClick={handleClick}>
+        {value ? value : <i>Empty</i>}
+      </a>
     );
   }
-};
-
-const selectTableAdditionalProps: SelectTableAdditionalProps = {
-  keyField: 'id',
-  selectType: 'checkbox',
-  selectWidth: 50,
-  SelectInputComponent: SelectInput,
-  SelectAllInputComponent: SelectAllInput
 };
 
 export default class DictionaryComponent extends Component<DictionaryComponentProps, DictionaryComponentState> {
@@ -187,21 +259,21 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
 
     if (rowInfo && rowInfo !== undefined && rowInfo.row) {
       return {
-        onClick: (e: any, handleOriginal: any) => {
-          console.log('It was in this row:', rowInfo);
+        // onClick: (e: any, handleOriginal: any) => {
+        //   console.log('It was in this row:', rowInfo);
 
-          // toggle selection
-          // this.toggleSelection(`select-${rowInfo.original.id}`, false, '');
+        //   // toggle selection
+        //   // this.toggleSelection(`select-${rowInfo.original.id}`, false, '');
 
-          // IMPORTANT! React-Table uses onClick internally to trigger
-          // events like expanding SubComponents and pivots.
-          // By default a custom 'onClick' handler will override this functionality.
-          // If you want to fire the original onClick handler, call the
-          // 'handleOriginal' function.
-          if (handleOriginal) {
-            handleOriginal();
-          }
-        },
+        //   // IMPORTANT! React-Table uses onClick internally to trigger
+        //   // events like expanding SubComponents and pivots.
+        //   // By default a custom 'onClick' handler will override this functionality.
+        //   // If you want to fire the original onClick handler, call the
+        //   // 'handleOriginal' function.
+        //   if (handleOriginal) {
+        //     handleOriginal();
+        //   }
+        // },
         style: {
           background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
         }
