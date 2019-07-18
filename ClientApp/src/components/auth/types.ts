@@ -18,6 +18,7 @@ export interface ILoginState {
   username: string;
   password: string;
   submitted: boolean;
+  remember: boolean;
 }
 
 export interface IRegisterProps {
@@ -30,6 +31,8 @@ export interface IRegisterState {
   user: IUser;
   submitted: boolean;
   registering?: boolean; // only used by the reducer
+  passwordsNotEqual?: boolean; // only used by the register page
+  emailsNotEqual?: boolean; // only used by the register page
 }
 
 export interface IAlertState {
@@ -54,7 +57,9 @@ export interface IUser {
   id: string;
   userName: string;
   password: string;
+  confirmPassword: string;
   email: string;
+  confirmEmail: string;
   phoneNumber: string;
   error?: boolean;
   deleting?: boolean;

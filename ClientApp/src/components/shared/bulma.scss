@@ -1,0 +1,94 @@
+@charset "utf-8";
+
+// Import a Google Font
+@import url('https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&display=swap');
+
+// Set your brand colors
+$black: hsl(0, 0%, 4%) !default;
+$black-bis: hsl(0, 0%, 7%) !default;
+$black-ter: hsl(0, 0%, 14%) !default;
+$grey-darker: hsl(0, 0%, 21%) !default;
+$grey-dark: hsl(0, 0%, 29%) !default;
+$grey: hsl(0, 0%, 48%) !default;
+$grey-light: hsl(0, 0%, 71%) !default;
+$grey-lighter: hsl(0, 0%, 86%) !default;
+$white-ter: hsl(0, 0%, 96%) !default;
+$white-bis: hsl(0, 0%, 98%) !default;
+$white: hsl(0, 0%, 100%) !default;
+$orange: hsl(14, 100%, 53%) !default;
+$yellow: hsl(48, 100%, 67%) !default;
+$green: hsl(141, 71%, 48%) !default;
+$turquoise: hsl(171, 100%, 41%) !default;
+$cyan: hsl(204, 86%, 53%) !default;
+$blue: hsl(217, 71%, 53%) !default;
+$purple: hsl(271, 100%, 71%) !default;
+$red: hsl(348, 100%, 61%) !default;
+
+// Update Bulma's global variables
+$family-sans-serif: 'Montserrat', sans-serif;
+$family-monospace: 'Source Code Pro', monospace;
+
+$primary: $turquoise;
+$link: $blue;
+$info: $cyan;
+$success: $green;
+$warning: $yellow;
+$danger: $red;
+$dark: $grey-darker;
+$text: $grey-dark;
+
+$background: $white-ter;
+
+$widescreen-enabled: false;
+$fullhd-enabled: false;
+
+// Update some of Bulma's component variables
+$section-padding: 3rem 1.5rem;
+$section-padding-medium: 9rem 1.5rem;
+$section-padding-large: 18rem 1.5rem;
+
+// $body-background-color: $background;
+// $control-border-width: 2px;
+// $input-border-color: transparent;
+// $input-shadow: none;
+
+// Import only what you need from Bulma
+@import '../../../node_modules/bulma/sass/utilities/_all.sass';
+@import '../../../node_modules/bulma/sass/base/_all.sass';
+@import '../../../node_modules/bulma/sass/elements/_all.sass';
+@import '../../../node_modules/bulma/sass/form/_all.sass';
+@import '../../../node_modules/bulma/sass/components/_all.sass';
+@import '../../../node_modules/bulma/sass/grid/_all.sass';
+@import '../../../node_modules/bulma/sass/layout/_all.sass';
+
+@import '../../../node_modules/bulma-divider/dist/css/bulma-divider.sass';
+
+// Update the padding sizes
+.hero-body {
+    flex-grow: 1;
+    flex-shrink: 0;
+    padding: 2rem 1.5rem;
+}
+
+input {
+    &[type='checkbox'],
+    &[type='radio'] {
+        margin-right: 0.5em;
+    }
+}
+
+// Add some helper spacer classes
+// <div class="mt-10">This div has top margin 10px</div>
+$sizes: (0, 10, 15, 20, 25, 30, 50);
+$positions: ('top', 'left', 'bottom', 'right');
+
+@each $size in $sizes {
+    @each $position in $positions {
+        .m#{str-slice($position, 0, 1)}-#{$size} {
+            margin-#{$position}: $size + px;
+        }
+        .p#{str-slice($position, 0, 1)}-#{$size} {
+            padding-#{$position}: $size + px;
+        }
+    }
+}

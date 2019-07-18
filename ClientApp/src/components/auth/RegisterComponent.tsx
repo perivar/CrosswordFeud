@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IRegisterProps, IRegisterState } from './types';
+import { BulmaInputField } from './BulmaInputField';
+import { BulmaSubmitButton } from './BulmaSubmitButton';
 
 export default class RegisterComponent extends React.Component<IRegisterProps, IRegisterState> {
   constructor(props: IRegisterProps) {
@@ -11,17 +13,18 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
         id: '',
         userName: '',
         password: '',
+        confirmPassword: '',
         email: '',
+        confirmEmail: '',
         phoneNumber: ''
       },
-      submitted: false
+      submitted: false,
+      passwordsNotEqual: false,
+      emailsNotEqual: false
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const { user } = this.state;
     this.setState({
@@ -30,76 +33,146 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
         [name]: value
       }
     });
-  }
+  };
 
-  handleSubmit(e: React.FormEvent) {
+  handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    this.setState({ submitted: true });
+    // perform all neccassary validations
     const { user } = this.state;
-    if (user.userName && user.password && user.email) {
-      this.props.register(user);
+    const { password, confirmPassword, email, confirmEmail } = user;
+    if (password !== confirmPassword) {
+      this.setState({
+        user: {
+          ...user,
+          confirmPassword: ''
+        },
+        passwordsNotEqual: true,
+        submitted: true
+      });
+    } else if (email !== confirmEmail) {
+      this.setState({
+        user: {
+          ...user,
+          confirmEmail: ''
+        },
+        emailsNotEqual: true,
+        submitted: true
+      });
+    } else {
+      // make API call
+      if (user.userName && user.password && user.email) {
+        this.props.register(user);
+      }
+      this.setState({ submitted: true });
     }
-  }
+  };
 
   render() {
     const { registering } = this.props;
-    const { user, submitted } = this.state;
+    const { user, submitted, passwordsNotEqual, emailsNotEqual } = this.state;
     return (
-      <div className="col-md-6 col-md-offset-3">
-        <h2>Register</h2>
-        <form name="form" onSubmit={this.handleSubmit}>
-          <div className={'form-group' + (submitted && !user.userName ? ' has-error' : '')}>
-            <label htmlFor="userName">Username</label>
-            <input
-              type="text"
-              className="form-control"
-              name="userName"
-              value={user.userName}
-              onChange={this.handleChange}
-            />
-            {submitted && !user.userName && <div className="help-block">Username is required</div>}
+      <>
+        <p className="subtitle has-text-grey">Registrer deg som ny bruker</p>
+        <div className="container">
+          <div className="columns is-centered">
+            <div className="column is-5-tablet is-5-desktop is-4-widescreen">
+              <form className="box" onSubmit={this.handleSubmit}>
+                <div className="field has-text-centered">
+                  <i className="fas fa-user-plus fa-3x"></i>
+                </div>
+                <BulmaInputField
+                  label="Brukernavn"
+                  type="text"
+                  name="userName"
+                  placeholder="feks. ola@nordmann.no"
+                  required={true}
+                  requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
+                  value={user.userName}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fas fa-user"></i>}
+                />
+                <BulmaInputField
+                  label="E-post adresse"
+                  type="email"
+                  name="email"
+                  placeholder="feks. ola@nordmann.no"
+                  required={true}
+                  requiredMessage="Gyldig e-post adresse er påkrevd"
+                  value={user.email}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-envelope"></i>}
+                />
+                <BulmaInputField
+                  label="Bekreft e-post adresse"
+                  type="email"
+                  name="confirmEmail"
+                  placeholder="feks. ola@nordmann.no"
+                  required={true}
+                  requiredMessage={emailsNotEqual ? 'E-post adressene er ulike' : 'Gyldig e-post adresse er påkrevd'}
+                  value={user.confirmEmail}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-envelope"></i>}
+                />
+                <BulmaInputField
+                  label="Telefon nummer"
+                  type="text"
+                  name="phoneNumber"
+                  placeholder="feks. +47 40506070"
+                  required={false}
+                  requiredMessage="Gyldig telefon nummer er påkrevd"
+                  value={user.phoneNumber}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-phone"></i>}
+                />
+
+                <div className="is-divider" data-content="Passord"></div>
+
+                <BulmaInputField
+                  label="Passord"
+                  type="password"
+                  name="password"
+                  placeholder="*********"
+                  required={true}
+                  requiredMessage="Gyldig passord er påkrevd"
+                  value={user.password}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-lock"></i>}
+                />
+
+                <BulmaInputField
+                  label="Bekreft Passord"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="*********"
+                  required={true}
+                  requiredMessage={passwordsNotEqual ? 'Passordene er ulike' : 'Gyldig passord er påkrevd'}
+                  value={user.confirmPassword}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-lock"></i>}
+                />
+                <BulmaSubmitButton text="Register ny bruker" loading={registering} />
+              </form>
+              <p className="has-text-grey">
+                <Link to="/login">
+                  <i className="fas fa-user"></i>&nbsp; Har du allerede bruker? Logg inn!
+                </Link>
+              </p>
+              <p className="has-text-grey">
+                <Link to="/help">
+                  <i className="fas fa-question"></i>&nbsp; Trenger du hjelp?
+                </Link>
+              </p>
+            </div>
           </div>
-          <div className={'form-group' + (submitted && !user.password ? ' has-error' : '')}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              value={user.password}
-              onChange={this.handleChange}
-            />
-            {submitted && !user.password && <div className="help-block">Password is required</div>}
-          </div>
-          <div className={'form-group' + (submitted && !user.email ? ' has-error' : '')}>
-            <label htmlFor="email">Email</label>
-            <input type="text" className="form-control" name="email" value={user.email} onChange={this.handleChange} />
-            {submitted && !user.email && <div className="help-block">Email is required</div>}
-          </div>
-          <div className={'form-group' + (submitted && !user.phoneNumber ? ' has-error' : '')}>
-            <label htmlFor="phoneNumber">Phone Number</label>
-            <input
-              type="text"
-              className="form-control"
-              name="phoneNumber"
-              value={user.phoneNumber}
-              onChange={this.handleChange}
-            />
-          </div>
-          <div className="form-group">
-            <button className="btn btn-primary">Register</button>
-            {registering && (
-              <img
-                alt="spinner"
-                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
-              />
-            )}
-            <Link to="/login" className="btn btn-link">
-              Cancel
-            </Link>
-          </div>
-        </form>
-      </div>
+        </div>
+      </>
     );
   }
 }

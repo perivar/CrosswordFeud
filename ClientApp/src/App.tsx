@@ -9,6 +9,9 @@ import { Layout } from './components/shared/Layout';
 
 import LoginContainer from './components/auth/LoginContainer';
 import RegisterContainer from './components/auth/RegisterContainer';
+import ForgottenPasswordContainer from './components/auth/ForgottenPasswordContainer';
+import HelpContainer from './components/auth/HelpContainer';
+
 import HomeContainer from './components/auth/HomeContainer';
 import PrivateRoute from './components/auth/PrivateRouteComponent';
 import CrosswordContainer from './components/crossword/CrosswordContainer';
@@ -16,6 +19,8 @@ import DictionaryContainer from './components/dictionary/DictionaryContainer';
 import * as alertActions from './components/alert/ducks/actions';
 
 import { history } from './history';
+
+import './components/shared/bulma.scss';
 
 class App extends Component<any, any> {
   constructor(props: any) {
@@ -30,32 +35,28 @@ class App extends Component<any, any> {
   public render() {
     const { alert, loggedIn } = this.props;
     return (
-      <div>
-        {alert && alert.message && (
-          <div className={`alert ${alert.className}`} role="alert">
-            {alert.message}
-          </div>
-        )}
+      <>
+        {alert && alert.message && <div className="notification is-warning">{alert.message}</div>}
         {loggedIn && (
-          <div>
-            <h1>Display when logged in</h1>
+          <div className="notification is-primary">
+            <h2 className="subtitle">Display when logged in</h2>
           </div>
         )}
         <Router history={history}>
-          <div>
-            <Layout>
-              {/* <Route exact={true} path="/" component={Home} /> */}
-              <PrivateRoute exact path="/" component={HomeContainer} />
-              <Route path="/dictionary" component={DictionaryContainer} />
-              <Route path="/counter" component={Counter} />
-              <Route path="/forecast" component={ForecastContainer} />
-              <Route path="/login" component={LoginContainer} />
-              <Route path="/register" component={RegisterContainer} />
-              <Route path="/crossword" component={CrosswordContainer} />
-            </Layout>
-          </div>
+          <Layout>
+            {/* <Route exact={true} path="/" component={Home} /> */}
+            <PrivateRoute exact path="/" component={HomeContainer} />
+            <Route path="/dictionary" component={DictionaryContainer} />
+            <Route path="/counter" component={Counter} />
+            <Route path="/forecast" component={ForecastContainer} />
+            <Route path="/login" component={LoginContainer} />
+            <Route path="/register" component={RegisterContainer} />
+            <Route path="/forgottenpassword" component={ForgottenPasswordContainer} />
+            <Route path="/help" component={HelpContainer} />
+            <Route path="/crossword" component={CrosswordContainer} />
+          </Layout>
         </Router>
-      </div>
+      </>
     );
   }
 }

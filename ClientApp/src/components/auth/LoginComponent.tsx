@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ILoginProps, ILoginState } from './types';
+import { BulmaInputField } from './BulmaInputField';
+import { BulmaSubmitButton } from './BulmaSubmitButton';
 
 export default class LoginComponent extends React.Component<ILoginProps, ILoginState> {
   constructor(props: ILoginProps) {
@@ -12,22 +14,27 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
     this.state = {
       username: '',
       password: '',
-      submitted: false
+      submitted: false,
+      remember: false
     };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     this.setState(prevState => ({
       ...prevState,
       [name]: value
     }));
-  }
+  };
 
-  handleSubmit(e: React.FormEvent) {
+  handleCheckboxChange = () => {
+    this.setState(prevState => ({
+      ...prevState,
+      remember: !prevState.remember
+    }));
+  };
+
+  handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     this.setState({ submitted: true });
@@ -35,45 +42,74 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
     if (username && password) {
       this.props.login(username, password);
     }
-  }
+  };
 
   render() {
     const { loggingIn } = this.props;
-    const { username, password, submitted } = this.state;
+    const { username, password, submitted, remember } = this.state;
     return (
-      <div className="col-md-6 col-md-offset-3">
-        <h2>Login</h2>
-        <form name="form" onSubmit={this.handleSubmit}>
-          <div className={'form-group' + (submitted && !username ? ' has-error' : '')}>
-            <label htmlFor="username">Username</label>
-            <input type="text" className="form-control" name="username" value={username} onChange={this.handleChange} />
-            {submitted && !username && <div className="help-block">Username is required</div>}
+      <>
+        <p className="subtitle has-text-grey">Logg inn</p>
+        <div className="container">
+          <div className="columns is-centered">
+            <div className="column is-5-tablet is-5-desktop is-4-widescreen">
+              <form className="box" onSubmit={this.handleSubmit}>
+                <div className="field has-text-centered">
+                  <i className="fas fa-sign-in-alt fa-3x"></i>
+                </div>
+                <BulmaInputField
+                  label="Brukernavn"
+                  type="text"
+                  name="username"
+                  placeholder="feks. ola@nordmann.no"
+                  required={true}
+                  requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
+                  value={username}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fas fa-user"></i>}
+                />
+                <BulmaInputField
+                  label="Passord"
+                  type="password"
+                  name="password"
+                  placeholder="*********"
+                  required={true}
+                  requiredMessage="Gyldig passord er påkrevd"
+                  value={password}
+                  submitted={submitted}
+                  handleChange={this.handleChange}
+                  icon={<i className="fa fa-lock"></i>}
+                />
+                <div className="field">
+                  <div className="control">
+                    <label className="checkbox">
+                      <input type="checkbox" name="remember" onChange={this.handleCheckboxChange} checked={remember} />
+                      Remember me
+                    </label>
+                  </div>
+                </div>
+                <BulmaSubmitButton text="Log inn" loading={loggingIn} />
+              </form>
+              <p className="has-text-grey">
+                <Link to="/register">
+                  <i className="fas fa-user-plus"></i>&nbsp; Er du ikke bruker? Register deg nå!
+                </Link>
+              </p>
+              <p className="has-text-grey">
+                <Link to="/forgottenpassword">
+                  <i className="fa fa-lock"></i>&nbsp; Glemt passord?
+                </Link>
+              </p>
+              <p className="has-text-grey">
+                <Link to="/help">
+                  <i className="fas fa-question"></i>&nbsp; Trenger du hjelp?
+                </Link>
+              </p>
+            </div>
           </div>
-          <div className={'form-group' + (submitted && !password ? ' has-error' : '')}>
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              className="form-control"
-              name="password"
-              value={password}
-              onChange={this.handleChange}
-            />
-            {submitted && !password && <div className="help-block">Password is required</div>}
-          </div>
-          <div className="form-group">
-            <button className="btn btn-primary">Login</button>
-            {loggingIn && (
-              <img
-                alt="spinner"
-                src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA=="
-              />
-            )}
-            <Link to="/register" className="btn btn-link">
-              Register
-            </Link>
-          </div>
-        </form>
-      </div>
+        </div>
+      </>
     );
   }
 }
