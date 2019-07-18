@@ -148,33 +148,31 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
 
   if (isEditing) {
     return (
-      <div className="container">
-        <form>
-          <div className="form-group row" ref={editWrapperRef}>
-            <div className="col-sm-8">
-              <input
-                type="text"
-                className="form-control form-control-sm"
-                ref={editInputRef}
-                value={editValue}
-                onChange={event => setEditValue(event.target.value)}
-                style={inputStyle}
-              />
-              <button className="editable-clear" onClick={onEditClear}>
-                <i className="fas fa-times fa-xs"></i>
-              </button>
-            </div>
-            <div className="col-sm-4">
-              <button type="submit" className="btn btn-primary btn-sm editable-confirm" onClick={onEditConfirm}>
-                <i className="fas fa-check"></i>
-              </button>
-              <button type="button" className="btn btn-default btn-sm editable-cancel" onClick={onEditCancel}>
-                <i className="fas fa-times"></i>
-              </button>
-            </div>
+      <form>
+        <div className="field is-grouped" ref={editWrapperRef}>
+          <div className="control is-expanded has-icons-right">
+            <input
+              type="text"
+              className="input is-small"
+              ref={editInputRef}
+              value={editValue}
+              onChange={event => setEditValue(event.target.value)}
+              style={inputStyle}
+            />
+            <button className="icon is-right editable-clear is-small" onClick={onEditClear}>
+              <i className="fas fa-times fa-xs"></i>
+            </button>
           </div>
-        </form>
-      </div>
+          <p className="control">
+            <button type="button" className="button is-info is-small" onClick={onEditConfirm}>
+              <i className="fas fa-check"></i>
+            </button>
+            <button type="button" className="button is-small" onClick={onEditCancel}>
+              <i className="fas fa-times"></i>
+            </button>
+          </p>
+        </div>
+      </form>
     );
   } else {
     return (
@@ -274,9 +272,10 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
         //     handleOriginal();
         //   }
         // },
-        style: {
-          background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
-        }
+        // style: {
+        //   background: rowInfo && selection.includes(`select-${rowInfo.original.id}`) && 'lightgreen'
+        // }
+        className: rowInfo && selection.includes(`select-${rowInfo.original.id}`) ? 'has-background-grey-lighter' : ''
       };
     } else {
       return {};
@@ -285,10 +284,10 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
 
   render() {
     const columns: Column[] = [
-      { Header: 'ID', accessor: 'id' },
-      { Header: 'First Name', accessor: 'firstName', Cell: this.renderEditable },
-      { Header: 'Last Name', accessor: 'lastName', Cell: this.renderEditable },
-      { Header: 'Age', accessor: 'age' }
+      { Header: 'ID', accessor: 'id', maxWidth: 100, className: 'has-text-centered' },
+      { Header: 'First Name', accessor: 'firstName', minWidth: 200, Cell: this.renderEditable },
+      { Header: 'Last Name', accessor: 'lastName', minWidth: 200, Cell: this.renderEditable },
+      { Header: 'Age', accessor: 'age', maxWidth: 100, className: 'has-text-centered' }
     ];
 
     return (
@@ -306,7 +305,7 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
         toggleAll={this.toggleAll}
         isSelected={this.isSelected}
         getTrProps={this.rowFn}
-        className="-striped -highlight"
+        className="-striped -highlight has-text-left"
       />
     );
     // const columns = [
