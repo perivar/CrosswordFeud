@@ -81,3 +81,8 @@ export interface ILogon {
   claims: IClaim[];
   token: string;
 }
+
+export interface ASPCoreIdentityErrors {
+  code: string;
+  description: string;
+}

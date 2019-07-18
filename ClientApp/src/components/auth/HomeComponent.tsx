@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IHomeProps, IUser, IClaim } from './types';
-import { Button, ListGroup, ListGroupItem, Alert } from 'reactstrap';
 
 export default class HomeComponent extends React.Component<IHomeProps> {
   componentDidMount() {
@@ -16,51 +15,83 @@ export default class HomeComponent extends React.Component<IHomeProps> {
     const { logon, users } = this.props;
     return (
       <div>
-        <h4>Hi {logon.user.userName}!</h4>
-        <h5>Claims</h5>
-        <ListGroup>
-          {logon.claims.map((claim: IClaim, index: number) => (
-            <ListGroupItem key={index}>{claim.value}</ListGroupItem>
-          ))}
-        </ListGroup>
-        <div>&nbsp;</div>
-        <h5>All registered users</h5>
-        {users.loading && <em>Loading users...</em>}
-        {users.items && (
-          <div>
-            <ListGroup>
-              {users.items.map((user: IUser, index: number) => (
-                <ListGroupItem key={index}>
-                  <div>
-                    <strong>Id:</strong> {user.id}
-                  </div>
-                  <div>
-                    <strong>Username:</strong> {user.userName}
-                  </div>
-                  <div>
-                    <strong>Email:</strong> {user.email}
-                  </div>
-                  <div>
-                    <strong>Phone Number:</strong> {user.phoneNumber}
-                  </div>
-                  {user.deleting ? (
-                    <em> - Deleting...</em>
-                  ) : user.deleteError ? (
-                    <span className="error"> - ERROR: {user.deleteError}</span>
-                  ) : (
-                    <Button color="primary" size="sm" onClick={this.handleDeleteUser(user.userName)}>
-                      Delete
-                    </Button>
-                  )}
-                </ListGroupItem>
-              ))}
-            </ListGroup>
+        <h3 className="is-size-3">Hi {logon.user.userName}!</h3>
+        <section className="section">
+          <h4 className="is-size-4">Claims</h4>
+          <div className="columns is-centered">
+            <div className="column is-narrow">
+              <table className="table is-bordered">
+                <tbody>
+                  {logon.claims.map((claim: IClaim, index: number) => (
+                    <tr key={index}>
+                      <td>{claim.value}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        )}
-        <div>&nbsp;</div>
-        <Alert color="primary">
-          <Link to="/login">Logout</Link>
-        </Alert>
+        </section>
+
+        <section className="section">
+          <h4 className="is-size-4">All registered users</h4>
+          <div className="columns is-centered">
+            <div className="column is-narrow">
+              <table className="table is-bordered">
+                <tbody>
+                  {users.loading && (
+                    <>
+                      <tr>
+                        <td>
+                          <h3 className="title is-3 has-text-success">Loading users</h3>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <progress className="progress progress is-medium is-dark" max="100"></progress>
+                        </td>
+                      </tr>
+                    </>
+                  )}
+                  {users.items && (
+                    <>
+                      <tr>
+                        <th>Id</th>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Delete</th>
+                      </tr>
+                      {users.items.map((user: IUser, index: number) => (
+                        <tr key={index}>
+                          <td>{user.id}</td>
+                          <td>{user.userName}</td>
+                          <td>{user.email}</td>
+                          <td>{user.phoneNumber}</td>
+                          <td>
+                            {user.deleting ? (
+                              <span className="is-info">Deleting...</span>
+                            ) : user.deleteError ? (
+                              <span className="is-warning">{user.deleteError}</span>
+                            ) : (
+                              <button className="button is-danger" onClick={this.handleDeleteUser(user.userName)}>
+                                Delete
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <Link className="button is-info is-medium" to="/login">
+          Logout
+        </Link>
       </div>
     );
   }

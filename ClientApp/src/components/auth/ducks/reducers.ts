@@ -3,7 +3,6 @@
 
 import { UserActionTypes, UserActions } from './types';
 import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from '../types';
-// import { Action } from 'redux';
 
 const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
@@ -82,7 +81,9 @@ const usersReducer = function users(state = initialUserState, action: UserAction
     case UserActionTypes.GETALL_FAILURE:
       return {
         ...state,
-        error: action.error
+        error: action.error,
+        loading: false,
+        items: []
       };
     case UserActionTypes.DELETE_REQUEST:
       // add 'deleting:true' property to user being deleted

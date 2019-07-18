@@ -5,6 +5,7 @@ import { BulmaSubmitButton } from './BulmaSubmitButton';
 import { Link } from 'react-router-dom';
 import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './ForgottenPasswordContainer';
 import { history } from '../../history';
+import { ASPCoreIdentityErrors } from './types';
 
 export default function ForgottenPasswordComponent(
   matchProps: ForgottenPasswordProps & ForgottenPasswordDispatchProps
@@ -25,6 +26,8 @@ export default function ForgottenPasswordComponent(
   const [confirmPassword, setConfirmPassword] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [passwordsNotEqual, setPasswordsNotEqual] = useState(false);
+  const [passwordNotValid, setPasswordNotValid] = useState(false);
+  const [passwordUpdatedSuccessfully, setPasswordUpdatedSuccessfully] = useState(false);
 
   const receivedToken = useCallback(
     (token: string) => {
@@ -43,7 +46,7 @@ export default function ForgottenPasswordComponent(
   );
 
   const receivedResetConfirmation = useCallback((data: string) => {
-    console.log('data: ' + data);
+    setPasswordUpdatedSuccessfully(true);
     setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
   }, []);
 
@@ -59,12 +62,31 @@ export default function ForgottenPasswordComponent(
     callback: receivedResetConfirmation
   });
 
+  const isValidASPCoreIdentityPassword = (password: string): boolean => {
+    // https://stackoverflow.com/questions/48635152/regex-for-default-asp-net-core-identity-password
+    // if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$/.test(password)) {
+    //   return true;
+    // }
+    // return false;
+    return true;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!hasTokenParameter && username) {
       getResetToken(`${config.apiUrl}/api/Account/GenerateForgotPasswordToken?username=${username}`);
-    } else if (hasTokenParameter && hasUsernameParameter && password && password === confirmPassword) {
+    } else if (hasTokenParameter && hasUsernameParameter && password && !isValidASPCoreIdentityPassword(password)) {
+      setPasswordNotValid(true);
+      setPassword('');
+      setConfirmPassword('');
+    } else if (
+      hasTokenParameter &&
+      hasUsernameParameter &&
+      password &&
+      isValidASPCoreIdentityPassword(password) &&
+      password === confirmPassword
+    ) {
       let encodedToken = encodeURIComponent(token);
       let encodedUsername = encodeURIComponent(username);
       let encodedPassword = encodeURIComponent(password);
@@ -81,7 +103,7 @@ export default function ForgottenPasswordComponent(
     setSubmitted(true);
   };
 
-  const usernameJSX = (
+  const usernameSegment = (
     <>
       <BulmaInputField
         label="Brukernavn"
@@ -98,7 +120,7 @@ export default function ForgottenPasswordComponent(
     </>
   );
 
-  const passwordJSX = (
+  const passwordSegment = (
     <>
       <div className="is-divider" data-content="Passord"></div>
 
@@ -108,7 +130,7 @@ export default function ForgottenPasswordComponent(
         name="password"
         placeholder="*********"
         required={true}
-        requiredMessage="Gyldig passord er påkrevd"
+        requiredMessage={passwordNotValid ? 'Passordet er ikke gyldig' : 'Gyldig passord er påkrevd'}
         value={password}
         submitted={submitted}
         handleChange={event => setPassword(event.target.value)}
@@ -130,18 +152,53 @@ export default function ForgottenPasswordComponent(
     </>
   );
 
+  const formSegment = (
+    <>
+      <form className="box" onSubmit={handleSubmit}>
+        <div className="field has-text-centered">
+          <i className="fa fa-lock fa-3x"></i>
+        </div>
+
+        {usernameSegment}
+        {hasTokenParameter ? passwordSegment : <></>}
+
+        <BulmaSubmitButton text="Oppdater passord" loading={isLoadingToken} />
+      </form>
+    </>
+  );
+
   return (
     <>
       {isErrorToken && (
         <div>
-          Something went wrong: <pre className="has-text-left">{JSON.stringify(errorMessageToken || {}, null, 0)}</pre>
+          Noe gikk galt!
+          <pre className="has-text-left">{JSON.stringify(errorMessageToken || {}, null, 0)}</pre>
         </div>
       )}
-      {isErrorReset && (
+
+      {isErrorReset ? (
+        <article className="message is-danger">
+          <div className="message-body">
+            {errorMessageReset &&
+              errorMessageReset.data &&
+              errorMessageReset.data.map((identityError: ASPCoreIdentityErrors, index: number) => (
+                <div key={index} className="has-text-left">
+                  {/* {identityError.code} */}
+                  {identityError.description}
+                </div>
+              ))}
+          </div>
+        </article>
+      ) : (
+        ''
+      )}
+
+      {/* {isErrorReset && (
         <div>
-          Something went wrong: <pre className="has-text-left">{JSON.stringify(errorMessageReset || {}, null, 0)}</pre>
+          Noe gikk galt!
+          <pre className="has-text-left">{JSON.stringify(errorMessageReset || {}, null, 0)}</pre>
         </div>
-      )}
+      )} */}
       {/* <pre className="has-text-left">{JSON.stringify(matchProps, null, 2)}</pre> */}
       {/* {isLoading ? <div>Loading ...</div> : <pre className="has-text-left">{JSON.stringify(token || {}, null, 0)}</pre>} */}
 
@@ -149,16 +206,11 @@ export default function ForgottenPasswordComponent(
       <div className="container">
         <div className="columns is-centered">
           <div className="column is-5-tablet is-5-desktop is-4-widescreen">
-            <form className="box" onSubmit={handleSubmit}>
-              <div className="field has-text-centered">
-                <i className="fa fa-lock fa-3x"></i>
-              </div>
-
-              {usernameJSX}
-              {hasTokenParameter ? passwordJSX : <></>}
-
-              <BulmaSubmitButton text="Oppdater passord" loading={isLoadingToken} />
-            </form>
+            {passwordUpdatedSuccessfully ? (
+              <h3 className="title is-3 has-text-success">Passordet ditt er oppdatert!</h3>
+            ) : (
+              formSegment
+            )}
             <p className="has-text-grey">
               <Link to="/login">
                 <i className="fas fa-user"></i>&nbsp; Har du allerede bruker? Logg inn!
