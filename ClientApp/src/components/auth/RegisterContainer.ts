@@ -3,16 +3,20 @@ import RegisterComponent from './RegisterComponent';
 
 import { userActions } from './ducks/actions';
 import { IUser } from './types';
+import { IStoreState } from '../../state/store';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
 
-function mapStateToProps(state: any) {
+const mapStateToProps = (state: IStoreState, ownProps: any) => {
   const { registering } = state.registration;
   return {
+    ...ownProps, // to make routes work, map state to props (add the properties after the spread)
     registering
   };
-}
+};
 
 // inject methods *and* dispatch
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>) => {
   return {
     dispatch,
     register: (user: IUser) => dispatch(userActions.register(user))

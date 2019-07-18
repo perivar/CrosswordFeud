@@ -24,7 +24,7 @@ export default class HelpComponent extends React.Component<any, any> {
                   </Link>
                 </p>
                 <p className="has-text-grey">
-                  <Link to="/forgottenpassword">
+                  <Link to="/forgotten-password">
                     <i className="fa fa-lock"></i>&nbsp; Glemt passord?
                   </Link>
                 </p>

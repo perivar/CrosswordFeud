@@ -21,12 +21,29 @@ import * as alertActions from './components/alert/ducks/actions';
 import { history } from './history';
 
 import './components/shared/bulma.scss';
+import { IStoreState } from './state/store';
+
+const TestPage = ({ match, location }: { match: any; location: any }) => {
+  return (
+    <>
+      <p>
+        <strong>Match Props: </strong>
+        {JSON.stringify(match, null, 2)}
+      </p>
+      <p>
+        <strong>Location Props: </strong>
+        {JSON.stringify(location, null, 2)}
+      </p>
+    </>
+  );
+};
 
 class App extends Component<any, any> {
   constructor(props: any) {
     super(props);
 
-    history.listen((location, action) => {
+    history.listen(() => {
+      // history arguments - unused: location, action
       // clear alert on location change
       this.props.clearAlerts();
     });
@@ -37,23 +54,30 @@ class App extends Component<any, any> {
     return (
       <>
         {alert && alert.message && <div className="notification is-warning">{alert.message}</div>}
-        {loggedIn && (
+        {/* {loggedIn && (
           <div className="notification is-primary">
             <h2 className="subtitle">Display when logged in</h2>
           </div>
-        )}
+        )} */}
         <Router history={history}>
           <Layout>
             {/* <Route exact={true} path="/" component={Home} /> */}
             <PrivateRoute exact path="/" component={HomeContainer} />
-            <Route path="/dictionary" component={DictionaryContainer} />
-            <Route path="/counter" component={Counter} />
-            <Route path="/forecast" component={ForecastContainer} />
-            <Route path="/login" component={LoginContainer} />
-            <Route path="/register" component={RegisterContainer} />
-            <Route path="/forgottenpassword" component={ForgottenPasswordContainer} />
-            <Route path="/help" component={HelpContainer} />
-            <Route path="/crossword" component={CrosswordContainer} />
+            <Route exact path="/dictionary" component={DictionaryContainer} />
+            <Route exact path="/counter" component={Counter} />
+            <Route exact path="/forecast" component={ForecastContainer} />
+            <Route exact path="/login" component={LoginContainer} />
+            <Route exact path="/register" component={RegisterContainer} />
+
+            {/* To define an optional parameter, you do:
+						   <Route path="/to/page/:pathParam?" component={MyPage} />
+						 and for multiple optional parameters:
+						   <Route path="/to/page/:pathParam1?/:pathParam2?" component={MyPage} /> */}
+            <Route exact path="/forgotten-password/:username?/:token?" component={ForgottenPasswordContainer} />
+            <Route exact path="/help" component={HelpContainer} />
+            <Route exact path="/crossword" component={CrosswordContainer} />
+            <Route exact path="/test" component={TestPage} />
+            <Route exact path="/test/:id" component={TestPage} />
           </Layout>
         </Router>
       </>
@@ -61,10 +85,12 @@ class App extends Component<any, any> {
   }
 }
 
-function mapStateToProps(state: any) {
+function mapStateToProps(state: IStoreState) {
   const { alert } = state;
+  const { authentication } = state;
   return {
-    alert
+    alert,
+    authentication
   };
 }
 

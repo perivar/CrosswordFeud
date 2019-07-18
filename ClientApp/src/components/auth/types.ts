@@ -23,7 +23,7 @@ export interface ILoginState {
 
 export interface IRegisterProps {
   register: (user: IUser) => void;
-  registering: boolean;
+  registering?: boolean;
   submitted: boolean;
 }
 

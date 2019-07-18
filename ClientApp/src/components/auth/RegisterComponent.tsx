@@ -157,7 +157,7 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
                   handleChange={this.handleChange}
                   icon={<i className="fa fa-lock"></i>}
                 />
-                <BulmaSubmitButton text="Register ny bruker" loading={registering} />
+                <BulmaSubmitButton text="Register ny bruker" loading={registering!} />
               </form>
               <p className="has-text-grey">
                 <Link to="/login">

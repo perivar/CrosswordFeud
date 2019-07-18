@@ -1,15 +1,12 @@
 import { connect } from 'react-redux';
 import HelpComponent from './HelpComponent';
 
-function mapStateToProps() {
+const mapStateToProps = () => {
   return {};
-}
+};
 
-// inject methods *and* dispatch
-const mapDispatchToProps = (dispatch: any) => {
-  return {
-    dispatch
-  };
+const mapDispatchToProps = () => {
+  return {};
 };
 
 const HelpContainer = connect(

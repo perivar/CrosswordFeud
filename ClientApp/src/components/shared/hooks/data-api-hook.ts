@@ -7,13 +7,14 @@ export interface DataApiProperties {
   options?: any | null;
   initialData?: any | null;
   autoLoad?: boolean;
+  callback?: Function;
 }
 
 export interface DataApiState {
   data: any;
   isLoading: boolean;
   isError: boolean;
-  errorMessage: string | null;
+  errorMessage: any | null;
   setUrl: Function;
 }
 
@@ -22,13 +23,14 @@ export const useDataApi = ({
   method = 'get',
   options = null,
   initialData = null,
-  autoLoad = true
-}: DataApiProperties): DataApiState => {
+  autoLoad = true,
+  callback
+}: DataApiProperties): any => {
   const [data, setData] = useState<any | null>(initialData);
   const [url, setUrl] = useState<string>(initialUrl);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<any | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,9 +44,14 @@ export const useDataApi = ({
           ...options
         });
         setData(result.data);
+
+        if (callback) {
+          // note this call back mush be called with an useCallback to avoid endless loop
+          callback(result.data);
+        }
       } catch (error) {
         setIsError(true);
-        setErrorMessage(error.message);
+        setErrorMessage(error.response);
       } finally {
         setIsLoading(false);
       }
@@ -57,7 +64,7 @@ export const useDataApi = ({
       // otherwise wait until the url has changed
       if (url !== initialUrl) fetchData();
     }
-  }, [autoLoad, initialUrl, method, options, url]);
+  }, [autoLoad, initialUrl, method, options, url, callback]);
 
-  return { data, isLoading, isError, errorMessage, setUrl };
+  return [data, isLoading, isError, errorMessage, setUrl];
 };
