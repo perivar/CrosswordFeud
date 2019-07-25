@@ -13,7 +13,7 @@ export interface BulmaInputFieldArguments {
   icon?: JSX.Element;
 }
 
-export function BulmaInputField({
+const InputField = ({
   label,
   type,
   name,
@@ -24,7 +24,7 @@ export function BulmaInputField({
   value,
   handleChange,
   icon
-}: BulmaInputFieldArguments) {
+}: BulmaInputFieldArguments) => {
   if (icon === undefined) {
     icon = <i className="fas fa-smile"></i>;
   }
@@ -57,4 +57,21 @@ export function BulmaInputField({
       </div>
     </>
   );
+};
+
+function areEqual(prevProps: BulmaInputFieldArguments, nextProps: BulmaInputFieldArguments) {
+  // console.log(`
+  //   prevProps: ${JSON.stringify(prevProps.value)}
+  //   nextProps: ${JSON.stringify(nextProps.value)}
+  // `);
+  return (
+    prevProps.value === nextProps.value &&
+    prevProps.required === nextProps.required &&
+    prevProps.requiredMessage === nextProps.requiredMessage &&
+    prevProps.submitted === nextProps.submitted
+  );
 }
+
+// to avoid re-rendering every keystroke due to the handleChange method, use a compare function
+export const BulmaInputField = React.memo(InputField, areEqual);
+// export const BulmaInputField = React.memo(InputField);

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ILoginProps, ILoginState } from './types';
 import { BulmaInputField } from './BulmaInputField';
 import { BulmaSubmitButton } from './BulmaSubmitButton';
+import { BulmaCheckboxField } from './BulmaCheckboxField';
 
 export default class LoginComponent extends React.Component<ILoginProps, ILoginState> {
   constructor(props: ILoginProps) {
@@ -81,14 +82,12 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
                   handleChange={this.handleChange}
                   icon={<i className="fa fa-lock"></i>}
                 />
-                <div className="field">
-                  <div className="control">
-                    <label className="checkbox">
-                      <input type="checkbox" name="remember" onChange={this.handleCheckboxChange} checked={remember} />
-                      Remember me
-                    </label>
-                  </div>
-                </div>
+                <BulmaCheckboxField
+                  label="Husk meg"
+                  name="remember"
+                  checked={remember}
+                  handleChange={this.handleCheckboxChange}
+                />
                 <BulmaSubmitButton text="Log inn" loading={loggingIn} />
               </form>
               <p className="has-text-grey">

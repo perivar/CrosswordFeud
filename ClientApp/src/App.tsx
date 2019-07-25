@@ -50,15 +50,10 @@ class App extends Component<any, any> {
   }
 
   public render() {
-    const { alert, loggedIn } = this.props;
+    const { alert } = this.props;
     return (
       <>
         {alert && alert.message && <div className="notification is-warning">{alert.message}</div>}
-        {/* {loggedIn && (
-          <div className="notification is-primary">
-            <h2 className="subtitle">Display when logged in</h2>
-          </div>
-        )} */}
         <Router history={history}>
           <Layout>
             {/* <Route exact={true} path="/" component={Home} /> */}

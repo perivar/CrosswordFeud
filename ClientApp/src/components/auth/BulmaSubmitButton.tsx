@@ -5,7 +5,7 @@ export interface BulmaSubmitButtonArguments {
   loading: boolean;
 }
 
-export function BulmaSubmitButton({ text, loading }: BulmaSubmitButtonArguments) {
+const SubmitButton = ({ text, loading }: BulmaSubmitButtonArguments) => {
   return (
     <>
       <div className="field">
@@ -17,4 +17,6 @@ export function BulmaSubmitButton({ text, loading }: BulmaSubmitButtonArguments)
       </div>
     </>
   );
-}
+};
+
+export const BulmaSubmitButton = React.memo(SubmitButton);
