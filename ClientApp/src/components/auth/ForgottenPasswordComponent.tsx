@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaInputField } from './BulmaInputField';
 import { BulmaSubmitButton } from './BulmaSubmitButton';
@@ -30,37 +30,60 @@ export default function ForgottenPasswordComponent(
   const [passwordUpdatedSuccessfully, setPasswordUpdatedSuccessfully] = useState(false);
 
   const receivedToken = useCallback(
-    (token: string) => {
-      let encodedToken = encodeURIComponent(token);
-      let encodedUsername = encodeURIComponent(username);
+    (error: any, response: any) => {
+      if (response && response.data) {
+        let token = response.data;
+        let encodedToken = encodeURIComponent(token);
+        let encodedUsername = encodeURIComponent(username);
 
-      // instead of sending the token on email, we include it as a url parameter
-      history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);
+        // instead of sending the token on email, we include it as a url parameter
+        history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);
 
-      console.log('encoded username: ' + encodedUsername);
-      console.log('encoded token: ' + encodedToken);
+        console.log('encoded username: ' + encodedUsername);
+        console.log('encoded token: ' + encodedToken);
 
-      setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
+        setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
+      }
     },
     [username]
   );
 
-  const receivedResetConfirmation = useCallback((data: string) => {
-    setPasswordUpdatedSuccessfully(true);
-    setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
+  const receivedResetConfirmation = useCallback((error: any, response: any) => {
+    if (response) {
+      setPasswordUpdatedSuccessfully(true);
+      setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
+    }
   }, []);
 
-  const [token, isLoadingToken, isErrorToken, errorMessageToken, getResetToken] = useDataApi({
-    initialUrl: '',
-    autoLoad: false,
-    callback: receivedToken
+  const {
+    response: responseToken,
+    isLoading: isLoadingToken,
+    isError: isErrorToken,
+    error: errorToken,
+    setUrl: getResetToken
+  } = useDataApi({
+    initialUrl: ''
+    // callback: receivedToken
   });
 
-  const [data, isLoadingReset, isErrorReset, errorMessageReset, resetPassword] = useDataApi({
-    initialUrl: '',
-    autoLoad: false,
-    callback: receivedResetConfirmation
+  useEffect(() => {
+    receivedToken(errorToken, responseToken);
+  }, [responseToken, errorToken, receivedToken]);
+
+  const {
+    response: responseReset,
+    // isLoading: isLoadingReset,
+    isError: isErrorReset,
+    error: errorReset,
+    setUrl: resetPassword
+  } = useDataApi({
+    initialUrl: ''
+    // callback: receivedResetConfirmation
   });
+
+  useEffect(() => {
+    receivedResetConfirmation(errorReset, responseReset);
+  }, [responseReset, errorReset, receivedResetConfirmation]);
 
   const isValidASPCoreIdentityPassword = (password: string): boolean => {
     // https://stackoverflow.com/questions/48635152/regex-for-default-asp-net-core-identity-password
@@ -87,13 +110,16 @@ export default function ForgottenPasswordComponent(
       isValidASPCoreIdentityPassword(password) &&
       password === confirmPassword
     ) {
-      let encodedToken = encodeURIComponent(token);
-      let encodedUsername = encodeURIComponent(username);
-      let encodedPassword = encodeURIComponent(password);
+      if (responseToken && responseToken.data) {
+        let token = responseToken.data;
+        let encodedToken = encodeURIComponent(token);
+        let encodedUsername = encodeURIComponent(username);
+        let encodedPassword = encodeURIComponent(password);
 
-      resetPassword(
-        `${config.apiUrl}/api/Account/ResetPassword?username=${encodedUsername}&password=${encodedPassword}&token=${encodedToken}`
-      );
+        resetPassword(
+          `${config.apiUrl}/api/Account/ResetPassword?username=${encodedUsername}&password=${encodedPassword}&token=${encodedToken}`
+        );
+      }
     } else if (password && password !== confirmPassword) {
       setPasswordsNotEqual(true);
       setConfirmPassword('');
@@ -169,19 +195,34 @@ export default function ForgottenPasswordComponent(
 
   return (
     <>
+      {/* <pre className="has-text-left">{JSON.stringify(matchProps, null, 2)}</pre> */}
+
       {isErrorToken && (
+        <article className="message is-danger">
+          <div className="message-body">
+            {errorToken && errorToken.response && errorToken.response.data ? (
+              errorToken.response.data.title
+            ) : (
+              <pre className="has-text-left">{JSON.stringify(errorToken.response.data || {}, null, 0)}</pre>
+            )}
+          </div>
+        </article>
+      )}
+
+      {/*isErrorReset && (
         <div>
           Noe gikk galt!
-          <pre className="has-text-left">{JSON.stringify(errorMessageToken || {}, null, 0)}</pre>
+          <pre className="has-text-left">{JSON.stringify(errorMessageReset || {}, null, 0)}</pre>
         </div>
-      )}
+			)} */}
 
       {isErrorReset ? (
         <article className="message is-danger">
           <div className="message-body">
-            {errorMessageReset &&
-              errorMessageReset.data &&
-              errorMessageReset.data.map((identityError: ASPCoreIdentityErrors, index: number) => (
+            {errorReset &&
+              errorReset.response &&
+              errorReset.response.data &&
+              errorReset.response.data.map((identityError: ASPCoreIdentityErrors, index: number) => (
                 <div key={index} className="has-text-left">
                   {/* {identityError.code} */}
                   {identityError.description}
@@ -193,14 +234,16 @@ export default function ForgottenPasswordComponent(
         ''
       )}
 
-      {/* {isErrorReset && (
-        <div>
-          Noe gikk galt!
-          <pre className="has-text-left">{JSON.stringify(errorMessageReset || {}, null, 0)}</pre>
-        </div>
+      {/* {isLoadingToken ? (
+        <div>Loading ...</div>
+      ) : (
+        <pre className="has-text-left">{JSON.stringify(responseToken || {}, null, 0)}</pre>
+      )}
+      {isLoadingReset ? (
+        <div>Loading ...</div>
+      ) : (
+        <pre className="has-text-left">{JSON.stringify(responseReset || {}, null, 0)}</pre>
       )} */}
-      {/* <pre className="has-text-left">{JSON.stringify(matchProps, null, 2)}</pre> */}
-      {/* {isLoading ? <div>Loading ...</div> : <pre className="has-text-left">{JSON.stringify(token || {}, null, 0)}</pre>} */}
 
       <p className="subtitle has-text-grey">Glemt passord</p>
       <div className="container">
@@ -232,16 +275,3 @@ export default function ForgottenPasswordComponent(
     </>
   );
 }
-
-/*
-export default class ForgottenPasswordComponent extends React.Component<any, any> {
-  username = 'perivar@nerseth.com';
-  render() {
-    return (
-      <>
-        <ResetPasswordToken username={this.username} />
-      </>
-    );
-  }
-}
-*/
