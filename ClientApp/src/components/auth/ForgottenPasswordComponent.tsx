@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useReducer, FormEvent, ChangeEvent } from 'react';
 import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaInputField } from './BulmaInputField';
 import { BulmaSubmitButton } from './BulmaSubmitButton';
@@ -7,54 +7,200 @@ import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './Forgot
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
 
-export default function ForgottenPasswordComponent(
-  matchProps: ForgottenPasswordProps & ForgottenPasswordDispatchProps
-) {
+interface IUsernameChange {
+  type: 'USERNAME_CHANGE';
+  value: string;
+}
+
+interface IPasswordChange {
+  type: 'PASSWORD_CHANGE';
+  value: string;
+}
+
+interface IConfirmPasswordChange {
+  type: 'CONFIRM_PASSWORD_CHANGE';
+  value: string;
+}
+
+interface ISubmit {
+  type: 'SUBMIT';
+  username: string;
+  password: string;
+  confirmPassword: string;
+}
+
+interface IReceivedToken {
+  type: 'RECEIVED_TOKEN';
+  token: string;
+}
+
+interface IReceivedResetSuccess {
+  type: 'RECEIVED_RESET_SUCCESS';
+  value: string;
+}
+
+interface IQueryParametersChange {
+  type: 'QUERY_PARAMETERS_CHANGE';
+  username: string;
+  token: string;
+}
+
+type Actions =
+  | IUsernameChange
+  | IPasswordChange
+  | IConfirmPasswordChange
+  | ISubmit
+  | IReceivedToken
+  | IReceivedResetSuccess
+  | IQueryParametersChange;
+
+interface IState {
+  apiUrl: string | undefined;
+  username: string;
+  password: string;
+  confirmPassword: string;
+  token: string;
+  submitted: boolean;
+  passwordsNotEqual: boolean;
+  passwordNotValid: boolean;
+  passwordUpdatedSuccessfully: boolean;
+  hasTokenParameter: boolean;
+  hasUsernameParameter: boolean;
+  getResetToken: Function;
+  doResetPassword: Function;
+}
+
+export const initialState: IState = {
+  apiUrl: '',
+  username: '',
+  password: '',
+  confirmPassword: '',
+  token: '',
+  submitted: false,
+  passwordsNotEqual: false,
+  passwordNotValid: false,
+  passwordUpdatedSuccessfully: false,
+  hasTokenParameter: false,
+  hasUsernameParameter: false,
+  getResetToken: () => {},
+  doResetPassword: () => {}
+};
+
+export function stateReducer(state: IState, action: Actions): IState {
+  switch (action.type) {
+    case 'USERNAME_CHANGE':
+      return {
+        ...state,
+        username: action.value
+      };
+    case 'PASSWORD_CHANGE':
+      return {
+        ...state,
+        password: action.value
+      };
+    case 'CONFIRM_PASSWORD_CHANGE':
+      return {
+        ...state,
+        confirmPassword: action.value
+      };
+    case 'QUERY_PARAMETERS_CHANGE':
+      const hasTokenParameter = action.token ? true : false;
+      const hasUsernameParameter = action.username ? true : false;
+
+      let username = state.username;
+      if (hasUsernameParameter) username = decodeURIComponent(action.username);
+
+      let token = state.token;
+      if (hasTokenParameter) token = decodeURIComponent(action.token);
+
+      return {
+        ...state,
+        username: username,
+        token: token,
+        hasUsernameParameter: hasUsernameParameter,
+        hasTokenParameter: hasTokenParameter
+      };
+    case 'RECEIVED_TOKEN':
+      // if the token is passed as an url parameter, we want a "clean" password form
+      return {
+        ...state,
+        token: action.token,
+        submitted: false
+      };
+    case 'RECEIVED_RESET_SUCCESS':
+      // if the token is passed as an url parameter, we want a "clean" password form
+      return {
+        ...state,
+        passwordUpdatedSuccessfully: true,
+        submitted: false
+      };
+    case 'SUBMIT':
+      if (!state.hasTokenParameter && state.username) {
+        state.getResetToken(`${state.apiUrl}/api/Account/GenerateForgotPasswordToken?username=${state.username}`);
+      } else if (
+        state.hasTokenParameter &&
+        state.hasUsernameParameter &&
+        state.password &&
+        !isValidASPCoreIdentityPassword(state.password)
+      ) {
+        return {
+          ...state,
+          passwordNotValid: true,
+          password: '',
+          confirmPassword: '',
+          submitted: true
+        };
+      } else if (
+        state.hasTokenParameter &&
+        state.hasUsernameParameter &&
+        state.password &&
+        isValidASPCoreIdentityPassword(state.password) &&
+        state.password === state.confirmPassword
+      ) {
+        if (state.token) {
+          let encodedToken = encodeURIComponent(state.token);
+          let encodedUsername = encodeURIComponent(state.username);
+          let encodedPassword = encodeURIComponent(state.password);
+
+          state.doResetPassword(
+            `${state.apiUrl}/api/Account/ResetPassword?username=${encodedUsername}&password=${encodedPassword}&token=${encodedToken}`
+          );
+        }
+      } else if (state.password && state.password !== state.confirmPassword) {
+        return {
+          ...state,
+          passwordsNotEqual: true,
+          confirmPassword: '',
+          submitted: true
+        };
+      } else {
+        // all fields are empty?
+      }
+      return state;
+
+    default:
+      return state;
+  }
+}
+
+const isValidASPCoreIdentityPassword = (password: string): boolean => {
+  // https://stackoverflow.com/questions/48635152/regex-for-default-asp-net-core-identity-password
+  // if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$/.test(password)) {
+  //   return true;
+  // }
+  // return false;
+  return true;
+};
+
+export default function ForgottenPasswordComponent(props: ForgottenPasswordProps & ForgottenPasswordDispatchProps) {
+  // get apiUrl from config object
   const config = { apiUrl: process.env.REACT_APP_API };
 
-  // read from props
-  const { authentication } = matchProps;
-  const hasTokenParameter = matchProps.match.params.token ? true : false;
-  const hasUsernameParameter = matchProps.match.params.username ? true : false;
-
+  // get login user name from the redux store
+  const { authentication } = props;
   let initialUsername = authentication.logonUserName;
-  if (hasUsernameParameter) initialUsername = decodeURIComponent(matchProps.match.params.username);
 
-  // define state
-  const [username, setUsername] = useState(initialUsername);
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [passwordsNotEqual, setPasswordsNotEqual] = useState(false);
-  const [passwordNotValid, setPasswordNotValid] = useState(false);
-  const [passwordUpdatedSuccessfully, setPasswordUpdatedSuccessfully] = useState(false);
-
-  const receivedToken = useCallback(
-    (error: any, response: any) => {
-      if (response && response.data) {
-        let token = response.data;
-        let encodedToken = encodeURIComponent(token);
-        let encodedUsername = encodeURIComponent(username);
-
-        // instead of sending the token on email, we include it as a url parameter
-        history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);
-
-        console.log('encoded username: ' + encodedUsername);
-        console.log('encoded token: ' + encodedToken);
-
-        setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
-      }
-    },
-    [username]
-  );
-
-  const receivedResetConfirmation = useCallback((error: any, response: any) => {
-    if (response) {
-      setPasswordUpdatedSuccessfully(true);
-      setSubmitted(false); // if the token is passed as an url parameter, we want a "clean" password form
-    }
-  }, []);
-
+  // setup the data api hooks
   const {
     response: responseToken,
     isLoading: isLoadingToken,
@@ -66,67 +212,102 @@ export default function ForgottenPasswordComponent(
     // callback: receivedToken
   });
 
-  useEffect(() => {
-    receivedToken(errorToken, responseToken);
-  }, [responseToken, errorToken, receivedToken]);
-
   const {
     response: responseReset,
     // isLoading: isLoadingReset,
     isError: isErrorReset,
     error: errorReset,
-    setUrl: resetPassword
+    setUrl: doResetPassword
   } = useDataApi({
     initialUrl: ''
     // callback: receivedResetConfirmation
   });
 
+  // setup state with some initial default parameters
+  const defaultState: IState = {
+    ...initialState,
+    apiUrl: config.apiUrl,
+    username: initialUsername,
+    getResetToken: getResetToken,
+    doResetPassword: doResetPassword
+  };
+  const [state, dispatch] = useReducer(stateReducer, defaultState);
+
+  // set query parameters from the match props if  they change
+  useEffect(() => {
+    dispatch({
+      type: 'QUERY_PARAMETERS_CHANGE',
+      username: props.match.params.username,
+      token: props.match.params.token
+    });
+  }, [props.match.params.token, props.match.params.username]);
+
+  // note these callbacks mush be called with an useCallback to avoid endless loop
+  const receivedToken = useCallback(
+    (error: any, response: any) => {
+      if (response && response.data) {
+        let token = response.data;
+        dispatch({ type: 'RECEIVED_TOKEN', token: token });
+
+        let encodedToken = encodeURIComponent(state.token);
+        let encodedUsername = encodeURIComponent(state.username);
+
+        // instead of sending the token on email, we include it as a url parameter
+        history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);
+
+        console.log('encoded username: ' + encodedUsername);
+        console.log('encoded token: ' + encodedToken);
+      }
+    },
+    [state.token, state.username]
+  );
+
+  const receivedResetConfirmation = useCallback((error: any, response: any) => {
+    if (response) {
+      dispatch({ type: 'RECEIVED_RESET_SUCCESS', value: response });
+    }
+  }, []);
+
+  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
+  useEffect(() => {
+    receivedToken(errorToken, responseToken);
+  }, [responseToken, errorToken, receivedToken]);
+
   useEffect(() => {
     receivedResetConfirmation(errorReset, responseReset);
   }, [responseReset, errorReset, receivedResetConfirmation]);
 
-  const isValidASPCoreIdentityPassword = (password: string): boolean => {
-    // https://stackoverflow.com/questions/48635152/regex-for-default-asp-net-core-identity-password
-    // if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$/.test(password)) {
-    //   return true;
-    // }
-    // return false;
-    return true;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
+  // handle submit
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!hasTokenParameter && username) {
-      getResetToken(`${config.apiUrl}/api/Account/GenerateForgotPasswordToken?username=${username}`);
-    } else if (hasTokenParameter && hasUsernameParameter && password && !isValidASPCoreIdentityPassword(password)) {
-      setPasswordNotValid(true);
-      setPassword('');
-      setConfirmPassword('');
-    } else if (
-      hasTokenParameter &&
-      hasUsernameParameter &&
-      password &&
-      isValidASPCoreIdentityPassword(password) &&
-      password === confirmPassword
-    ) {
-      if (responseToken && responseToken.data) {
-        let token = responseToken.data;
-        let encodedToken = encodeURIComponent(token);
-        let encodedUsername = encodeURIComponent(username);
-        let encodedPassword = encodeURIComponent(password);
+    dispatch({
+      type: 'SUBMIT',
+      username: state.username,
+      password: state.password,
+      confirmPassword: state.confirmPassword
+    });
+  };
 
-        resetPassword(
-          `${config.apiUrl}/api/Account/ResetPassword?username=${encodedUsername}&password=${encodedPassword}&token=${encodedToken}`
-        );
-      }
-    } else if (password && password !== confirmPassword) {
-      setPasswordsNotEqual(true);
-      setConfirmPassword('');
-    } else {
-      // all fields are empty?
-    }
-    setSubmitted(true);
+  const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: 'USERNAME_CHANGE',
+      value: e.currentTarget.value
+    });
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: 'PASSWORD_CHANGE',
+      value: e.currentTarget.value
+    });
+  };
+
+  const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    dispatch({
+      type: 'CONFIRM_PASSWORD_CHANGE',
+      value: e.currentTarget.value
+    });
   };
 
   const usernameSegment = (
@@ -138,9 +319,9 @@ export default function ForgottenPasswordComponent(
         placeholder="feks. ola@nordmann.no"
         required={true}
         requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
-        value={username}
-        submitted={submitted}
-        handleChange={event => setUsername(event.target.value)}
+        value={state.username}
+        submitted={state.submitted}
+        handleChange={handleUsernameChange}
         icon={<i className="fas fa-user"></i>}
       />
     </>
@@ -156,10 +337,10 @@ export default function ForgottenPasswordComponent(
         name="password"
         placeholder="*********"
         required={true}
-        requiredMessage={passwordNotValid ? 'Passordet er ikke gyldig' : 'Gyldig passord er påkrevd'}
-        value={password}
-        submitted={submitted}
-        handleChange={event => setPassword(event.target.value)}
+        requiredMessage={state.passwordNotValid ? 'Passordet er ikke gyldig' : 'Gyldig passord er påkrevd'}
+        value={state.password}
+        submitted={state.submitted}
+        handleChange={handlePasswordChange}
         icon={<i className="fa fa-lock"></i>}
       />
 
@@ -169,10 +350,10 @@ export default function ForgottenPasswordComponent(
         name="confirmPassword"
         placeholder="*********"
         required={true}
-        requiredMessage={passwordsNotEqual ? 'Passordene er ulike' : 'Gyldig passord er påkrevd'}
-        value={confirmPassword}
-        submitted={submitted}
-        handleChange={event => setConfirmPassword(event.target.value)}
+        requiredMessage={state.passwordsNotEqual ? 'Passordene er ulike' : 'Gyldig passord er påkrevd'}
+        value={state.confirmPassword}
+        submitted={state.submitted}
+        handleChange={handleConfirmPasswordChange}
         icon={<i className="fa fa-lock"></i>}
       />
     </>
@@ -180,13 +361,13 @@ export default function ForgottenPasswordComponent(
 
   const formSegment = (
     <>
-      <form className="box" onSubmit={handleSubmit}>
+      <form noValidate={true} className="box" onSubmit={handleSubmit}>
         <div className="field has-text-centered">
           <i className="fa fa-lock fa-3x"></i>
         </div>
 
         {usernameSegment}
-        {hasTokenParameter ? passwordSegment : <></>}
+        {state.hasTokenParameter ? passwordSegment : <></>}
 
         <BulmaSubmitButton text="Oppdater passord" loading={isLoadingToken} />
       </form>
@@ -249,7 +430,7 @@ export default function ForgottenPasswordComponent(
       <div className="container">
         <div className="columns is-centered">
           <div className="column is-5-tablet is-5-desktop is-4-widescreen">
-            {passwordUpdatedSuccessfully ? (
+            {state.passwordUpdatedSuccessfully ? (
               <h3 className="title is-3 has-text-success">Passordet ditt er oppdatert!</h3>
             ) : (
               formSegment
