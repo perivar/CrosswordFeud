@@ -7,40 +7,50 @@ import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './Forgot
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
 
+export enum ActionTypes {
+  USERNAME_CHANGE = 'USERNAME_CHANGE',
+  PASSWORD_CHANGE = 'PASSWORD_CHANGE',
+  CONFIRM_PASSWORD_CHANGE = 'CONFIRM_PASSWORD_CHANGE',
+  SUBMIT = 'SUBMIT',
+  RECEIVED_TOKEN = 'RECEIVED_TOKEN',
+  RECEIVED_RESET_SUCCESS = 'RECEIVED_RESET_SUCCESS',
+  QUERY_PARAMETERS_CHANGE = 'QUERY_PARAMETERS_CHANGE'
+}
+
 interface IUsernameChange {
-  type: 'USERNAME_CHANGE';
+  type: typeof ActionTypes.USERNAME_CHANGE;
   value: string;
 }
 
 interface IPasswordChange {
-  type: 'PASSWORD_CHANGE';
+  type: typeof ActionTypes.PASSWORD_CHANGE;
   value: string;
 }
 
 interface IConfirmPasswordChange {
-  type: 'CONFIRM_PASSWORD_CHANGE';
+  type: typeof ActionTypes.CONFIRM_PASSWORD_CHANGE;
   value: string;
 }
 
 interface ISubmit {
-  type: 'SUBMIT';
+  type: typeof ActionTypes.SUBMIT;
   username: string;
   password: string;
   confirmPassword: string;
 }
 
 interface IReceivedToken {
-  type: 'RECEIVED_TOKEN';
+  type: typeof ActionTypes.RECEIVED_TOKEN;
   token: string;
 }
 
 interface IReceivedResetSuccess {
-  type: 'RECEIVED_RESET_SUCCESS';
+  type: typeof ActionTypes.RECEIVED_RESET_SUCCESS;
   value: string;
 }
 
 interface IQueryParametersChange {
-  type: 'QUERY_PARAMETERS_CHANGE';
+  type: typeof ActionTypes.QUERY_PARAMETERS_CHANGE;
   username: string;
   token: string;
 }
@@ -55,55 +65,39 @@ type Actions =
   | IQueryParametersChange;
 
 interface IState {
-  apiUrl: string | undefined;
   username: string;
   password: string;
   confirmPassword: string;
-  token: string;
   submitted: boolean;
   passwordsNotEqual: boolean;
   passwordNotValid: boolean;
   passwordUpdatedSuccessfully: boolean;
   hasTokenParameter: boolean;
   hasUsernameParameter: boolean;
+  apiUrl: string | undefined;
+  token: string;
   getResetToken: Function;
   doResetPassword: Function;
 }
 
-export const initialState: IState = {
-  apiUrl: '',
-  username: '',
-  password: '',
-  confirmPassword: '',
-  token: '',
-  submitted: false,
-  passwordsNotEqual: false,
-  passwordNotValid: false,
-  passwordUpdatedSuccessfully: false,
-  hasTokenParameter: false,
-  hasUsernameParameter: false,
-  getResetToken: () => {},
-  doResetPassword: () => {}
-};
-
 export function stateReducer(state: IState, action: Actions): IState {
   switch (action.type) {
-    case 'USERNAME_CHANGE':
+    case ActionTypes.USERNAME_CHANGE:
       return {
         ...state,
         username: action.value
       };
-    case 'PASSWORD_CHANGE':
+    case ActionTypes.PASSWORD_CHANGE:
       return {
         ...state,
         password: action.value
       };
-    case 'CONFIRM_PASSWORD_CHANGE':
+    case ActionTypes.CONFIRM_PASSWORD_CHANGE:
       return {
         ...state,
         confirmPassword: action.value
       };
-    case 'QUERY_PARAMETERS_CHANGE':
+    case ActionTypes.QUERY_PARAMETERS_CHANGE:
       const hasTokenParameter = action.token ? true : false;
       const hasUsernameParameter = action.username ? true : false;
 
@@ -120,21 +114,20 @@ export function stateReducer(state: IState, action: Actions): IState {
         hasUsernameParameter: hasUsernameParameter,
         hasTokenParameter: hasTokenParameter
       };
-    case 'RECEIVED_TOKEN':
-      // if the token is passed as an url parameter, we want a "clean" password form
+    case ActionTypes.RECEIVED_TOKEN:
       return {
         ...state,
         token: action.token,
+        // if the token is passed as an url parameter, we want a "clean" password form
         submitted: false
       };
-    case 'RECEIVED_RESET_SUCCESS':
-      // if the token is passed as an url parameter, we want a "clean" password form
+    case ActionTypes.RECEIVED_RESET_SUCCESS:
       return {
         ...state,
         passwordUpdatedSuccessfully: true,
         submitted: false
       };
-    case 'SUBMIT':
+    case ActionTypes.SUBMIT:
       if (!state.hasTokenParameter && state.username) {
         state.getResetToken(`${state.apiUrl}/api/Account/GenerateForgotPasswordToken?username=${state.username}`);
       } else if (
@@ -201,6 +194,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   let initialUsername = authentication.logonUserName;
 
   // setup the data api hooks
+  // data api for receiving reset password tokens
   const {
     response: responseToken,
     isLoading: isLoadingToken,
@@ -212,6 +206,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
     // callback: receivedToken
   });
 
+  // data api for resetting the password
   const {
     response: responseReset,
     // isLoading: isLoadingReset,
@@ -224,30 +219,46 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   });
 
   // setup state with some initial default parameters
-  const defaultState: IState = {
-    ...initialState,
-    apiUrl: config.apiUrl,
+  const initialState: IState = {
     username: initialUsername,
+    apiUrl: config.apiUrl,
     getResetToken: getResetToken,
-    doResetPassword: doResetPassword
+    doResetPassword: doResetPassword,
+    // initial empty values
+    password: '',
+    confirmPassword: '',
+    submitted: false,
+    passwordsNotEqual: false,
+    passwordNotValid: false,
+    passwordUpdatedSuccessfully: false,
+    hasTokenParameter: false,
+    hasUsernameParameter: false,
+    token: ''
   };
-  const [state, dispatch] = useReducer(stateReducer, defaultState);
+
+  // use the useReducer instead of useState due to the complexity of the state handling
+  const [state, dispatch] = useReducer(stateReducer, initialState);
 
   // set query parameters from the match props if  they change
   useEffect(() => {
-    dispatch({
-      type: 'QUERY_PARAMETERS_CHANGE',
-      username: props.match.params.username,
-      token: props.match.params.token
-    });
+    const username = props.match.params.username;
+    const token = props.match.params.token;
+    if (username && token) {
+      dispatch({
+        type: ActionTypes.QUERY_PARAMETERS_CHANGE,
+        username: username,
+        token: token
+      });
+    }
   }, [props.match.params.token, props.match.params.username]);
 
+  // callback for receiving a token from an api
   // note these callbacks mush be called with an useCallback to avoid endless loop
   const receivedToken = useCallback(
     (error: any, response: any) => {
       if (response && response.data) {
         let token = response.data;
-        dispatch({ type: 'RECEIVED_TOKEN', token: token });
+        dispatch({ type: ActionTypes.RECEIVED_TOKEN, token: token });
 
         let encodedToken = encodeURIComponent(state.token);
         let encodedUsername = encodeURIComponent(state.username);
@@ -262,9 +273,11 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
     [state.token, state.username]
   );
 
+  // callback for resetting the password using an api
+  // note these callbacks mush be called with an useCallback to avoid endless loop
   const receivedResetConfirmation = useCallback((error: any, response: any) => {
     if (response) {
-      dispatch({ type: 'RECEIVED_RESET_SUCCESS', value: response });
+      dispatch({ type: ActionTypes.RECEIVED_RESET_SUCCESS, value: response });
     }
   }, []);
 
@@ -277,36 +290,36 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
     receivedResetConfirmation(errorReset, responseReset);
   }, [responseReset, errorReset, receivedResetConfirmation]);
 
-  // handle submit
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    dispatch({
-      type: 'SUBMIT',
-      username: state.username,
-      password: state.password,
-      confirmPassword: state.confirmPassword
-    });
-  };
-
+  // change event handlers
   const handleUsernameChange = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: 'USERNAME_CHANGE',
+      type: ActionTypes.USERNAME_CHANGE,
       value: e.currentTarget.value
     });
   };
 
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: 'PASSWORD_CHANGE',
+      type: ActionTypes.PASSWORD_CHANGE,
       value: e.currentTarget.value
     });
   };
 
   const handleConfirmPasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     dispatch({
-      type: 'CONFIRM_PASSWORD_CHANGE',
+      type: ActionTypes.CONFIRM_PASSWORD_CHANGE,
       value: e.currentTarget.value
+    });
+  };
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    dispatch({
+      type: ActionTypes.SUBMIT,
+      username: state.username,
+      password: state.password,
+      confirmPassword: state.confirmPassword
     });
   };
 

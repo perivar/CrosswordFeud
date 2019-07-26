@@ -8,14 +8,12 @@ import { RouteComponentProps } from 'react-router-dom';
 
 export interface ForgottenPasswordRouterProps {
   token: string; // This one is coming from the router
-  username: string;
+  username: string; // This one is coming from the router
 }
 
 export interface ForgottenPasswordProps extends RouteComponentProps<ForgottenPasswordRouterProps> {
-  authentication: IAuthState;
+  authentication: IAuthState; // This one is coming from the redux store
 }
-
-export interface ForgottenPasswordDispatchProps {}
 
 const mapStateToProps = (state: IStoreState, ownProps: ForgottenPasswordProps): ForgottenPasswordProps => {
   const { authentication } = state;
@@ -24,6 +22,8 @@ const mapStateToProps = (state: IStoreState, ownProps: ForgottenPasswordProps): 
     authentication
   };
 };
+
+export interface ForgottenPasswordDispatchProps {}
 
 // inject methods *and* dispatch
 const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>): ForgottenPasswordDispatchProps => {
