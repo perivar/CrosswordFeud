@@ -52,7 +52,8 @@ module.exports = {
     ], // also want to use with ".tsx"
     "react/prop-types": "off", // Is this incompatible with TS props type?
     "react/no-find-dom-node": "warn",
-    "react/no-string-refs": "warn",
+		"react/no-string-refs": "warn",
+		"react/jsx-no-bind": "warn",
 
     /**
      * @description rules of eslint-plugin-react-hooks

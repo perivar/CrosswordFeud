@@ -1,21 +1,23 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { IHomeProps, IUser, IClaim } from './types';
+import { IHomeProps, IClaim, IUser } from './types';
 
 export default class HomeComponent extends React.Component<IHomeProps> {
   componentDidMount() {
     this.props.getAll();
   }
 
-  handleDeleteUser(username: string) {
-    return () => this.props.delete(username);
-  }
+  handleDeleteUser = (username: string, event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    event.preventDefault();
+    // event.persist(); // this stores parameters like id and value inside the event.target
+    this.props.delete(username);
+  };
 
   render() {
     const { logon, users } = this.props;
     return (
       <div>
-        <h3 className="is-size-3">Hi {logon.user.userName}!</h3>
+        <h3 className="is-size-3">Hi {logon.user.username}!</h3>
         <section className="section">
           <h4 className="is-size-4">Claims</h4>
           <div className="columns is-centered">
@@ -65,16 +67,18 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                       {users.items.map((user: IUser, index: number) => (
                         <tr key={index}>
                           <td>{user.id}</td>
-                          <td>{user.userName}</td>
+                          <td>{user.username}</td>
                           <td>{user.email}</td>
-                          <td>{user.phoneNumber}</td>
+                          <td>{user.phonenumber}</td>
                           <td>
                             {user.deleting ? (
                               <span className="is-info">Deleting...</span>
                             ) : user.deleteError ? (
                               <span className="is-warning">{user.deleteError}</span>
                             ) : (
-                              <button className="button is-danger" onClick={this.handleDeleteUser(user.userName)}>
+                              <button
+                                className="button is-danger"
+                                onClick={event => this.handleDeleteUser(user.username, event)}>
                                 Delete
                               </button>
                             )}

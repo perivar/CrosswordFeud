@@ -71,13 +71,13 @@ function getAll() {
   return fetch(`${config.apiUrl}/api/Account/GetAll`, requestOptions).then(handleResponse);
 }
 
-function getByName(userName: string) {
+function getByName(username: string) {
   const requestOptions = {
     method: 'GET',
     headers: authHeader()
   };
 
-  return fetch(`${config.apiUrl}/api/Account/GetByName/${userName}`, requestOptions).then(handleResponse);
+  return fetch(`${config.apiUrl}/api/Account/GetByName/${username}`, requestOptions).then(handleResponse);
 }
 
 function register(user: IUser) {
@@ -97,17 +97,17 @@ function update(user: IUser) {
     body: JSON.stringify(user)
   };
 
-  return fetch(`${config.apiUrl}/api/Account/Update/${user.userName}`, requestOptions).then(handleResponse);
+  return fetch(`${config.apiUrl}/api/Account/Update/${user.username}`, requestOptions).then(handleResponse);
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
-function _delete(userName: string) {
+function _delete(username: string) {
   const requestOptions = {
     method: 'DELETE',
     headers: authHeader()
   };
 
-  return fetch(`${config.apiUrl}/api/Account/Delete/${userName}`, requestOptions).then(handleResponse);
+  return fetch(`${config.apiUrl}/api/Account/Delete/${username}`, requestOptions).then(handleResponse);
 }
 
 export const userService = {

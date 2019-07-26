@@ -11,12 +11,12 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
     this.state = {
       user: {
         id: '',
-        userName: '',
+        username: '',
         password: '',
         confirmPassword: '',
         email: '',
         confirmEmail: '',
-        phoneNumber: ''
+        phonenumber: ''
       },
       submitted: false,
       passwordsNotEqual: false,
@@ -61,7 +61,7 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
       });
     } else {
       // make API call
-      if (user.userName && user.password && user.email) {
+      if (user.username && user.password && user.email) {
         this.props.register(user);
       }
       this.setState({ submitted: true });
@@ -84,11 +84,11 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
                 <BulmaInputField
                   label="Brukernavn"
                   type="text"
-                  name="userName"
+                  name="username"
                   placeholder="feks. ola@nordmann.no"
                   required={true}
                   requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
-                  value={user.userName}
+                  value={user.username}
                   submitted={submitted}
                   handleChange={this.handleChange}
                   icon={<i className="fas fa-user"></i>}
@@ -120,11 +120,11 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
                 <BulmaInputField
                   label="Telefon nummer"
                   type="text"
-                  name="phoneNumber"
+                  name="phonenumber"
                   placeholder="feks. +47 40506070"
                   required={false}
                   requiredMessage="Gyldig telefon nummer er påkrevd"
-                  value={user.phoneNumber}
+                  value={user.phonenumber}
                   submitted={submitted}
                   handleChange={this.handleChange}
                   icon={<i className="fa fa-phone"></i>}

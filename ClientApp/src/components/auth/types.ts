@@ -55,12 +55,12 @@ export interface IAuthState {
 
 export interface IUser {
   id: string;
-  userName: string;
+  username: string;
   password: string;
   confirmPassword: string;
   email: string;
   confirmEmail: string;
-  phoneNumber: string;
+  phonenumber: string;
   error?: boolean;
   deleting?: boolean;
   deleteError?: string;

@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './ForgottenPasswordContainer';
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
+import { useReducerWithLogger } from '../shared/hooks/reducer-logger-hook';
 
 export enum ActionTypes {
   USERNAME_CHANGE = 'USERNAME_CHANGE',
@@ -237,7 +238,8 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   };
 
   // use the useReducer instead of useState due to the complexity of the state handling
-  const [state, dispatch] = useReducer(stateReducer, initialState);
+  // const [state, dispatch] = useReducer(stateReducer, initialState);
+  const [state, dispatch] = useReducerWithLogger(stateReducer, initialState);
 
   // set query parameters from the match props if  they change
   useEffect(() => {
@@ -250,7 +252,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         token: token
       });
     }
-  }, [props.match.params.token, props.match.params.username]);
+  }, [dispatch, props.match.params.token, props.match.params.username]);
 
   // callback for receiving a token from an api
   // note these callbacks mush be called with an useCallback to avoid endless loop
@@ -270,16 +272,19 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         console.log('encoded token: ' + encodedToken);
       }
     },
-    [state.token, state.username]
+    [dispatch, state.token, state.username]
   );
 
   // callback for resetting the password using an api
   // note these callbacks mush be called with an useCallback to avoid endless loop
-  const receivedResetConfirmation = useCallback((error: any, response: any) => {
-    if (response) {
-      dispatch({ type: ActionTypes.RECEIVED_RESET_SUCCESS, value: response });
-    }
-  }, []);
+  const receivedResetConfirmation = useCallback(
+    (error: any, response: any) => {
+      if (response) {
+        dispatch({ type: ActionTypes.RECEIVED_RESET_SUCCESS, value: response });
+      }
+    },
+    [dispatch]
+  );
 
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
   useEffect(() => {
