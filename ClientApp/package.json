@@ -28,7 +28,7 @@
     "prop-types": "^15.7.2",
     "reactstrap": "^8.0.1",
     "bulma": "^0.7.5",
-    "bulma-divider": "^0.2.0"
+    "bulma-extensions": "^6.2.7"
   },
   "devDependencies": {
     "typescript": "^3.5.2",

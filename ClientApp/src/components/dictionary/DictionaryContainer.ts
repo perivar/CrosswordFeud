@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
-import DictionaryComponent from './DictionaryComponent';
+// import DictionaryComponent from './DictionaryComponent';
+import DictionaryComponent2 from './DictionaryComponent2';
 
 import { IStoreState } from '../../state/store';
 
@@ -14,6 +15,6 @@ const mapDispatchToProps = (dispatch: any) => {
 const DictionaryContainer = connect(
   mapStateToProps,
   mapDispatchToProps
-)(DictionaryComponent);
+)(DictionaryComponent2);
 
 export default DictionaryContainer;

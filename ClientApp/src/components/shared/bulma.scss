@@ -61,7 +61,9 @@ $section-padding-large: 18rem 1.5rem;
 @import '../../../node_modules/bulma/sass/grid/_all.sass';
 @import '../../../node_modules/bulma/sass/layout/_all.sass';
 
-@import '../../../node_modules/bulma-divider/dist/css/bulma-divider.sass';
+// import the extensions
+@import '../../../node_modules/bulma-extensions/bulma-divider/dist/css/bulma-divider.sass';
+// @import '../../../node_modules/bulma-extensions/bulma-slider/dist/css/bulma-slider.min.css';
 
 // Update the padding sizes
 .hero-body {
