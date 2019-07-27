@@ -5,6 +5,7 @@ export type PaginationPlacement = 'inline' | 'centered' | 'left' | 'right';
 
 export interface IBulmaPaginatorProps {
   initialPage: number;
+  setInitialPage?: Function;
   numberOfRows: number;
   rowsPerPage?: number;
   setRowsPerPage?: Function;
@@ -28,6 +29,7 @@ const getPaginationClassName = (paginationPlacement: string) => {
 
 function BulmaPaginator({
   initialPage = 1,
+  setInitialPage = () => {},
   numberOfRows,
   rowsPerPage = 10,
   setRowsPerPage = () => {},
@@ -40,13 +42,14 @@ function BulmaPaginator({
 
   let gotoFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
 
+  // subscribe to any changes to initialPage
   useEffect(() => {
     goToPage(initialPage);
   }, [goToPage, initialPage]);
 
   const handleClick = (pageNumber: number, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    goToPage(pageNumber);
+    setInitialPage(pageNumber);
   };
 
   const handleRowsPerPageChange = (e: React.FocusEvent<HTMLSelectElement>) => {
@@ -72,11 +75,11 @@ function BulmaPaginator({
 
   const handleGotoNewpage = () => {
     if (gotoFieldInput && gotoFieldInput.current) {
-      let page = Number(gotoFieldInput.current.value);
-      if (page > numberOfPages) page = numberOfPages;
-      if (page <= 0) page = 1;
+      let pageNumber = Number(gotoFieldInput.current.value);
+      if (pageNumber > numberOfPages) pageNumber = numberOfPages;
+      if (pageNumber <= 0) pageNumber = 1;
       gotoFieldInput.current.value = '';
-      goToPage(page);
+      setInitialPage(pageNumber);
     }
   };
 
@@ -116,6 +119,10 @@ function BulmaPaginator({
   const next = visiblePieces.find(e => e.type === 'next');
 
   const paginationClassName = getPaginationClassName(paginationPlacement);
+
+  // calculate showing from x to y of total
+  const fromRow = (activePage - 1) * rowsPerPage + 1;
+  const toRow = Math.min(activePage * rowsPerPage, numberOfRows);
 
   return (
     <>
@@ -193,7 +200,7 @@ function BulmaPaginator({
       <div className="level">
         <div className="level-left">
           <div className="level-item">
-            Showing {activePage * rowsPerPage} to {(activePage + 1) * rowsPerPage} of {numberOfRows} rows.
+            Showing {fromRow} to {toRow} of {numberOfRows} rows
           </div>
         </div>
         <div className="level-right">

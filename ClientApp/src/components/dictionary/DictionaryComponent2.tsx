@@ -1,9 +1,7 @@
-import React, { useEffect, useState, useMemo } from 'react';
-// import usePagination from '../shared/hooks/pagination-hook';
-// import Pagination from '../shared/hooks/paginator';
-
-import './bulma-table.scss';
+import React, { useEffect, useState } from 'react';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
+import useRadioButtons from '../shared/hooks/radio-buttons-hook';
+import './bulma-table.scss';
 
 const range = (from: number, to: number, step = 1) => {
   let i = from;
@@ -18,15 +16,23 @@ const range = (from: number, to: number, step = 1) => {
 };
 
 export default function DictionaryComponent2() {
-  const [initialPage, setInitialPage] = useState(1);
-  const [maxButtons, setMaxButtons] = useState(5);
+  const [activePage, setActivePage] = useState(1);
   const [numberOfRows, setNumberOfRows] = useState(1000);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [maxButtons, setMaxButtons] = useState(5);
+  const [useGotoField, setUseGotoField] = useState<boolean>(false);
 
-  const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
+  // use radio button hook
+  const { value: paginationPlacement, inputProps: paginationPlacementProps } = useRadioButtons<PaginationPlacement>(
+    'paginationPlacement',
+    'left'
+  );
 
+  // data state
   const [data, setData] = useState<number[]>([]);
   const [currentData, setCurrentData] = useState<number[]>([]);
+
+  const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
 
   useEffect(() => {
     let pages: number[] = range(1, numberOfRows);
@@ -34,14 +40,14 @@ export default function DictionaryComponent2() {
   }, [numberOfRows]);
 
   useEffect(() => {
-    setCurrentData(data.slice(initialPage * rowsPerPage, initialPage * rowsPerPage + rowsPerPage));
-  }, [data, initialPage, rowsPerPage]);
+    setCurrentData(data.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage));
+  }, [data, activePage, rowsPerPage]);
 
   useEffect(() => {
-    if (initialPage > numberOfPages) {
-      setInitialPage(numberOfPages);
+    if (activePage > numberOfPages) {
+      setActivePage(numberOfPages);
     }
-  }, [initialPage, numberOfPages]);
+  }, [activePage, numberOfPages]);
 
   useEffect(() => {
     if (maxButtons > numberOfPages) {
@@ -49,10 +55,9 @@ export default function DictionaryComponent2() {
     }
   }, [maxButtons, numberOfPages]);
 
-  const paginationPlacement: PaginationPlacement = 'left';
-  const useGotoField = true;
   const bulmaPaginator = BulmaPaginator({
-    initialPage,
+    initialPage: activePage,
+    setInitialPage: setActivePage,
     numberOfRows,
     rowsPerPage,
     setRowsPerPage,
@@ -64,18 +69,18 @@ export default function DictionaryComponent2() {
   return (
     <>
       <div className="container box">
-        <h1>react-pagination-hook demo</h1>
+        <h1>BulmaPagination and react-pagination-hook demo</h1>
         <div>
-          <div>Initial page:</div>
+          <div>Active page:</div>
           <div>
             <input
               type="range"
-              value={initialPage}
+              value={activePage}
               min={1}
               max={numberOfPages}
-              onChange={event => setInitialPage(Number(event.target.value))}
+              onChange={event => setActivePage(Number(event.target.value))}
             />
-            {initialPage}
+            {activePage}
           </div>
         </div>
         <div>
@@ -117,6 +122,26 @@ export default function DictionaryComponent2() {
             {maxButtons}
           </div>
         </div>
+        <div>
+          <div>Use Goto-field:</div>
+          <div>
+            <input type="checkbox" checked={useGotoField} onChange={() => setUseGotoField(!useGotoField)} />
+            {useGotoField}
+          </div>
+        </div>
+        <div>
+          <div>Pagination placement:</div>
+          <div>
+            <input value="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
+            Left
+            <input value="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
+            Right
+            <input value="centered" checked={paginationPlacement === 'centered'} {...paginationPlacementProps} />
+            Centered
+            <input value="inline" checked={paginationPlacement === 'inline'} {...paginationPlacementProps} />
+            Inline
+          </div>
+        </div>
       </div>
       <div>
         <ul>
@@ -128,170 +153,4 @@ export default function DictionaryComponent2() {
       {bulmaPaginator}
     </>
   );
-  // const pageLimit = 10;
-
-  // const [offset, setOffset] = useState(0);
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const [data, setData] = useState<number[]>([]);
-  // const [currentData, setCurrentData] = useState<number[]>([]);
-
-  // useEffect(() => {
-  //   setData(pages);
-  // }, [pages]);
-
-  // useEffect(() => {
-  //   setCurrentData(data.slice(offset, offset + pageLimit));
-  // }, [data, offset]);
-
-  // return (
-  //   <div>
-  //     <ul>
-  //       {currentData.map((data, index) => (
-  //         <li key={index}>{data}</li>
-  //       ))}
-  //     </ul>
-  //     <Pagination
-  //       totalRecords={data.length}
-  //       pageLimit={pageLimit}
-  //       pageNeighbours={2}
-  //       setOffset={setOffset}
-  //       currentPage={currentPage}
-  //       setCurrentPage={setCurrentPage}
-  //     />
-  //   </div>
-  // );
-
-  // const pagination = usePagination({
-  //   items: pages,
-  //   itemsPerPage: 20
-  // });
-
-  // const {
-  //   onNextPage,
-  //   onPreviousPage,
-  //   onResetPage,
-  //   setCurrentPage,
-  //   dispatch,
-  //   currentItems,
-  //   currentPage,
-  //   hasNextPage,
-  //   hasPreviousPage,
-  //   items,
-  //   itemsPerPage,
-  //   maxPages,
-  //   nextPage,
-  //   previousPage
-  // } = pagination;
-
-  // const handleOnKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (e.key === 'Enter') {
-  //     setCurrentPage(e.currentTarget.value);
-  //   }
-  // };
-
-  // const handleOnBlur = (e: ChangeEvent<HTMLInputElement>) => {
-  //   // event.persist(); // this stores parameters like id and value inside the event.target
-  //   setCurrentPage(e.target.value);
-  // };
-
-  // return (
-  //   <>
-  //     <pre>{JSON.stringify(currentItems, null, 2)}</pre>
-  //     <button onClick={onResetPage}>Reset</button>
-
-  //     <div className="level">
-  //       <div className="level-left">
-  //         <div className="level-item">Showing 661621 to 661640 of 661767 rows.</div>
-  //       </div>
-  //       <div className="level-right">
-  //         <nav className="pagination" role="navigation" aria-label="pagination">
-  //           <ul className="pagination-list">
-  //             <li>
-  //               <button
-  //                 className="pagination-previous pagination-button"
-  //                 aria-label="Previous"
-  //                 onClick={onPreviousPage}
-  //                 disabled={hasPreviousPage ? false : true}>
-  //                 &laquo; Previous
-  //               </button>
-  //             </li>
-  //             <li>
-  //               <button className="pagination-link pagination-button" aria-label="Goto page 1">
-  //                 1
-  //               </button>
-  //             </li>
-  //             <li>
-  //               <span className="pagination-ellipsis">&hellip;</span>
-  //             </li>
-  //             <li>
-  //               <button className="pagination-link pagination-button" aria-label="Goto page 33081">
-  //                 33081
-  //               </button>
-  //             </li>
-  //             <li>
-  //               {/* <button
-  //                 className="pagination-link pagination-button is-current"
-  //                 aria-label="Page 33082"
-  //                 aria-current="page">
-  //                 33082
-  //               </button> */}
-
-  //               <div className="field">
-  //                 <p className="control has-icons-right">
-  //                   <input
-  //                     className="input is-focused"
-  //                     type="text"
-  //                     placeholder="33082"
-  //                     style={{ width: '6rem' }}
-  //                     onBlur={handleOnBlur}
-  //                     onKeyPress={handleOnKeyPress}
-  //                   />
-  //                   <span className="icon is-small is-right">
-  //                     <i className="fas fa-search"></i>
-  //                   </span>
-  //                 </p>
-  //               </div>
-  //             </li>
-  //             <li>
-  //               <button className="pagination-link pagination-button" aria-label="Goto page 33083">
-  //                 33083
-  //               </button>
-  //             </li>
-  //             <li>
-  //               <span className="pagination-ellipsis">&hellip;</span>
-  //             </li>
-  //             <li>
-  //               <button className="pagination-link pagination-button" aria-label="Goto page 33089">
-  //                 33089
-  //               </button>
-  //             </li>
-  //             <li>
-  //               <button
-  //                 className="pagination-next pagination-button"
-  //                 aria-label="Next"
-  //                 onClick={onNextPage}
-  //                 disabled={hasNextPage ? false : true}>
-  //                 Next &raquo;
-  //               </button>
-  //             </li>
-  //           </ul>
-  //         </nav>
-  //       </div>
-  //     </div>
-  //     <div className="level">
-  //       <div className="level-left">
-  //         <div className="level-item">
-  //           <div className="select">
-  //             <select name="rowsPerPage" id="rowsPerPage" aria-label="Rows per page">
-  //               <option value="10">10</option>
-  //               <option value="15">15</option>
-  //               <option value="20">20</option>
-  //             </select>
-  //           </div>
-  //         </div>
-  //         <div className="level-item">rows per page</div>
-  //       </div>
-  //     </div>
-  //   </>
-  // );
 }
