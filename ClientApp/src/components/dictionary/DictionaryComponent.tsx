@@ -220,37 +220,47 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
   };
 
   toggleSelection = (key: string, shiftKeyPressed: boolean, row: string) => {
-    let selection = [...this.state.selection];
-    const keyIndex = selection.indexOf(key);
-    // check to see if the key exists
-    if (keyIndex >= 0) {
-      // it does exist so we will remove it using destructing
-      selection = [...selection.slice(0, keyIndex), ...selection.slice(keyIndex + 1)];
-    } else {
-      // it does not exist so add it
-      selection.push(key);
-    }
-    // update the state
-    this.setState({ selection });
+    this.setState(prevState => {
+      let selection = [...prevState.selection];
+
+      const keyIndex = selection.indexOf(key);
+
+      // check to see if the key exists
+      if (keyIndex >= 0) {
+        // it does exist so we will remove it using destructing
+        selection = [...selection.slice(0, keyIndex), ...selection.slice(keyIndex + 1)];
+      } else {
+        // it does not exist so add it
+        selection.push(key);
+      }
+
+      return { selection };
+    });
   };
 
   toggleAll = () => {
     const { keyField } = selectTableAdditionalProps;
-    const selectAll = this.state.selectAll ? false : true;
-    const selection = [] as any[];
-    if (selectAll) {
-      // we need to get at the internals of ReactTable
-      const wrappedInstance = this.selectTable.getWrappedInstance();
-      // the 'sortedData' property contains the currently accessible records based on the filter and sort
-      const currentRecords = wrappedInstance.getResolvedState().sortedData;
-      // we just push all the IDs onto the selection array
-      currentRecords.forEach((item: any) => {
-        if (item._original) {
-          selection.push(`select-${item._original[keyField!]}`);
-        }
-      });
-    }
-    this.setState({ selectAll, selection });
+
+    this.setState(prevState => {
+      // toggle
+      const selectAll = !prevState.selectAll;
+
+      const selection = [] as any[];
+      if (selectAll) {
+        // we need to get at the internals of ReactTable
+        const wrappedInstance = this.selectTable.getWrappedInstance();
+        // the 'sortedData' property contains the currently accessible records based on the filter and sort
+        const currentRecords = wrappedInstance.getResolvedState().sortedData;
+        // we just push all the IDs onto the selection array
+        currentRecords.forEach((item: any) => {
+          if (item._original) {
+            selection.push(`select-${item._original[keyField!]}`);
+          }
+        });
+      }
+
+      return { selectAll, selection };
+    });
   };
 
   isSelected = (key: string) => {

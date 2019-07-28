@@ -1,10 +1,10 @@
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
-		'airbnb', // quite strict
+		'airbnb',
 		'eslint:recommended', 
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
-    'plugin:jsx-a11y/recommended', // reccommended or strict
+    'plugin:jsx-a11y/recommended',
 		'plugin:import/typescript', // extends the recommended import with typescript import/resolver support for .ts and .tsx
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
@@ -78,15 +78,15 @@ module.exports = {
     /**
      * @description rules of eslint
      */
-    // 'no-underscore-dangle': 'warn',
-		'import/no-cycle': 'warn',
+    'no-underscore-dangle': 'off',
 		'no-console': 'off',
-		// 'prefer-const': 'error',
+		'prefer-const': 'warn',
 		'no-dupe-class-members': 'warn',
 
 		/**
      * @description rules of eslint-import-resolver-typescript
      */    
+		'import/no-cycle': 'off',
 		'import/no-unresolved': 'error',
 		'import/prefer-default-export': 'off',
 		'import/no-extraneous-dependencies': ['error', {'devDependencies': ['**/*.spec.ts']}],

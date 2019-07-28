@@ -95,10 +95,10 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
 
   shuffle() {
     if (this.canShuffle()) {
-      this.setState({
-        letters: this.shuffleWord(this.state.clueInput, this.entries()),
+      this.setState(prevState => ({
+        letters: this.shuffleWord(prevState.clueInput, this.entries()),
         showInput: false
-      });
+      }));
     }
   }
 

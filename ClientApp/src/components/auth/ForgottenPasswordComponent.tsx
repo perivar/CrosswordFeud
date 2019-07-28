@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useReducer, FormEvent, ChangeEvent } from 'react';
+import React, { useCallback, useEffect, FormEvent, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaInputField } from '../shared/bulma-components/BulmaInputField';
@@ -153,9 +153,9 @@ export function stateReducer(state: IState, action: Actions): IState {
         state.password === state.confirmPassword
       ) {
         if (state.token) {
-          let encodedToken = encodeURIComponent(state.token);
-          let encodedUsername = encodeURIComponent(state.username);
-          let encodedPassword = encodeURIComponent(state.password);
+          const encodedToken = encodeURIComponent(state.token);
+          const encodedUsername = encodeURIComponent(state.username);
+          const encodedPassword = encodeURIComponent(state.password);
 
           state.doResetPassword(
             `${state.apiUrl}/api/Account/ResetPassword?username=${encodedUsername}&password=${encodedPassword}&token=${encodedToken}`
@@ -197,7 +197,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
 
   // get login user name from the redux store
   const { authentication } = props;
-  let initialUsername = authentication.logonUserName;
+  const initialUsername = authentication.logonUserName;
 
   // setup the data api hooks
   // data api for receiving reset password tokens
@@ -264,11 +264,11 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   const receivedToken = useCallback(
     (error: any, response: any) => {
       if (response && response.data) {
-        let token = response.data;
+        const token = response.data;
         dispatch({ type: ActionTypes.RECEIVED_TOKEN, token: token });
 
-        let encodedToken = encodeURIComponent(state.token);
-        let encodedUsername = encodeURIComponent(state.username);
+        const encodedToken = encodeURIComponent(state.token);
+        const encodedUsername = encodeURIComponent(state.username);
 
         // instead of sending the token on email, we include it as a url parameter
         history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);

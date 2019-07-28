@@ -86,51 +86,69 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
 
   // notice that this is an arrow function to avoid having to bind this in constructor.
   onStateChange = (index: number) => {
-    const sortings = this.state.sortings.map((sorting: SortingType, i: number) => {
-      // set next sorting type for the selected sorting
-      // the others need to be reset back to both
-      if (i === index) {
-        sorting = this.nextSortingState(sorting);
-      } else {
-        sorting = 'both';
-      }
+    // const sortings = this.state.sortings.map((sorting: SortingType, i: number) => {
+    //   // set next sorting type for the selected sorting
+    //   // the others need to be reset back to both
+    //   if (i === index) {
+    //     sorting = this.nextSortingState(sorting);
+    //   } else {
+    //     sorting = 'both';
+    //   }
 
-      return sorting;
-    });
+    //   return sorting;
+    // });
 
-    this.setState({
-      sortings
-    });
+    // this.setState({
+    //   sortings
+    // });
+
+    this.setState(previousState => ({
+      sortings: [
+        ...previousState.sortings.map((sorting: SortingType, i: number) => {
+          // set next sorting type for the selected sorting
+          // the others need to be reset back to both
+          if (i === index) {
+            sorting = this.nextSortingState(sorting);
+          } else {
+            sorting = 'both';
+          }
+          return sorting;
+        })
+      ]
+    }));
   };
 
   // notice that this is an arrow function to avoid having to bind this in constructor.
   handleCheckboxChange = (changeEvent: ChangeEvent<HTMLInputElement>) => {
     const { name: id } = changeEvent.target;
-    const checkboxes = this.state.checkboxes;
 
     if (id === 'checkAll') {
-      // toggle isAllSelected
-      const isAllSelected = !this.state.isAllSelected;
+      this.setState(prevState => {
+        // toggle isAllSelected
+        const isAllSelected = !prevState.isAllSelected;
 
-      // and update all checkboxes
-      Object.keys(checkboxes).forEach(id => {
-        checkboxes[id] = isAllSelected;
-      });
+        // creating copy of state variable checkboxes
+        const checkboxes = { ...prevState.checkboxes };
 
-      this.setState({
-        checkboxes,
-        isAllSelected
+        // and update all checkboxes
+        Object.keys(checkboxes).forEach(id => {
+          checkboxes[id] = isAllSelected;
+        });
+
+        return { isAllSelected, checkboxes };
       });
     } else {
-      // only toggle the given id
-      checkboxes[id] = !this.state.checkboxes[id];
+      this.setState(prevState => {
+        // creating copy of state variable checkboxes
+        const checkboxes = { ...prevState.checkboxes };
 
-      // check if all is selected
-      const isAllSelected = Object.keys(checkboxes).every(id => checkboxes[id]);
+        // only toggle the given id
+        checkboxes[id] = !prevState.checkboxes[id];
 
-      this.setState({
-        checkboxes,
-        isAllSelected
+        // check if all is selected
+        const isAllSelected = Object.keys(checkboxes).every(id => checkboxes[id]);
+
+        return { isAllSelected, checkboxes };
       });
     }
   };
