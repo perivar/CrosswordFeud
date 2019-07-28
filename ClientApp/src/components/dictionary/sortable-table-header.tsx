@@ -1,4 +1,4 @@
-import React, { Component, CSSProperties, ChangeEvent } from 'react';
+import React, { Component, CSSProperties, ChangeEvent, PureComponent } from 'react';
 import { SortIconBoth, SortIconDesc, SortIconAsc } from './sortable-table-icons';
 import { SortingType, SortableTableColumn, SortableTableIconInfo, SortableCheckboxMap } from './sortable-table';
 import Checkbox from './Checkbox';
@@ -74,7 +74,7 @@ interface SortableTableHeaderProps extends SortableTableIconInfo {
   isAllSelected: boolean;
 }
 
-export default class SortableTableHeader extends Component<SortableTableHeaderProps> {
+export default class SortableTableHeader extends PureComponent<SortableTableHeaderProps> {
   render() {
     const headers = this.props.columns.map((column: SortableTableColumn, index: number) => {
       const sorting = this.props.sortings[index];

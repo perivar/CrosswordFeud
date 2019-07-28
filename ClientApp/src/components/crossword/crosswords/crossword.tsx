@@ -1,5 +1,8 @@
 import '../scss/main.scss';
 import React, { Component } from 'react';
+import debounce from 'lodash/debounce';
+import fastdom from 'fastdom';
+import zip from 'lodash/zip';
 import {
   buildClueMap,
   buildGrid,
@@ -30,14 +33,11 @@ import { Grid, IGridProps } from './grid';
 import { HiddenInput } from './hidden-input';
 import { addMyEventListener } from '../lib/events';
 import { classNames } from './classNames';
-import debounce from 'lodash/debounce';
-import fastdom from 'fastdom';
 // import { findDOMNode } from 'react-dom';
 import { isBreakpoint, isIOS } from '../lib/detect';
 import { keycodes } from './keycodes';
 // import mediator from '../lib/mediator';
 import { scrollTo } from '../lib/scroller';
-import zip from 'lodash/zip';
 
 export interface ICrosswordProps {
   data: ICrosswordData;
@@ -320,51 +320,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  handleScroll(): void {
-    // Sticky clue
-    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
-
-    if (!$stickyClueWrapper) {
-      return;
-    }
-    const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
-
-    const $game = this.game.current as HTMLDivElement;
-    const gameOffsetTop = $game.offsetTop;
-    const gameOffsetHeight = $game.offsetHeight;
-
-    // const $grid = this.grid.current as React.ReactNode;
-    // const gridOffsetTop = $grid.offsetTop;
-    // const gridOffsetHeight = $grid.offsetHeight;
-
-    const scrollY = window.scrollY;
-
-    fastdom.mutate(() => {
-      // Clear previous state
-      $stickyClueWrapper.removeAttribute('style');
-      $stickyClueWrapper.classList.remove('is-fixed');
-
-      const scrollYPastGame = scrollY - gameOffsetTop;
-
-      if (scrollYPastGame >= 0) {
-        // const gridOffsetBottom = gridOffsetTop + gridOffsetHeight;
-        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
-
-        if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
-          // if (scrollY > gridOffsetBottom - stickyClueWrapperOffsetHeight) {
-          $stickyClueWrapper.setAttribute('style', `top: auto, bottom: 0px`);
-        } else if (isIOS()) {
-          // iOS doesn't support sticky things when the keyboard
-          // is open, so we use absolute positioning and
-          // programatically update the value of top
-          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}px`);
-        } else {
-          $stickyClueWrapper.classList.add('is-fixed');
-        }
-      }
-    });
-  }
-
   setGridHeight(): void {
     const $gridWrapper = this.gridWrapper.current as HTMLDivElement;
 
@@ -420,6 +375,51 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   setReturnPosition(position: number): void {
     this.returnPosition = position;
+  }
+
+  handleScroll(): void {
+    // Sticky clue
+    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
+
+    if (!$stickyClueWrapper) {
+      return;
+    }
+    const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
+
+    const $game = this.game.current as HTMLDivElement;
+    const gameOffsetTop = $game.offsetTop;
+    const gameOffsetHeight = $game.offsetHeight;
+
+    // const $grid = this.grid.current as React.ReactNode;
+    // const gridOffsetTop = $grid.offsetTop;
+    // const gridOffsetHeight = $grid.offsetHeight;
+
+    const scrollY = window.scrollY;
+
+    fastdom.mutate(() => {
+      // Clear previous state
+      $stickyClueWrapper.removeAttribute('style');
+      $stickyClueWrapper.classList.remove('is-fixed');
+
+      const scrollYPastGame = scrollY - gameOffsetTop;
+
+      if (scrollYPastGame >= 0) {
+        // const gridOffsetBottom = gridOffsetTop + gridOffsetHeight;
+        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
+
+        if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
+          // if (scrollY > gridOffsetBottom - stickyClueWrapperOffsetHeight) {
+          $stickyClueWrapper.setAttribute('style', `top: auto, bottom: 0px`);
+        } else if (isIOS()) {
+          // iOS doesn't support sticky things when the keyboard
+          // is open, so we use absolute positioning and
+          // programatically update the value of top
+          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}px`);
+        } else {
+          $stickyClueWrapper.classList.add('is-fixed');
+        }
+      }
+    });
   }
 
   updateGrid(gridState: any) {

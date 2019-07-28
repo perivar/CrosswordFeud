@@ -1,4 +1,4 @@
-import React, { Component, ChangeEvent } from 'react';
+import React, { Component, ChangeEvent, PureComponent } from 'react';
 import { SortingType, SortableTableColumn, SortableTableData, SortableCheckboxMap } from './sortable-table';
 import Checkbox from './Checkbox';
 
@@ -67,7 +67,7 @@ interface SortableTableBodyProps {
   isAllSelected: boolean;
 }
 
-export default class SortableTableBody extends Component<SortableTableBodyProps> {
+export default class SortableTableBody extends PureComponent<SortableTableBodyProps> {
   render() {
     const bodies = this.props.data.map((item: any, index: number) => {
       return (

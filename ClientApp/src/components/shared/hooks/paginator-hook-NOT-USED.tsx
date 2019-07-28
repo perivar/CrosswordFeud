@@ -197,7 +197,7 @@ function Paginator({
           if (page === LEFT_PAGE)
             return (
               <li className={pageItemClass} key={index}>
-                <button className={pageLinkClass} onClick={handleMoveLeft}>
+                <button type="button" className={pageLinkClass} onClick={handleMoveLeft}>
                   {pagePrevText}
                 </button>
               </li>
@@ -206,7 +206,7 @@ function Paginator({
           if (page === RIGHT_PAGE)
             return (
               <li className={pageItemClass} key={index}>
-                <button className={pageLinkClass} onClick={handleMoveRight}>
+                <button type="button" className={pageLinkClass} onClick={handleMoveRight}>
                   {pageNextText}
                 </button>
               </li>
@@ -215,6 +215,7 @@ function Paginator({
           return (
             <li className={`${pageItemClass}`} key={index}>
               <button
+                type="button"
                 className={`${pageLinkClass} ${currentPage === page ? pageActiveClass : null}`}
                 onClick={e => handleClick(page, e)}>
                 {page}

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
-export class Home extends Component {
+export class Home extends PureComponent {
   static displayName = Home.name;
 
   render() {

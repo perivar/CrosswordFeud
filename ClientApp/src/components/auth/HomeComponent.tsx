@@ -50,7 +50,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                       </tr>
                       <tr>
                         <td>
-                          <progress className="progress progress is-medium is-dark" max="100"></progress>
+                          <progress className="progress progress is-medium is-dark" max="100" />
                         </td>
                       </tr>
                     </>
@@ -77,6 +77,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                               <span className="is-warning">{user.deleteError}</span>
                             ) : (
                               <button
+                                type="button"
                                 className="button is-danger"
                                 onClick={event => this.handleDeleteUser(user.username, event)}>
                                 Delete

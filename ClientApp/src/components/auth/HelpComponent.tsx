@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 
-export default class HelpComponent extends React.Component<any, any> {
+export default class HelpComponent extends PureComponent<any, any> {
   render() {
     return (
       <>
@@ -11,21 +11,24 @@ export default class HelpComponent extends React.Component<any, any> {
             <div className="column is-5-tablet is-5-desktop is-4-widescreen">
               <div className="box">
                 <div className="field has-text-centered">
-                  <i className="fas fa-question fa-3x"></i>
+                  <i className="fas fa-question fa-3x" />
                 </div>
                 <p className="has-text-grey">
                   <Link to="/register">
-                    <i className="fas fa-user-plus"></i>&nbsp; Er du ikke bruker? Register deg nå!
+                    <i className="fas fa-user-plus" />
+                    &nbsp; Er du ikke bruker? Register deg nå!
                   </Link>
                 </p>
                 <p className="has-text-grey">
                   <Link to="/login">
-                    <i className="fas fa-user"></i>&nbsp; Har du allerede bruker? Logg inn!
+                    <i className="fas fa-user" />
+                    &nbsp; Har du allerede bruker? Logg inn!
                   </Link>
                 </p>
                 <p className="has-text-grey">
                   <Link to="/forgotten-password">
-                    <i className="fa fa-lock"></i>&nbsp; Glemt passord?
+                    <i className="fa fa-lock" />
+                    &nbsp; Glemt passord?
                   </Link>
                 </p>
               </div>

@@ -1,4 +1,4 @@
-import mediator from '../lib/mediator';
+import mediator from './mediator';
 
 interface IBreakPoint {
   name: string;

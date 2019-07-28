@@ -159,16 +159,16 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
               onChange={event => setEditValue(event.target.value)}
               style={inputStyle}
             />
-            <button className="icon is-right editable-clear is-small" onClick={onEditClear}>
-              <i className="fas fa-times fa-xs"></i>
+            <button type="button" className="icon is-right editable-clear is-small" onClick={onEditClear}>
+              <i className="fas fa-times fa-xs" />
             </button>
           </div>
           <p className="control">
             <button type="button" className="button is-info is-small" onClick={onEditConfirm}>
-              <i className="fas fa-check"></i>
+              <i className="fas fa-check" />
             </button>
             <button type="button" className="button is-small" onClick={onEditCancel}>
-              <i className="fas fa-times"></i>
+              <i className="fas fa-times" />
             </button>
           </p>
         </div>
@@ -200,9 +200,19 @@ export default class DictionaryComponent extends Component<DictionaryComponentPr
   }
 
   handleValueChanged = (cellInfo: CellInfo, newValue: string) => {
-    let data = [...this.state.data];
-    data[cellInfo.index][cellInfo.column.id!] = newValue;
-    this.setState({ data });
+    // let data = [...this.state.data];
+    // data[cellInfo.index][cellInfo.column.id!] = newValue;
+    // this.setState({ data });
+
+    this.setState(prevState => ({
+      data: {
+        ...prevState.data,
+        [cellInfo.index]: {
+          ...prevState.data[cellInfo.index],
+          [cellInfo.column.id!]: newValue
+        }
+      }
+    }));
   };
 
   renderEditable = (cellInfo: CellInfo) => {

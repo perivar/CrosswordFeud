@@ -42,7 +42,7 @@ export default class ForecastComponent extends Component<IForecastProps> {
       this.renderForecastsTable(this.props.forecasts)
     );
 
-    const error = this.props.loadError != null ? <span className="error">{this.props.loadError}</span> : <span></span>;
+    const error = this.props.loadError != null ? <span className="error">{this.props.loadError}</span> : <span />;
 
     return (
       <div>

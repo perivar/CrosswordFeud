@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
+import shuffle from 'lodash/shuffle';
 import { ReactComponent as Close } from '../../svgs/close.svg';
 
-import { cellsForClue, getAnagramClueData } from '.././helpers';
-import shuffle from 'lodash/shuffle';
+import { cellsForClue, getAnagramClueData } from '../helpers';
 import { ClueInput } from './clue-input';
 import { CluePreview, ICluePreview } from './clue-preview';
 import { Ring } from './ring';
@@ -144,6 +144,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
       <div className="crossword__anagram-helper-outer" data-link-name="Anagram Helper">
         <div className="crossword__anagram-helper-inner">{inner}</div>
         <button
+          type="button"
           className="button button--large button--tertiary crossword__anagram-helper-close"
           onClick={this.props.close.bind(this.props.crossword)}
           data-link-name="Close">
@@ -156,12 +157,14 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
           hasShuffled={!this.state.showInput}
         />
         <button
+          type="button"
           className={`button button--large ${!this.state.clueInput ? 'button--tertiary' : ''}`}
           onClick={this.reset.bind(this)}
           data-link-name="Start Again">
           Restart
         </button>
         <button
+          type="button"
           className={`button button--large ${this.canShuffle() ? '' : 'button--tertiary'}`}
           onClick={this.shuffle.bind(this)}
           data-link-name="Shuffle">

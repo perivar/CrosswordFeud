@@ -84,79 +84,6 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
     });
   }
 
-  sortData(data: SortableTableData, sortings: string[]): SortableTableData {
-    // let sortedData = this.props.data;
-    let sortedData = data;
-    for (var i in sortings) {
-      const sorting = sortings[i];
-      const column = this.props.columns[i];
-      const key = this.props.columns[i].key;
-      switch (sorting) {
-        case 'desc':
-          if (column.descSortFunction && typeof column.descSortFunction == 'function') {
-            sortedData = column.descSortFunction(sortedData, key);
-          } else {
-            sortedData = this.descSortData(sortedData, key);
-          }
-          break;
-        case 'asc':
-          if (column.ascSortFunction && typeof column.ascSortFunction == 'function') {
-            sortedData = column.ascSortFunction(sortedData, key);
-          } else {
-            sortedData = this.ascSortData(sortedData, key);
-          }
-          break;
-      }
-    }
-    return sortedData;
-  }
-
-  ascSortData(data: SortableTableData, key: string): SortableTableData {
-    return this.sortDataByKey(data, key, (a: any, b: any) => {
-      if (this.parseFloatable(a) && this.parseFloatable(b)) {
-        a = this.parseIfFloat(a);
-        b = this.parseIfFloat(b);
-      }
-      if (a >= b) {
-        return 1;
-      } else if (a < b) {
-        return -1;
-      }
-    });
-  }
-
-  descSortData(data: SortableTableData, key: string): SortableTableData {
-    return this.sortDataByKey(data, key, (a: any, b: any) => {
-      if (this.parseFloatable(a) && this.parseFloatable(b)) {
-        a = this.parseIfFloat(a);
-        b = this.parseIfFloat(b);
-      }
-      if (a <= b) {
-        return 1;
-      } else if (a > b) {
-        return -1;
-      }
-    });
-  }
-
-  parseFloatable(value: any): boolean {
-    return typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, '')))
-      ? true
-      : false;
-  }
-
-  parseIfFloat(value: any): number {
-    return parseFloat(value.replace(/,/g, ''));
-  }
-
-  sortDataByKey(data: SortableTableData, key: string, fn: any): SortableTableData {
-    const clone = Array.apply(null, data as any);
-
-    return clone.sort((a: any, b: any) => {
-      return fn(a[key], b[key]);
-    });
-  }
-
   // notice that this is an arrow function to avoid having to bind this in constructor.
   onStateChange = (index: number) => {
     const sortings = this.state.sortings.map((sorting: SortingType, i: number) => {
@@ -207,6 +134,79 @@ export default class SortableTable extends Component<SortableTableProps, Sortabl
       });
     }
   };
+
+  parseFloatable(value: any): boolean {
+    return typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, '')))
+      ? true
+      : false;
+  }
+
+  parseIfFloat(value: any): number {
+    return parseFloat(value.replace(/,/g, ''));
+  }
+
+  ascSortData(data: SortableTableData, key: string): SortableTableData {
+    return this.sortDataByKey(data, key, (a: any, b: any) => {
+      if (this.parseFloatable(a) && this.parseFloatable(b)) {
+        a = this.parseIfFloat(a);
+        b = this.parseIfFloat(b);
+      }
+      if (a >= b) {
+        return 1;
+      } else if (a < b) {
+        return -1;
+      }
+    });
+  }
+
+  descSortData(data: SortableTableData, key: string): SortableTableData {
+    return this.sortDataByKey(data, key, (a: any, b: any) => {
+      if (this.parseFloatable(a) && this.parseFloatable(b)) {
+        a = this.parseIfFloat(a);
+        b = this.parseIfFloat(b);
+      }
+      if (a <= b) {
+        return 1;
+      } else if (a > b) {
+        return -1;
+      }
+    });
+  }
+
+  sortData(data: SortableTableData, sortings: string[]): SortableTableData {
+    // let sortedData = this.props.data;
+    let sortedData = data;
+    for (var i in sortings) {
+      const sorting = sortings[i];
+      const column = this.props.columns[i];
+      const key = this.props.columns[i].key;
+      switch (sorting) {
+        case 'desc':
+          if (column.descSortFunction && typeof column.descSortFunction == 'function') {
+            sortedData = column.descSortFunction(sortedData, key);
+          } else {
+            sortedData = this.descSortData(sortedData, key);
+          }
+          break;
+        case 'asc':
+          if (column.ascSortFunction && typeof column.ascSortFunction == 'function') {
+            sortedData = column.ascSortFunction(sortedData, key);
+          } else {
+            sortedData = this.ascSortData(sortedData, key);
+          }
+          break;
+      }
+    }
+    return sortedData;
+  }
+
+  sortDataByKey(data: SortableTableData, key: string, fn: any): SortableTableData {
+    const clone = Array.apply(null, data as any);
+
+    return clone.sort((a: any, b: any) => {
+      return fn(a[key], b[key]);
+    });
+  }
 
   nextSortingState(state: SortingType): SortingType {
     let next;

@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
 import RegisterComponent from './RegisterComponent';
 
 import { userActions } from './ducks/actions';
 import { IUser } from './types';
 import { IStoreState } from '../../state/store';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
 
 const mapStateToProps = (state: IStoreState, ownProps: any) => {
   const { registering } = state.registration;

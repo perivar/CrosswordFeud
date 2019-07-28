@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { Container } from 'reactstrap';
 import { NavMenu } from './NavMenu';
 
-export class Layout extends Component<any, any> {
+export class Layout extends PureComponent<any, any> {
   public render() {
     return (
       <>
@@ -16,7 +16,7 @@ export class Layout extends Component<any, any> {
             </div>
           </div>
           <div className="hero-foot">
-            <div className="container"></div>
+            <div className="container" />
           </div>
         </section>
       </>

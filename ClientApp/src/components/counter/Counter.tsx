@@ -30,7 +30,7 @@ export class Counter extends Component<{}, ILocalState> {
           Current count: <strong>{this.state.currentCount}</strong>
         </p>
 
-        <button className="btn btn-primary" onClick={this.incrementCounter}>
+        <button type="button" className="btn btn-primary" onClick={this.incrementCounter}>
           Increment
         </button>
       </div>

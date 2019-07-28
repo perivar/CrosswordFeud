@@ -1,11 +1,11 @@
 // Import only what you need from Bulma
-@import '../../../node_modules/bulma/sass/utilities/_all.sass';
-@import '../../../node_modules/bulma/sass/base/_all.sass';
-@import '../../../node_modules/bulma/sass/elements/_all.sass';
-@import '../../../node_modules/bulma/sass/form/_all.sass';
-@import '../../../node_modules/bulma/sass/components/_all.sass';
-@import '../../../node_modules/bulma/sass/grid/_all.sass';
-@import '../../../node_modules/bulma/sass/layout/_all.sass';
+@import '../../../../node_modules/bulma/sass/utilities/_all.sass';
+// @import '../../../../node_modules/bulma/sass/base/_all.sass';
+// @import '../../../../node_modules/bulma/sass/elements/_all.sass';
+// @import '../../../../node_modules/bulma/sass/form/_all.sass';
+@import '../../../../node_modules/bulma/sass/components/_all.sass';
+// @import '../../../../node_modules/bulma/sass/grid/_all.sass';
+// @import '../../../../node_modules/bulma/sass/layout/_all.sass';
 
 button.pagination-button {
     background: none;
@@ -34,7 +34,6 @@ button.pagination-button {
     }
     &:active,
     &.is-active {
-        // border-color: $button-active-border-color;
         border-color: $pagination-hover-border-color;
     }
     &.is-current {

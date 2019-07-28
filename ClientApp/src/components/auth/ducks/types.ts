@@ -3,8 +3,8 @@
 // This provides an easy reference for the actions available.
 // These strings are exported as an object literal which can then be imported into your reducers and action creators instead of hard-coding them.
 
-import { IUser, ILogon } from '../types';
 import { Action } from 'redux';
+import { IUser, ILogon } from '../types';
 
 export enum UserActionTypes {
   REGISTER_REQUEST = 'USERS_REGISTER_REQUEST',

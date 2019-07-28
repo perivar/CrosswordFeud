@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
+import BulmaPaginator, { PaginationPlacement } from '../shared/bulma-components/BulmaPagination';
 import useRadioButtons from '../shared/hooks/radio-buttons-hook';
-import './bulma-table.scss';
+import '../shared/bulma-components/bulma-table.scss';
 
 const range = (from: number, to: number, step = 1) => {
   let i = from;

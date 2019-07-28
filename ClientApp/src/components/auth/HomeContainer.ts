@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
+import { ThunkDispatch } from 'redux-thunk';
+import { AnyAction } from 'redux';
 import HomeComponent from './HomeComponent';
 
 import { userActions } from './ducks/actions';
 import { IStoreState } from '../../state/store';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
 
 const mapStateToProps = (state: IStoreState, ownProps: any) => {
   const { users, authentication } = state;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 
 const round = (x: number) => Math.round(x * 100) / 100;
 /**
@@ -21,7 +21,7 @@ export interface IRingProps {
   letters: any;
 }
 
-class Ring extends Component<IRingProps> {
+class Ring extends PureComponent<IRingProps> {
   render() {
     const angle = 360 / this.props.letters.length;
 

@@ -55,7 +55,11 @@ class ConfirmButton extends Component<IConfirmButtonProps, IConfirmButtonState> 
       className
     };
 
-    return <button {...props}>{inner}</button>;
+    return (
+      <button type="button" {...props}>
+        {inner}
+      </button>
+    );
   }
 }
 

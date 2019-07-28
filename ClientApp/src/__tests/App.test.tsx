@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
-import App from '../App';
 import { Provider } from 'react-redux';
+import App from '../App';
 import configureStore from '../state/store';
 
 const mockStore = configureStore();

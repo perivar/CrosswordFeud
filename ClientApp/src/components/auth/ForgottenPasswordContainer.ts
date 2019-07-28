@@ -1,10 +1,10 @@
 import { connect } from 'react-redux';
-import ForgottenPasswordComponent from './ForgottenPasswordComponent';
-import { IStoreState } from '../../state/store';
 import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
-import { IAuthState } from './types';
 import { RouteComponentProps } from 'react-router-dom';
+import ForgottenPasswordComponent from './ForgottenPasswordComponent';
+import { IStoreState } from '../../state/store';
+import { IAuthState } from './types';
 
 export interface ForgottenPasswordRouterProps {
   token: string; // This one is coming from the router

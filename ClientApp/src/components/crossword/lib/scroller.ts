@@ -8,8 +8,8 @@
     Note: if you pass in an element, you must also specify an easing function.
 */
 
-import { createEasing } from '../lib/easing';
 import fastdom from 'fastdom';
+import { createEasing } from './easing';
 
 const scrollTo = (offset: number, duration = 0, easeFn = 'easeOutQuad', container = document.body) => {
   const $container = container;

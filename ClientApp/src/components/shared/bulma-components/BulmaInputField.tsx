@@ -26,7 +26,7 @@ const InputField = ({
   icon
 }: BulmaInputFieldArguments) => {
   if (icon === undefined) {
-    icon = <i className="fas fa-smile"></i>;
+    icon = <i className="fas fa-smile" />;
   }
   return (
     <>
@@ -39,6 +39,7 @@ const InputField = ({
             type={type} // text, email or password
             className={`input ${required && submitted && !value ? ' is-danger' : ' '}`}
             name={name}
+            id={name}
             value={value}
             onChange={handleChange}
             placeholder={placeholder}
@@ -47,7 +48,7 @@ const InputField = ({
           <span className="icon is-small is-left">{icon}</span>
           {required && submitted && !value ? (
             <span className="icon is-small is-right">
-              <i className="fas fa-exclamation-triangle"></i>
+              <i className="fas fa-exclamation-triangle" />
             </span>
           ) : (
             ''

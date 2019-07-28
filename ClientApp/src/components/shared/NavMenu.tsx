@@ -12,10 +12,6 @@ export class NavMenu extends Component<{}, ILocalState> {
   constructor(props: any) {
     super(props);
 
-    this.state = {
-      collapsed: true
-    };
-
     this.menu = React.createRef();
   }
 
@@ -23,14 +19,8 @@ export class NavMenu extends Component<{}, ILocalState> {
     if (this.menu.current) {
       if (this.menu.current.classList.contains('is-active')) {
         this.menu.current.classList.remove('is-active');
-        this.setState({
-          collapsed: true
-        });
       } else {
         this.menu.current.classList.add('is-active');
-        this.setState({
-          collapsed: false
-        });
       }
     }
   };
@@ -45,14 +35,15 @@ export class NavMenu extends Component<{}, ILocalState> {
                 <h4 className="title is-4">CrosswordFeud.Web</h4>
               </NavLink>
               <button
+                type="button"
                 className="navbar-burger burger button is-white"
                 aria-label="menu"
                 aria-expanded="false"
                 data-target="navbarBasic"
                 onClick={this.handleNavBurgerToggle}>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
               </button>
             </div>
 

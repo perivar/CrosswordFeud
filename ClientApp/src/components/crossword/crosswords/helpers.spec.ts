@@ -19,8 +19,7 @@ import {
   getClearableCellsForClue
 } from './helpers';
 
-import { IClue } from '../types';
-import { ICell } from '../types';
+import { IClue, ICell } from '../types';
 
 const stubCellWithValue = (value: string): ICell => ({
   number: 1,

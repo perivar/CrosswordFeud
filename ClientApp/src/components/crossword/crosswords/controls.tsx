@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import { ConfirmButton } from './confirm-button';
 import Crossword from './crossword';
 import { IClue } from '../types';
@@ -13,7 +13,7 @@ export interface IControlProps {
   crossword: Crossword;
 }
 
-class Controls extends Component<IControlProps> {
+class Controls extends PureComponent<IControlProps> {
   render(): React.ReactNode {
     const hasSolutions = this.props.hasSolutions;
     const clueInFocus = this.props.clueInFocus;
@@ -59,6 +59,7 @@ class Controls extends Component<IControlProps> {
     if (clueInFocus) {
       controls.clue.unshift(
         <button
+          type="button"
           className={`${buttonClassName} ${buttonCurrentClassName}`}
           onClick={this.props.crossword.onClearSingle.bind(this.props.crossword)}
           key="clear-single"
@@ -70,6 +71,7 @@ class Controls extends Component<IControlProps> {
       // anagram helper
       controls.clue.push(
         <button
+          type="button"
           className={`${buttonClassName} ${buttonCurrentClassName}`}
           onClick={this.props.crossword.onToggleAnagramHelper.bind(this.props.crossword)}
           key="anagram"
@@ -81,6 +83,7 @@ class Controls extends Component<IControlProps> {
       if (hasSolutions) {
         controls.clue.unshift(
           <button
+            type="button"
             className={`${buttonClassName} ${buttonCurrentClassName}`}
             onClick={this.props.crossword.onCheat.bind(this.props.crossword)}
             key="cheat"
@@ -90,6 +93,7 @@ class Controls extends Component<IControlProps> {
         );
         controls.clue.unshift(
           <button
+            type="button"
             className={`${buttonClassName} ${buttonCurrentClassName}`}
             onClick={this.props.crossword.onCheck.bind(this.props.crossword)}
             key="check"

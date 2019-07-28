@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { usePagination } from '../shared/hooks/react-pagination-hook';
+import { usePagination } from '../hooks/react-pagination-hook';
 
 export type PaginationPlacement = 'inline' | 'centered' | 'left' | 'right';
 

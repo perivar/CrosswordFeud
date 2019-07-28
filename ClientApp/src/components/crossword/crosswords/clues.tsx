@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import fastdom from 'fastdom';
+import { debounce } from 'lodash';
 import { classNames } from './classNames';
 import { isBreakpoint } from '../lib/detect';
 import { scrollTo } from '../lib/scroller';
 import { IClue, Direction } from '../types';
 import { addMyEventListener } from '../lib/events';
-import { debounce } from 'lodash';
 
 export interface IClueProps {
   id: string;
@@ -83,17 +83,6 @@ class Clues extends Component<ICluesProps, ICluesState> {
     addMyEventListener(window, 'scroll', delayedHandleScrollCallback);
   }
 
-  handleScroll(): void {
-    const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
-    const showGradient = height - this.$cluesNode.scrollTop > 25;
-
-    if (this.state.showGradient !== showGradient) {
-      this.setState({
-        showGradient
-      });
-    }
-  }
-
   /**
    * Scroll clues into view when they're activated (i.e. clicked in the grid)
    */
@@ -107,6 +96,17 @@ class Clues extends Component<ICluesProps, ICluesState> {
     ) {
       fastdom.measure(() => {
         this.scrollIntoView(this.props.focused);
+      });
+    }
+  }
+
+  handleScroll(): void {
+    const height = this.$cluesNode.scrollHeight - this.$cluesNode.clientHeight;
+    const showGradient = height - this.$cluesNode.scrollTop > 25;
+
+    if (this.state.showGradient !== showGradient) {
+      this.setState({
+        showGradient
       });
     }
   }

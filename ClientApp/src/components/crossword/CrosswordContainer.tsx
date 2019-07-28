@@ -31,7 +31,7 @@ class CrosswordContainer extends Component<any, ICrosswordContainerState> {
         {/* {error} */}
         {/* {JSON.stringify(data)} */}
         <Crossword data={data} />
-        <button className="btn btn-primary" onClick={this.getCrossword}>
+        <button type="button" className="btn btn-primary" onClick={this.getCrossword}>
           Get crossword
         </button>
       </div>

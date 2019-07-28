@@ -1,8 +1,8 @@
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
-		// 'airbnb', // too strict
-		// "eslint:recommended", // too strict
+		'airbnb', // quite strict
+		'eslint:recommended', 
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
     'plugin:jsx-a11y/recommended', // reccommended or strict
 		'plugin:import/typescript', // extends the recommended import with typescript import/resolver support for .ts and .tsx
@@ -13,24 +13,30 @@ module.exports = {
   ],
   parserOptions: {
     // ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
-    // sourceType: "module", // Allows for the use of imports
+    // sourceType: 'module', // Allows for the use of imports
     // ecmaFeatures: {
     //   jsx: true,
     // },
     project: 'tsconfig.json',
     tsconfigRootDir: 'ClientApp'
   },
+  'env': {
+    'es6': true,
+    'browser': true,
+    'node': true,
+    'jest': true
+  },
   plugins: ['@typescript-eslint', 'react', 'react-hooks', 'jsx-a11y', 'prettier', 'json', 'import'],
   rules: {
     // Place to specify ESLint rules. Can be used to overwrite rules specified from the extended configs
-    // e.g. "@typescript-eslint/explicit-function-return-type": "off",
+    // e.g. '@typescript-eslint/explicit-function-return-type': 'off',
 
     // https://gist.github.com/1natsu172/a65a4b45faed2bd3fa74b24163e4256e
 
     /**
      * @description rules of @typescript-eslint
      */
-    '@typescript-eslint/prefer-interface': 'off', // also want to use "type"
+    '@typescript-eslint/prefer-interface': 'off', // also want to use 'type'
     '@typescript-eslint/explicit-function-return-type': 'off', // annoying to force return type
     '@typescript-eslint/indent': 'off',
     '@typescript-eslint/interface-name-prefix': 'off', // off = disagree with TS team on usefulness
@@ -50,7 +56,7 @@ module.exports = {
     'react/jsx-filename-extension': [
       'warn',
       {
-        // also want to use with ".tsx"
+        // also want to use with '.tsx'
         extensions: ['.jsx', '.tsx']
       }
     ],
@@ -73,13 +79,17 @@ module.exports = {
      * @description rules of eslint
      */
     // 'no-underscore-dangle': 'warn',
-    // 'no-case-declarations': 'warn',
-    // 'import/no-cycle': 'warn',
+		'import/no-cycle': 'warn',
+		'no-console': 'off',
+		// 'prefer-const': 'error',
+		'no-dupe-class-members': 'warn',
 
 		/**
      * @description rules of eslint-import-resolver-typescript
      */    
-		"import/no-unresolved": "error",
+		'import/no-unresolved': 'error',
+		'import/prefer-default-export': 'off',
+		'import/no-extraneous-dependencies': ['error', {'devDependencies': ['**/*.spec.ts']}],
 
     /**
      * @description rules of eslint-plugin-prettier
@@ -106,7 +116,9 @@ module.exports = {
         specialLink: ['to', 'hrefLeft', 'hrefRight'],
         aspects: ['noHref', 'invalidHref', 'preferButton']
       }
-    ]
+		],
+		'jsx-a11y/label-has-for': 'off', // deprecated
+    'jsx-a11y/label-has-associated-control': 'warn',
 	},
   settings: {
     react: {

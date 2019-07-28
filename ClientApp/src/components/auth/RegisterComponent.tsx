@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { IRegisterProps, IRegisterState } from './types';
-import { BulmaInputField } from './BulmaInputField';
-import { BulmaSubmitButton } from './BulmaSubmitButton';
+import { BulmaInputField } from '../shared/bulma-components/BulmaInputField';
+import { BulmaSubmitButton } from '../shared/bulma-components/BulmaSubmitButton';
 
 export default class RegisterComponent extends React.Component<IRegisterProps, IRegisterState> {
   constructor(props: IRegisterProps) {
@@ -79,43 +79,43 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
             <div className="column is-5-tablet is-5-desktop is-4-widescreen">
               <form className="box" onSubmit={this.handleSubmit}>
                 <div className="field has-text-centered">
-                  <i className="fas fa-user-plus fa-3x"></i>
+                  <i className="fas fa-user-plus fa-3x" />
                 </div>
                 <BulmaInputField
                   label="Brukernavn"
                   type="text"
                   name="username"
                   placeholder="feks. ola@nordmann.no"
-                  required={true}
+                  required
                   requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
                   value={user.username}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fas fa-user"></i>}
+                  icon={<i className="fas fa-user" />}
                 />
                 <BulmaInputField
                   label="E-post adresse"
                   type="email"
                   name="email"
                   placeholder="feks. ola@nordmann.no"
-                  required={true}
+                  required
                   requiredMessage="Gyldig e-post adresse er påkrevd"
                   value={user.email}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fa fa-envelope"></i>}
+                  icon={<i className="fa fa-envelope" />}
                 />
                 <BulmaInputField
                   label="Bekreft e-post adresse"
                   type="email"
                   name="confirmEmail"
                   placeholder="feks. ola@nordmann.no"
-                  required={true}
+                  required
                   requiredMessage={emailsNotEqual ? 'E-post adressene er ulike' : 'Gyldig e-post adresse er påkrevd'}
                   value={user.confirmEmail}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fa fa-envelope"></i>}
+                  icon={<i className="fa fa-envelope" />}
                 />
                 <BulmaInputField
                   label="Telefon nummer"
@@ -127,22 +127,22 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
                   value={user.phonenumber}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fa fa-phone"></i>}
+                  icon={<i className="fa fa-phone" />}
                 />
 
-                <div className="is-divider" data-content="Passord"></div>
+                <div className="is-divider" data-content="Passord" />
 
                 <BulmaInputField
                   label="Passord"
                   type="password"
                   name="password"
                   placeholder="*********"
-                  required={true}
+                  required
                   requiredMessage="Gyldig passord er påkrevd"
                   value={user.password}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fa fa-lock"></i>}
+                  icon={<i className="fa fa-lock" />}
                 />
 
                 <BulmaInputField
@@ -150,23 +150,25 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
                   type="password"
                   name="confirmPassword"
                   placeholder="*********"
-                  required={true}
+                  required
                   requiredMessage={passwordsNotEqual ? 'Passordene er ulike' : 'Gyldig passord er påkrevd'}
                   value={user.confirmPassword}
                   submitted={submitted}
                   handleChange={this.handleChange}
-                  icon={<i className="fa fa-lock"></i>}
+                  icon={<i className="fa fa-lock" />}
                 />
                 <BulmaSubmitButton text="Register ny bruker" loading={registering!} />
               </form>
               <p className="has-text-grey">
                 <Link to="/login">
-                  <i className="fas fa-user"></i>&nbsp; Har du allerede bruker? Logg inn!
+                  <i className="fas fa-user" />
+                  &nbsp; Har du allerede bruker? Logg inn!
                 </Link>
               </p>
               <p className="has-text-grey">
                 <Link to="/help">
-                  <i className="fas fa-question"></i>&nbsp; Trenger du hjelp?
+                  <i className="fas fa-question" />
+                  &nbsp; Trenger du hjelp?
                 </Link>
               </p>
             </div>

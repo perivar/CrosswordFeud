@@ -1,5 +1,5 @@
 import MockDate from 'mockdate';
-import { local, session, IStorage } from '../lib/storage';
+import { local, session, IStorage } from './storage';
 
 interface StorageIO {
   key: string;

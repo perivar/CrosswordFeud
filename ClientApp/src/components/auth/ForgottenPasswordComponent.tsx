@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useReducer, FormEvent, ChangeEvent } from 'react';
-import { useDataApi } from '../shared/hooks/data-api-hook';
-import { BulmaInputField } from './BulmaInputField';
-import { BulmaSubmitButton } from './BulmaSubmitButton';
 import { Link } from 'react-router-dom';
+import { useDataApi } from '../shared/hooks/data-api-hook';
+import { BulmaInputField } from '../shared/bulma-components/BulmaInputField';
+import { BulmaSubmitButton } from '../shared/bulma-components/BulmaSubmitButton';
 import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './ForgottenPasswordContainer';
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
@@ -98,7 +98,7 @@ export function stateReducer(state: IState, action: Actions): IState {
         ...state,
         confirmPassword: action.value
       };
-    case ActionTypes.QUERY_PARAMETERS_CHANGE:
+    case ActionTypes.QUERY_PARAMETERS_CHANGE: {
       const hasTokenParameter = action.token ? true : false;
       const hasUsernameParameter = action.username ? true : false;
 
@@ -115,6 +115,7 @@ export function stateReducer(state: IState, action: Actions): IState {
         hasUsernameParameter: hasUsernameParameter,
         hasTokenParameter: hasTokenParameter
       };
+    }
     case ActionTypes.RECEIVED_TOKEN:
       return {
         ...state,
@@ -339,31 +340,31 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         type="text"
         name="username"
         placeholder="feks. ola@nordmann.no"
-        required={true}
+        required
         requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
         value={state.username}
         submitted={state.submitted}
         handleChange={handleUsernameChange}
-        icon={<i className="fas fa-user"></i>}
+        icon={<i className="fas fa-user" />}
       />
     </>
   );
 
   const passwordSegment = (
     <>
-      <div className="is-divider" data-content="Passord"></div>
+      <div className="is-divider" data-content="Passord" />
 
       <BulmaInputField
         label="Nytt Passord"
         type="password"
         name="password"
         placeholder="*********"
-        required={true}
+        required
         requiredMessage={state.passwordNotValid ? 'Passordet er ikke gyldig' : 'Gyldig passord er påkrevd'}
         value={state.password}
         submitted={state.submitted}
         handleChange={handlePasswordChange}
-        icon={<i className="fa fa-lock"></i>}
+        icon={<i className="fa fa-lock" />}
       />
 
       <BulmaInputField
@@ -371,21 +372,21 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         type="password"
         name="confirmPassword"
         placeholder="*********"
-        required={true}
+        required
         requiredMessage={state.passwordsNotEqual ? 'Passordene er ulike' : 'Gyldig passord er påkrevd'}
         value={state.confirmPassword}
         submitted={state.submitted}
         handleChange={handleConfirmPasswordChange}
-        icon={<i className="fa fa-lock"></i>}
+        icon={<i className="fa fa-lock" />}
       />
     </>
   );
 
   const formSegment = (
     <>
-      <form noValidate={true} className="box" onSubmit={handleSubmit}>
+      <form noValidate className="box" onSubmit={handleSubmit}>
         <div className="field has-text-centered">
-          <i className="fa fa-lock fa-3x"></i>
+          <i className="fa fa-lock fa-3x" />
         </div>
 
         {usernameSegment}
@@ -458,17 +459,20 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
             )}
             <p className="has-text-grey">
               <Link to="/login">
-                <i className="fas fa-user"></i>&nbsp; Har du allerede bruker? Logg inn!
+                <i className="fas fa-user" />
+                &nbsp; Har du allerede bruker? Logg inn!
               </Link>
             </p>
             <p className="has-text-grey">
               <Link to="/register">
-                <i className="fas fa-user-plus"></i>&nbsp; Er du ikke bruker? Register deg nå!
+                <i className="fas fa-user-plus" />
+                &nbsp; Er du ikke bruker? Register deg nå!
               </Link>
             </p>
             <p className="has-text-grey">
               <Link to="/help">
-                <i className="fas fa-question"></i>&nbsp; Trenger du hjelp?
+                <i className="fas fa-question" />
+                &nbsp; Trenger du hjelp?
               </Link>
             </p>
           </div>
