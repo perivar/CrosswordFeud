@@ -145,7 +145,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
         <div className="crossword__anagram-helper-inner">{inner}</div>
         <button
           type="button"
-          className="button button--large button--tertiary crossword__anagram-helper-close"
+          className="button--crossword button--large button--tertiary crossword__anagram-helper-close"
           onClick={this.props.close.bind(this.props.crossword)}
           data-link-name="Close">
           <Close />
@@ -158,14 +158,14 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
         />
         <button
           type="button"
-          className={`button button--large ${!this.state.clueInput ? 'button--tertiary' : ''}`}
+          className={`button--crossword button--large ${!this.state.clueInput ? 'button--tertiary' : ''}`}
           onClick={this.reset.bind(this)}
           data-link-name="Start Again">
           Restart
         </button>
         <button
           type="button"
-          className={`button button--large ${this.canShuffle() ? '' : 'button--tertiary'}`}
+          className={`button--crossword button--large ${this.canShuffle() ? '' : 'button--tertiary'}`}
           onClick={this.shuffle.bind(this)}
           data-link-name="Shuffle">
           Shuffle

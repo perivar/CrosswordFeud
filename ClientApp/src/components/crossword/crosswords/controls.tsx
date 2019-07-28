@@ -3,7 +3,7 @@ import { ConfirmButton } from './confirm-button';
 import Crossword from './crossword';
 import { IClue } from '../types';
 
-const buttonClassName = 'button button--primary';
+const buttonClassName = 'button--crossword button--primary';
 const buttonCurrentClassName = 'button--crossword--current';
 const buttonGenericClassName = 'button--secondary';
 

@@ -1,6 +1,6 @@
 @import 'src';
 
-.button {
+.button--crossword {
     @include fs-textSans(2);
     @include button-height($base-size * 5);
     @include button-colour($sport-bright, #ffffff, $sport-dark);
@@ -13,6 +13,10 @@
     border-width: 1px;
     border-style: solid;
     box-sizing: border-box;
+
+    margin: 0.25rem;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
 
     &:hover,
     &:focus,

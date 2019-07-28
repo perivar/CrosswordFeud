@@ -11,7 +11,7 @@ const SubmitButton = ({ text, loading }: BulmaSubmitButtonArguments) => {
       <div className="field">
         <div className="control">
           <button
-            type="button"
+            type="submit"
             className={`button is-block is-info is-large is-fullwidth ${loading ? 'is-loading' : ''}`}>
             {text}
           </button>
