@@ -40,7 +40,7 @@ function BulmaPaginator({
   const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
   const { activePage, visiblePieces, goToPage } = usePagination({ initialPage, numberOfPages, maxButtons });
 
-  let gotoFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
+  const gotoFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
 
   // subscribe to any changes to initialPage
   useEffect(() => {
@@ -88,6 +88,7 @@ function BulmaPaginator({
       const { pageNumber } = visiblePiece;
       return (
         <button
+          type="button"
           className="pagination-previous pagination-button"
           aria-label="Previous"
           onClick={event => handleClick(pageNumber, event)}
@@ -104,6 +105,7 @@ function BulmaPaginator({
       const { pageNumber } = visiblePiece;
       return (
         <button
+          type="button"
           className="pagination-next pagination-button"
           aria-label="Next"
           onClick={event => handleClick(pageNumber, event)}
@@ -162,25 +164,25 @@ function BulmaPaginator({
                             onKeyPress={handleGotoKeyPress}
                           />
                           <button type="submit" className="icon is-small is-right is-icon-button">
-                            <i className="fas fa-search"></i>
+                            <i className="fas fa-search" />
                           </button>
                         </p>
                       </div>
                     </form>
                   </li>
                 );
-              } else {
-                return (
-                  <li key={key}>
-                    <button
-                      className={`pagination-link pagination-button ${className}`}
-                      aria-label={`Goto page ${pageNumber}`}
-                      onClick={event => handleClick(pageNumber, event)}>
-                      {pageNumber}
-                    </button>
-                  </li>
-                );
               }
+              return (
+                <li key={key}>
+                  <button
+                    type="button"
+                    className={`pagination-link pagination-button ${className}`}
+                    aria-label={`Goto page ${pageNumber}`}
+                    onClick={event => handleClick(pageNumber, event)}>
+                    {pageNumber}
+                  </button>
+                </li>
+              );
             }
 
             if (paginationPlacement === 'inline') {

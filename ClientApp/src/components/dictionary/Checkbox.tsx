@@ -9,10 +9,11 @@ interface CheckboxProps {
 
 const Checkbox: React.FunctionComponent<CheckboxProps> = ({ name, label, isSelected, onCheckboxChange }) => (
   <div className="form-check">
-    <label>
+    <label htmlFor={name}>
       <input
         type="checkbox"
         name={name}
+        id={name}
         checked={isSelected}
         onChange={onCheckboxChange}
         className="form-check-input"

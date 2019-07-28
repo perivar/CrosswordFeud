@@ -168,7 +168,11 @@ export function stateReducer(state: IState, action: Actions): IState {
           submitted: true
         };
       } else {
-        // all fields are empty?
+        // all fields are empty - set to submitted so the warnings are shown
+        return {
+          ...state,
+          submitted: true
+        };
       }
       return state;
 
@@ -421,9 +425,8 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
             {errorReset &&
               errorReset.response &&
               errorReset.response.data &&
-              errorReset.response.data.map((identityError: ASPCoreIdentityErrors, index: number) => (
-                <div key={index} className="has-text-left">
-                  {/* {identityError.code} */}
+              errorReset.response.data.map((identityError: ASPCoreIdentityErrors) => (
+                <div key={identityError.code} className="has-text-left">
                   {identityError.description}
                 </div>
               ))}

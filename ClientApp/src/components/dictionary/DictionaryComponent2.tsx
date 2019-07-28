@@ -35,7 +35,7 @@ export default function DictionaryComponent2() {
   const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
 
   useEffect(() => {
-    let pages: number[] = range(1, numberOfRows);
+    const pages: number[] = range(1, numberOfRows);
     setData(pages);
   }, [numberOfRows]);
 
@@ -145,8 +145,8 @@ export default function DictionaryComponent2() {
       </div>
       <div>
         <ul>
-          {currentData.map((data, index) => (
-            <li key={index}>{data}</li>
+          {currentData.map(dataEntry => (
+            <li key={dataEntry.toString()}>{dataEntry}</li>
           ))}
         </ul>
       </div>

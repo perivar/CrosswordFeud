@@ -6,18 +6,22 @@
   "editor.formatOnSave": true,
   //   "files.autoSave": "onFocusChange",
   "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
   "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
   "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
   "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false,
     "editor.tabSize": 2
   },
@@ -51,12 +55,12 @@
     "active": true,
     "text": "Add placeholder."
   },
-  "prettier.disableLanguages": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact"
-  ],
+  //   "prettier.disableLanguages": [
+  //     "javascript",
+  //     "javascriptreact",
+  //     "typescript",
+  //     "typescriptreact"
+  //   ],
   "prettier.eslintIntegration": true,
   "prettier.stylelintIntegration": true
 }

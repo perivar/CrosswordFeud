@@ -12,8 +12,8 @@ const CheckboxField = ({ label, name, checked, handleChange }: BulmaChexkboxFiel
     <>
       <div className="field">
         <div className="control">
-          <label className="checkbox">
-            <input type="checkbox" name={name} onChange={handleChange} checked={checked} />
+          <label htmlFor={name} className="checkbox">
+            <input type="checkbox" id={name} name={name} onChange={handleChange} checked={checked} />
             {label}
           </label>
         </div>
