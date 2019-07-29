@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import BulmaPaginator, { PaginationPlacement } from '../shared/bulma-components/BulmaPagination';
-import useRadioButtons from '../shared/hooks/radio-buttons-hook';
-import '../shared/bulma-components/bulma-table.scss';
+import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
+import useRadioButtons from '../hooks/radio-buttons-hook';
+import './bulma-table.scss';
 
 const range = (from: number, to: number, step = 1) => {
   let i = from;
@@ -15,9 +15,9 @@ const range = (from: number, to: number, step = 1) => {
   return pool;
 };
 
-export default function DictionaryComponent2() {
+export default function BulmaPaginationExample() {
   const [activePage, setActivePage] = useState(1);
-  const [numberOfRows, setNumberOfRows] = useState(1000);
+  const [numberOfRows, setNumberOfRows] = useState(35);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [maxButtons, setMaxButtons] = useState(5);
   const [useGotoField, setUseGotoField] = useState<boolean>(false);
@@ -90,7 +90,7 @@ export default function DictionaryComponent2() {
               type="range"
               value={numberOfRows}
               min={1}
-              max={10000}
+              max={200}
               onChange={event => setNumberOfRows(Number(event.target.value))}
             />
             {numberOfRows}

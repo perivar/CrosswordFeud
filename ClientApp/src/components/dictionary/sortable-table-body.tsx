@@ -17,7 +17,10 @@ class SortableTableRow extends Component<SortableTableRowProps> {
     if (this.props.isSelected !== nextProps.isSelected) {
       return true;
     }
-    if (this.props.sortings !== nextProps.sortings) {
+    // if (this.props.sortings !== nextProps.sortings) {
+    //   return true;
+    // }
+    if (this.props.data !== nextProps.data) {
       return true;
     }
     return false;
