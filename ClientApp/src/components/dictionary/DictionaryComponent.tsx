@@ -14,6 +14,6 @@ interface DictionaryComponentState {
 
 export default class DictionaryComponent extends PureComponent<DictionaryComponentProps, DictionaryComponentState> {
   render() {
-    return <TableExample2 />;
+    return <TableExample1 />;
   }
 }

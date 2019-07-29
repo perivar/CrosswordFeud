@@ -8,6 +8,7 @@ import selectTableHOC, {
 
 import 'react-table/react-table.css';
 import './my-react-table.scss';
+import produce, { Draft } from 'immer';
 import { useEditableState, UseEditableStateArguments, EditableState } from '../shared/hooks/editable-hook';
 import { useKeyboardEvent } from '../shared/hooks/keyboard-hook';
 import { useOutsideClick } from '../shared/hooks/outside-click-hook';
@@ -187,13 +188,20 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
   }
 
   handleValueChanged = (cellInfo: CellInfo, newValue: string) => {
-    this.setState(prevState => {
-      // creating copy of state variable data
-      const data = [...prevState.data];
-      data[cellInfo.index][cellInfo.column.id!] = newValue;
+    // this.setState(prevState => {
+    //   // creating copy of state variable data
+    //   const data = [...prevState.data];
+    //   data[cellInfo.index][cellInfo.column.id!] = newValue;
 
-      return { data };
-    });
+    //   return { data };
+    // });
+
+    // use immer
+    this.setState(
+      produce((draft: Draft<TableExample1State>) => {
+        draft.data[cellInfo.index][cellInfo.column.id!] = newValue;
+      })
+    );
   };
 
   renderEditable = (cellInfo: CellInfo) => {
@@ -201,48 +209,86 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
   };
 
   toggleSelection = (key: string) => {
-    this.setState(prevState => {
-      // creating copy of state variable selection
-      let selection = [...prevState.selection];
+    // this.setState(prevState => {
+    //   // creating copy of state variable selection
+    //   let selection = [...prevState.selection];
 
-      const keyIndex = selection.indexOf(key);
+    //   const keyIndex = selection.indexOf(key);
 
-      // check to see if the key exists
-      if (keyIndex >= 0) {
-        // it does exist so we will remove it using destructing
-        selection = [...selection.slice(0, keyIndex), ...selection.slice(keyIndex + 1)];
-      } else {
-        // it does not exist so add it
-        selection.push(key);
-      }
+    //   // check to see if the key exists
+    //   if (keyIndex >= 0) {
+    //     // it does exist so we will remove it using destructing
+    //     selection = [...selection.slice(0, keyIndex), ...selection.slice(keyIndex + 1)];
+    //   } else {
+    //     // it does not exist so add it
+    //     selection.push(key);
+    //   }
 
-      return { selection };
-    });
+    //   return { selection };
+    // });
+
+    // use immer
+    this.setState(
+      produce((draft: Draft<TableExample1State>) => {
+        const keyIndex = draft.selection.indexOf(key);
+
+        // check to see if the key exists
+        if (keyIndex >= 0) {
+          draft.selection.splice(keyIndex, 1);
+        } else {
+          // it does not exist so add it
+          draft.selection.push(key);
+        }
+      })
+    );
   };
 
   toggleAll = () => {
     const { keyField } = selectTableAdditionalProps;
 
-    this.setState(prevState => {
-      // toggle
-      const selectAll = !prevState.selectAll;
+    // this.setState(prevState => {
+    //   // toggle
+    //   const selectAll = !prevState.selectAll;
 
-      const selection = [] as any[];
-      if (selectAll) {
-        // we need to get at the internals of ReactTable
-        const wrappedInstance = this.selectTable.getWrappedInstance();
-        // the 'sortedData' property contains the currently accessible records based on the filter and sort
-        const currentRecords = wrappedInstance.getResolvedState().sortedData;
-        // we just push all the IDs onto the selection array
-        currentRecords.forEach((item: any) => {
-          if (item._original) {
-            selection.push(`select-${item._original[keyField!]}`);
-          }
-        });
-      }
+    //   const selection = [] as any[];
+    //   if (selectAll) {
+    //     // we need to get at the internals of ReactTable
+    //     const wrappedInstance = this.selectTable.getWrappedInstance();
+    //     // the 'sortedData' property contains the currently accessible records based on the filter and sort
+    //     const currentRecords = wrappedInstance.getResolvedState().sortedData;
+    //     // we just push all the IDs onto the selection array
+    //     currentRecords.forEach((item: any) => {
+    //       if (item._original) {
+    //         selection.push(`select-${item._original[keyField!]}`);
+    //       }
+    //     });
+    //   }
 
-      return { selectAll, selection };
-    });
+    //   return { selectAll, selection };
+    // });
+
+    // use immer
+    this.setState(
+      produce((draft: Draft<TableExample1State>) => {
+        // toggle
+        draft.selectAll = !draft.selectAll;
+        const selection = [] as any[];
+        if (draft.selectAll) {
+          // we need to get at the internals of ReactTable
+          const wrappedInstance = this.selectTable.getWrappedInstance();
+          // the 'sortedData' property contains the currently accessible records based on the filter and sort
+          const currentRecords = wrappedInstance.getResolvedState().sortedData;
+          // we just push all the IDs onto the selection array
+          currentRecords.forEach((item: any) => {
+            if (item._original) {
+              selection.push(`select-${item._original[keyField!]}`);
+            }
+          });
+        }
+
+        draft.selection = selection;
+      })
+    );
   };
 
   isSelected = (key: string) => {
