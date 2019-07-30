@@ -194,7 +194,7 @@ function BulmaPaginator({
               }
             }
 
-            return <></>;
+            return ''; // have to return empty string not <></> since this will trigger a warning due to missing key
           })}
         </ul>
       </nav>

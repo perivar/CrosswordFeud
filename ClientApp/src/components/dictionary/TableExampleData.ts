@@ -10,6 +10,7 @@ export interface Data {
 }
 
 export const getUniqueData = (): Data[] => {
+  console.log('getting unique test data...');
   const result = makeData();
 
   // we are adding a unique ID to the data for tracking the selected records

@@ -5,15 +5,16 @@ export interface BulmaChexkboxFieldArguments {
   name: string;
   checked: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  checkboxProps?: any;
 }
 
-const CheckboxField = ({ label, name, checked, handleChange }: BulmaChexkboxFieldArguments) => {
+const CheckboxField = ({ label, name, checked, handleChange, checkboxProps }: BulmaChexkboxFieldArguments) => {
   return (
     <>
       <div className="field">
         <div className="control">
           <label htmlFor={name} className="checkbox">
-            <input type="checkbox" id={name} name={name} onChange={handleChange} checked={checked} />
+            <input type="checkbox" id={name} name={name} onChange={handleChange} checked={checked} {...checkboxProps} />
             {label}
           </label>
         </div>
