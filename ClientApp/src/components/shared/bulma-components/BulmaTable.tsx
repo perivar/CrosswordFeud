@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, ChangeEvent } from 'react';
+import React, { Dispatch, SetStateAction, ChangeEvent, CSSProperties, HTMLAttributes, useCallback } from 'react';
 import './bulma-table.scss';
 import produce, { Draft } from 'immer';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
@@ -17,80 +17,155 @@ export interface SortableTableColumn {
   header: string;
   key: string;
   defaultSorting?: string; // ASC or asc or DESC or desc
+  headerStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
+  headerProps?: HTMLAttributes<HTMLElement>; // { className: 'align-left' },
+  dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
+  dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
-  // render?: (id: string) => JSX.Element;
+  render?: (id: string) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
 
-interface SortableTableHeaderProps {
+export interface SortableTableIconInfo {
+  iconStyle?: CSSProperties;
+  iconDesc?: JSX.Element;
+  iconAsc?: JSX.Element;
+  iconBoth?: JSX.Element;
+}
+
+export interface SortableTableProps extends SortableTableIconInfo {
+  data: SortableTableData;
+  columns: SortableTableColumn[];
+  tableState: SortableTableState;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  style?: CSSProperties;
+}
+
+export interface SortableTableState {
+  sortings: SortingType[];
+  isAllSelected: boolean;
+  checkboxes: SortableCheckboxMap;
+}
+
+interface SortableTableHeaderProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SortableTableHeader = ({
-  columns,
+interface SortableTableHeaderItemProps extends SortableTableIconInfo {
+  column: SortableTableColumn;
+  tableState: SortableTableState;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  index: number;
+  sorting?: SortingType;
+}
+
+const SortableTableHeaderItem = ({
+  column,
   tableState,
   setTableState,
-  handleCheckboxChange
-}: SortableTableHeaderProps) => {
-  const headers = columns.map((column: SortableTableColumn, index: number) => {
-    const sorting = tableState.sortings[index];
-
-    const handleHeaderClick = () => {
-      if (column.sortable || column.sortable === undefined) {
-        setTableState(
-          produce((draft: Draft<SortableTableState>) => {
-            draft.sortings = draft.sortings.map((sorting: SortingType, i: number) => {
-              // set next sorting type for the selected sorting
-              // the others need to be reset back to both
-              if (i === index) {
-                sorting = nextSortingState(sorting);
-              } else {
-                sorting = 'both';
-              }
-              return sorting;
-            });
-          })
-        );
-      }
-    };
-
-    // default to being sortable (i.e. undefined)
-    let sortIcon;
+  index,
+  sorting,
+  iconStyle,
+  iconDesc,
+  iconAsc,
+  iconBoth
+}: SortableTableHeaderItemProps) => {
+  const handleHeaderClick = () => {
     if (column.sortable || column.sortable === undefined) {
+      setTableState(
+        produce((draft: Draft<SortableTableState>) => {
+          draft.sortings = draft.sortings.map((sorting: SortingType, i: number) => {
+            // set next sorting type for the selected sorting
+            // the others need to be reset back to both
+            if (i === index) {
+              sorting = nextSortingState(sorting);
+            } else {
+              sorting = 'both';
+            }
+            return sorting;
+          });
+        })
+      );
+    }
+  };
+
+  // default to being sortable (i.e. undefined)
+  let sortIcon;
+  if (column.sortable || column.sortable === undefined) {
+    if (iconBoth) {
+      sortIcon = iconBoth;
+    } else {
       sortIcon = (
-        <span className="icon has-text-grey-light">
+        <span className="icon has-text-grey-light" style={iconStyle}>
           <i className="fas fa-sort" />
         </span>
       );
-      if (sorting === 'desc') {
+    }
+    if (sorting === 'desc') {
+      if (iconDesc) {
+        sortIcon = iconDesc;
+      } else {
         sortIcon = (
-          <span className="icon has-text-grey-light">
+          <span className="icon has-text-grey-light" style={iconStyle}>
             <i className="fas fa-sort-up" />
           </span>
         );
-      } else if (sorting === 'asc') {
+      }
+    } else if (sorting === 'asc') {
+      if (iconAsc) {
+        sortIcon = iconAsc;
+      } else {
         sortIcon = (
-          <span className="icon has-text-grey-light">
+          <span className="icon has-text-grey-light" style={iconStyle}>
             <i className="fas fa-sort-down" />
           </span>
         );
       }
     }
-    return (
-      <th key={column.key} onClick={handleHeaderClick}>
-        {column.header}
-        {sortIcon}
-      </th>
-    );
+  }
+
+  return (
+    <th key={`header-${column.key}`} style={column.headerStyle} onClick={handleHeaderClick} {...column.headerProps}>
+      {column.header}
+      {sortIcon}
+    </th>
+  );
+};
+
+const SortableTableHeader = ({
+  columns,
+  tableState,
+  setTableState,
+  iconStyle,
+  iconDesc,
+  iconAsc,
+  iconBoth,
+  handleCheckboxChange
+}: SortableTableHeaderProps) => {
+  const headers = columns.map((column: SortableTableColumn, index: number) => {
+    const sorting = tableState.sortings[index];
+    const sortableTableHeaderItem = SortableTableHeaderItem({
+      column,
+      tableState,
+      setTableState,
+      index,
+      sorting,
+      iconStyle,
+      iconDesc,
+      iconAsc,
+      iconBoth
+    });
+
+    return sortableTableHeaderItem;
   });
 
   const name = 'checkAll';
   const checkbox = (
-    <th>
+    <th key="header-select-all">
       <BulmaCheckboxField
         label=""
         name={name}
@@ -103,11 +178,54 @@ const SortableTableHeader = ({
 
   return (
     <thead>
-      <tr>
+      <tr key="header-row">
         {checkbox}
         {headers}
       </tr>
     </thead>
+  );
+};
+
+interface SortableTableRowProps {
+  index: number;
+  data: SortableTableData;
+  columns: SortableTableColumn[];
+  isSelected: boolean;
+  handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const SortableTableRow = ({ index, data, columns, isSelected, handleCheckboxChange }: SortableTableRowProps) => {
+  console.log(`render table row :: ${data.id}`);
+
+  const tds = columns.map((column: SortableTableColumn) => {
+    let value = data[column.key];
+    if (column.render) {
+      value = column.render(value);
+    }
+    return (
+      <td key={`row-${data.id}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
+        {value}
+      </td>
+    );
+  });
+
+  const checkbox = (
+    <td key={`row-${data.id}-select`}>
+      <BulmaCheckboxField
+        label=""
+        name={`${data.id}`}
+        checked={isSelected}
+        handleChange={handleCheckboxChange}
+        checkboxProps={{ 'aria-label': `${isSelected ? 'Un-select' : 'Select'} row with id: ${data.id}` }}
+      />
+    </td>
+  );
+
+  return (
+    <tr key={`row-${data.id}`} className={isSelected ? ' is-selected' : ''}>
+      {checkbox}
+      {tds}
+    </tr>
   );
 };
 
@@ -126,33 +244,16 @@ const SortableTableBody = ({
   setTableState,
   handleCheckboxChange
 }: SortableTableBodyProps) => {
-  const bodies = data.map((item: any) => {
-    console.log(`render table row :: ${item.id}`);
-
-    const tds = columns.map((column: SortableTableColumn) => {
-      const value = item[column.key];
-      return <td key={`${item.id}-${column.key}`}>{value}</td>;
+  const bodies = data.map((item: any, index: number) => {
+    const sortableTableRow = SortableTableRow({
+      index,
+      data: item,
+      columns,
+      isSelected: tableState.checkboxes[item.id],
+      handleCheckboxChange
     });
 
-    const isRowSelected = tableState.checkboxes[item.id];
-    const checkbox = (
-      <td>
-        <BulmaCheckboxField
-          label=""
-          name={`${item.id}`}
-          checked={isRowSelected}
-          handleChange={handleCheckboxChange}
-          checkboxProps={{ 'aria-label': `${isRowSelected ? 'Un-select' : 'Select'} row with id: ${item.id}` }}
-        />
-      </td>
-    );
-
-    return (
-      <tr key={item.id}>
-        {checkbox}
-        {tds}
-      </tr>
-    );
+    return sortableTableRow;
   });
 
   return <tbody>{bodies}</tbody>;
@@ -246,20 +347,17 @@ const nextSortingState = (state: SortingType): SortingType => {
   return next as SortingType;
 };
 
-export interface SortableTableState {
-  sortings: SortingType[];
-  isAllSelected: boolean;
-  checkboxes: SortableCheckboxMap;
-}
-
-interface BulmaTableProps {
-  data: SortableTableData;
-  columns: SortableTableColumn[];
-  tableState: SortableTableState;
-  setTableState: Dispatch<SetStateAction<SortableTableState>>;
-}
-
-export default function BulmaTable({ columns, data, tableState, setTableState }: BulmaTableProps) {
+export default function BulmaTable({
+  columns,
+  data,
+  tableState,
+  setTableState,
+  style,
+  iconStyle,
+  iconDesc,
+  iconAsc,
+  iconBoth
+}: SortableTableProps) {
   const handleCheckboxChange = (changeEvent: ChangeEvent<HTMLInputElement>) => {
     const { name: id } = changeEvent.target;
 
@@ -292,6 +390,10 @@ export default function BulmaTable({ columns, data, tableState, setTableState }:
     columns,
     tableState,
     setTableState,
+    iconStyle,
+    iconDesc,
+    iconAsc,
+    iconBoth,
     handleCheckboxChange
   });
 
@@ -307,7 +409,7 @@ export default function BulmaTable({ columns, data, tableState, setTableState }:
   return (
     <>
       <div className="table-container">
-        <table className="table is-bordered is-striped is-hoverable is-fullwidth">
+        <table className="table is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}
           {sortableTableBody}
         </table>

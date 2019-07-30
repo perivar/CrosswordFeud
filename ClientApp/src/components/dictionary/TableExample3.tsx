@@ -49,26 +49,51 @@ const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPe
   return currentDataSlice;
 };
 
+// render methods must have displayName
+const renderIdUrl = (id: string) => {
+  return <a href={'user/' + id}>{id}</a>;
+};
+renderIdUrl.displayName = 'RenderIdUrl';
+
 const columns = [
   {
     header: 'Id',
     key: 'id',
     defaultSorting: 'ASC'
+    // headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
+    // dataStyle: { fontSize: '15px', backgroundColor: '#CCCCCC' },
+    // dataProps: { className: 'align-right' },
+    // render: renderIdUrl
   },
   {
     header: 'Age',
     key: 'age',
+    // headerStyle: { fontSize: '20px' },
     sortable: false
   },
   {
     header: 'First Name',
     key: 'firstName'
+    // headerStyle: { fontSize: '15px' },
+    // headerProps: { className: 'align-left' }
   },
   {
     header: 'Last Name',
     key: 'lastName'
+    // headerStyle: { fontSize: '15px' },
+    // headerProps: { className: 'align-left' }
   }
 ];
+
+const style = {
+  // backgroundColor: '#eee'
+};
+
+const iconStyle = {
+  // color: '#aaa',
+  // paddingLeft: '5px',
+  // paddingRight: '5px'
+};
 
 const intialTableState = {
   sortings: getInitialSortings(columns),
@@ -95,7 +120,7 @@ export default function TableExample3() {
   // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {
     console.log(
-      'useEffect was run - setCurrentData and setTableState. activePage: ' +
+      'useEffect() being executed - setCurrentData and setTableState. activePage: ' +
         activePage +
         ' ,rowsPerPage: ' +
         rowsPerPage
@@ -129,7 +154,9 @@ export default function TableExample3() {
     columns,
     data: currentData,
     tableState,
-    setTableState
+    setTableState,
+    style,
+    iconStyle
   });
 
   return (

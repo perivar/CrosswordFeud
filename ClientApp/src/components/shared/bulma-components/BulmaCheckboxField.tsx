@@ -24,3 +24,4 @@ const CheckboxField = ({ label, name, checked, handleChange, checkboxProps }: Bu
 };
 
 export const BulmaCheckboxField = React.memo(CheckboxField);
+// export const BulmaCheckboxField = CheckboxField;
