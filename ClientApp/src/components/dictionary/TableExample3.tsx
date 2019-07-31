@@ -3,7 +3,7 @@ import produce, { Draft } from 'immer';
 import { getUniqueData, Data } from './TableExampleData';
 import BulmaPaginator from '../shared/bulma-components/BulmaPagination';
 import '../shared/bulma-components/bulma-table.scss';
-import BulmaTable, {
+import SortableTable, {
   SortingType,
   SortableTableColumn,
   SortableCheckboxMap,
@@ -150,7 +150,7 @@ export default function TableExample3() {
     useGotoField
   });
 
-  const bulmaTable = BulmaTable({
+  const bulmaTable = SortableTable({
     columns,
     data: currentData,
     tableState,

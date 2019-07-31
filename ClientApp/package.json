@@ -71,7 +71,8 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "mockdate": "^2.0.3",
-    "chance": "^1.0.18"
+    "chance": "^1.0.18",
+    "@welldone-software/why-did-you-render": "^3.2.3"
   },
   "eslintConfig": {
     "extends": "react-app"

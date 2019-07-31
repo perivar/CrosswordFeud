@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, ChangeEvent, CSSProperties, HTMLAttrib
 import './bulma-table.scss';
 import produce, { Draft } from 'immer';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
+import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -57,24 +58,18 @@ interface SortableTableHeaderProps extends SortableTableIconInfo {
 
 interface SortableTableHeaderItemProps extends SortableTableIconInfo {
   column: SortableTableColumn;
-  tableState: SortableTableState;
+  // tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   index: number;
   sorting?: SortingType;
 }
 
-const SortableTableHeaderItem = ({
-  column,
-  tableState,
-  setTableState,
-  index,
-  sorting,
-  iconStyle,
-  iconDesc,
-  iconAsc,
-  iconBoth
-}: SortableTableHeaderItemProps) => {
-  const handleHeaderClick = () => {
+// SortableTableHeaderItem
+const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
+  // useWhyDidYouUpdate('SortableTableHeaderItem', props);
+  const { column, setTableState, index, sorting, iconStyle, iconDesc, iconAsc, iconBoth } = props;
+  console.log(`render header :: ${column.key}`);
+  const handleHeaderClick = useCallback(() => {
     if (column.sortable || column.sortable === undefined) {
       setTableState(
         produce((draft: Draft<SortableTableState>) => {
@@ -91,7 +86,7 @@ const SortableTableHeaderItem = ({
         })
       );
     }
-  };
+  }, [column.sortable, index, setTableState]);
 
   // default to being sortable (i.e. undefined)
   let sortIcon;
@@ -136,29 +131,29 @@ const SortableTableHeaderItem = ({
   );
 };
 
-const SortableTableHeader = ({
-  columns,
-  tableState,
-  setTableState,
-  iconStyle,
-  iconDesc,
-  iconAsc,
-  iconBoth,
-  handleCheckboxChange
-}: SortableTableHeaderProps) => {
+const MemoizedSortableTableHeaderItem = React.memo(SortableTableHeaderItem);
+
+// SortableTableHeader
+const SortableTableHeader = (props: SortableTableHeaderProps) => {
+  // useWhyDidYouUpdate('SortableTableHeader', props);
+  const { columns, tableState, setTableState, iconStyle, iconDesc, iconAsc, iconBoth, handleCheckboxChange } = props;
   const headers = columns.map((column: SortableTableColumn, index: number) => {
     const sorting = tableState.sortings[index];
-    const sortableTableHeaderItem = SortableTableHeaderItem({
-      column,
-      tableState,
-      setTableState,
-      index,
-      sorting,
-      iconStyle,
-      iconDesc,
-      iconAsc,
-      iconBoth
-    });
+
+    const sortableTableHeaderItem = (
+      <MemoizedSortableTableHeaderItem
+        key={`header-${column.key}`}
+        column={column}
+        // tableState={tableState}
+        setTableState={setTableState}
+        index={index}
+        sorting={sorting}
+        iconStyle={iconStyle}
+        iconDesc={iconDesc}
+        iconAsc={iconAsc}
+        iconBoth={iconBoth}
+      />
+    );
 
     return sortableTableHeaderItem;
   });
@@ -187,15 +182,17 @@ const SortableTableHeader = ({
 };
 
 interface SortableTableRowProps {
-  index: number;
   data: SortableTableData;
   columns: SortableTableColumn[];
   isSelected: boolean;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SortableTableRow = ({ index, data, columns, isSelected, handleCheckboxChange }: SortableTableRowProps) => {
-  console.log(`render table row :: ${data.id}`);
+// SortableTableRow
+const SortableTableRow = (props: SortableTableRowProps) => {
+  // useWhyDidYouUpdate('SortableTableRow', props);
+  const { data, columns, isSelected, handleCheckboxChange } = props;
+  console.log(`render row :: ${data.id}`);
 
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
@@ -222,7 +219,7 @@ const SortableTableRow = ({ index, data, columns, isSelected, handleCheckboxChan
   );
 
   return (
-    <tr key={`row-${data.id}`} className={isSelected ? ' is-selected' : ''}>
+    <tr key={`row-${data.id}`} className={isSelected ? 'is-selected' : ''}>
       {checkbox}
       {tds}
     </tr>
@@ -237,21 +234,23 @@ interface SortableTableBodyProps {
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const SortableTableBody = ({
-  columns,
-  data,
-  tableState,
-  setTableState,
-  handleCheckboxChange
-}: SortableTableBodyProps) => {
-  const bodies = data.map((item: any, index: number) => {
-    const sortableTableRow = SortableTableRow({
-      index,
-      data: item,
-      columns,
-      isSelected: tableState.checkboxes[item.id],
-      handleCheckboxChange
-    });
+// make sure to memoize the rows to avoid re-renders
+const MemoizedSortableTableRow = React.memo(SortableTableRow);
+
+// SortableTableBody
+const SortableTableBody = (props: SortableTableBodyProps) => {
+  // useWhyDidYouUpdate('SortableTableBody', props);
+  const { columns, data, tableState, setTableState, handleCheckboxChange } = props;
+  const bodies = data.map((row: any) => {
+    const sortableTableRow = (
+      <MemoizedSortableTableRow
+        key={`row-${row.id}`}
+        data={row}
+        columns={columns}
+        isSelected={tableState.checkboxes[row.id]}
+        handleCheckboxChange={handleCheckboxChange}
+      />
+    );
 
     return sortableTableRow;
   });
@@ -259,6 +258,7 @@ const SortableTableBody = ({
   return <tbody>{bodies}</tbody>;
 };
 
+// sort methods
 const parseFloatable = (value: any): boolean => {
   return typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, '')))
     ? true
@@ -347,44 +347,41 @@ const nextSortingState = (state: SortingType): SortingType => {
   return next as SortingType;
 };
 
-export default function BulmaTable({
-  columns,
-  data,
-  tableState,
-  setTableState,
-  style,
-  iconStyle,
-  iconDesc,
-  iconAsc,
-  iconBoth
-}: SortableTableProps) {
-  const handleCheckboxChange = (changeEvent: ChangeEvent<HTMLInputElement>) => {
-    const { name: id } = changeEvent.target;
+// BulmaTable
+const BulmaTable = (props: SortableTableProps) => {
+  // useWhyDidYouUpdate('BulmaTable', props);
+  const { columns, data, tableState, setTableState, style, iconStyle, iconDesc, iconAsc, iconBoth } = props;
 
-    if (id === 'checkAll') {
-      setTableState(
-        produce((draft: Draft<SortableTableState>) => {
-          // toggle isAllSelected
-          draft.isAllSelected = !draft.isAllSelected;
+  const handleCheckboxChange = useCallback(
+    (changeEvent: ChangeEvent<HTMLInputElement>) => {
+      const { name: id } = changeEvent.target;
 
-          // and update all checkboxes
-          Object.keys(draft.checkboxes).forEach(id => {
-            draft.checkboxes[id] = draft.isAllSelected;
-          });
-        })
-      );
-    } else {
-      setTableState(
-        produce((draft: Draft<SortableTableState>) => {
-          // only toggle the given id
-          draft.checkboxes[id] = !draft.checkboxes[id];
+      if (id === 'checkAll') {
+        setTableState(
+          produce((draft: Draft<SortableTableState>) => {
+            // toggle isAllSelected
+            draft.isAllSelected = !draft.isAllSelected;
 
-          // check if all is selected
-          draft.isAllSelected = Object.keys(draft.checkboxes).every(id => draft.checkboxes[id]);
-        })
-      );
-    }
-  };
+            // and update all checkboxes
+            Object.keys(draft.checkboxes).forEach(id => {
+              draft.checkboxes[id] = draft.isAllSelected;
+            });
+          })
+        );
+      } else {
+        setTableState(
+          produce((draft: Draft<SortableTableState>) => {
+            // only toggle the given id
+            draft.checkboxes[id] = !draft.checkboxes[id];
+
+            // check if all is selected
+            draft.isAllSelected = Object.keys(draft.checkboxes).every(id => draft.checkboxes[id]);
+          })
+        );
+      }
+    },
+    [setTableState]
+  );
 
   const sortableTableHeader = SortableTableHeader({
     columns,
@@ -416,4 +413,6 @@ export default function BulmaTable({
       </div>
     </>
   );
-}
+};
+
+export default BulmaTable;

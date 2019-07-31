@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+/* eslint-disable @typescript-eslint/no-var-requires */
 import React, { Component } from 'react';
 import { Route, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -22,6 +24,13 @@ import { history } from './history';
 
 import './components/shared/bulma.scss';
 import { IStoreState } from './state/store';
+
+// Add a tool that will notify us when components update
+// if (process.env.NODE_ENV !== 'production') {
+//   console.warn('Loading why-did-you-render');
+//   const whyDidYouRender = require('@welldone-software/why-did-you-render');
+//   whyDidYouRender(React);
+// }
 
 const TestPage = ({ match, location }: { match: any; location: any }) => {
   return (
