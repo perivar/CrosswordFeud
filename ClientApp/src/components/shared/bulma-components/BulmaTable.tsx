@@ -337,7 +337,10 @@ interface SortableTableSearchBarProps {
 const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
   const { numberOfRows, setTableState } = props;
 
-  const searchFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
+  const searchInputRef: React.RefObject<HTMLInputElement> = React.createRef();
+
+  const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+  const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
 
   const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const keyCode = e.keyCode || e.which;
@@ -353,19 +356,46 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
     doSearch();
   };
 
-  const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
-  const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+  const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    if (searchInputRef && searchInputRef.current) searchInputRef.current.value = '';
+    doSearch();
+  };
 
   const doSearch = () => {
-    if (searchFieldInput && searchFieldInput.current) {
-      const searchQuery = searchFieldInput.current.value;
+    if (searchInputRef && searchInputRef.current) {
+      const filterQuery = searchInputRef.current.value;
       setTableState(
         produce((draft: Draft<SortableTableState>) => {
-          draft.filter = searchQuery;
+          draft.filter = filterQuery;
         })
       );
     }
   };
+
+  const searchForm = (
+    <form onSubmit={handleSearchSubmit}>
+      <div className="field has-addons">
+        <div className="control is-expanded has-icons-right">
+          <input
+            ref={searchInputRef}
+            className="input"
+            type="text"
+            placeholder="Find in table"
+            onKeyPress={handleSearchKeyPress}
+          />
+          <button type="button" className="icon is-small is-right is-icon-button" onClick={handleSearchClear}>
+            <i className="fas fa-times fa-xs" />
+          </button>
+        </div>
+        <p className="control">
+          <button type="submit" className="button">
+            Search
+          </button>
+        </p>
+      </div>
+    </form>
+  );
 
   return (
     <nav className="level">
@@ -393,26 +423,7 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
             <strong>{numberOfRows}</strong> elements
           </p>
         </div>
-        <div className="level-item">
-          <form onSubmit={handleSearchSubmit}>
-            <div className="field has-addons">
-              <p className="control">
-                <input
-                  ref={searchFieldInput}
-                  className="input"
-                  type="text"
-                  placeholder="Find in table"
-                  onKeyPress={handleSearchKeyPress}
-                />
-              </p>
-              <p className="control">
-                <button type="submit" className="button">
-                  Search
-                </button>
-              </p>
-            </div>
-          </form>
-        </div>
+        <div className="level-item">{searchForm}</div>
       </div>
     </nav>
   );
