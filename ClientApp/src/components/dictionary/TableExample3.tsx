@@ -1,53 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import produce, { Draft } from 'immer';
-import { getUniqueData, Data } from './TableExampleData';
+import React, { useState, useMemo } from 'react';
+import { getUniqueData } from './TableExampleData';
 import BulmaPaginator from '../shared/bulma-components/BulmaPagination';
 import '../shared/bulma-components/bulma-table.scss';
-import SortableTable, {
-  SortingType,
-  SortableTableColumn,
-  SortableCheckboxMap,
-  SortableTableData,
-  SortableTableState
-} from '../shared/bulma-components/BulmaTable';
-
-const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
-  console.log('getting initial sortings');
-  const sortings = columns.map((column: SortableTableColumn) => {
-    let sorting = 'both';
-    if (column.defaultSorting) {
-      const defaultSorting = column.defaultSorting.toLowerCase();
-
-      if (defaultSorting === 'desc') {
-        sorting = 'desc';
-      } else if (defaultSorting === 'asc') {
-        sorting = 'asc';
-      }
-    }
-    return sorting as SortingType;
-  });
-
-  return sortings;
-};
-
-const getInitialCheckboxes = (data: SortableTableData): SortableCheckboxMap => {
-  console.log('getting initial checkboxes');
-  // the reduce function creates a map of ids and a boolean, initially false
-  const checkboxes = data.reduce(
-    (options: any, option: any) => ({
-      ...options,
-      [option.id]: false
-    }),
-    {}
-  );
-  return checkboxes;
-};
-
-const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPerPage: number) => {
-  console.log('getting data slice. activePage: ' + activePage + ' ,rowsPerPage:' + rowsPerPage);
-  const currentDataSlice = data.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage);
-  return currentDataSlice;
-};
+import SortableTable, { SortableTableState } from '../shared/bulma-components/BulmaTable';
 
 // render methods must have displayName
 const renderIdUrl = (id: string) => {
@@ -58,8 +13,8 @@ renderIdUrl.displayName = 'RenderIdUrl';
 const columns = [
   {
     header: 'Id',
-    key: 'id',
-    defaultSorting: 'ASC'
+    key: 'id'
+    // defaultSorting: 'ASC'
     // headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
     // dataStyle: { fontSize: '15px', backgroundColor: '#CCCCCC' },
     // dataProps: { className: 'align-right' },
@@ -73,7 +28,8 @@ const columns = [
   },
   {
     header: 'First Name',
-    key: 'firstName'
+    key: 'firstName',
+    defaultSorting: 'ASC'
     // headerStyle: { fontSize: '15px' },
     // headerProps: { className: 'align-left' }
   },
@@ -95,10 +51,11 @@ const iconStyle = {
   // paddingRight: '5px'
 };
 
-const intialTableState = {
-  sortings: getInitialSortings(columns),
+// initial table state
+const intialState: SortableTableState = {
+  sortings: [],
   isAllSelected: false,
-  checkboxes: {} // if we have the full data avaialale we should set the initial checkboxes here
+  checkboxes: {}
 };
 
 export default function TableExample3() {
@@ -111,29 +68,7 @@ export default function TableExample3() {
   const data = useMemo(() => getUniqueData(), []);
   const numberOfRows = data.length;
 
-  // don't need to initialize the current data chunk since we are running an effect that does the same
-  const [currentData, setCurrentData] = useState<Data[]>([]);
-
-  // table state
-  const [tableState, setTableState] = useState<SortableTableState>(intialTableState);
-
-  // this effect will run on intial rendering and each subsequent change to the dependency array
-  useEffect(() => {
-    console.log(
-      'useEffect() being executed - setCurrentData and setTableState. activePage: ' +
-        activePage +
-        ' ,rowsPerPage: ' +
-        rowsPerPage
-    );
-    const localDataSlice = getCurrentDataSlice(data, activePage, rowsPerPage);
-    setCurrentData(localDataSlice);
-
-    setTableState(
-      produce((draft: Draft<SortableTableState>) => {
-        draft.checkboxes = getInitialCheckboxes(localDataSlice);
-      })
-    );
-  }, [activePage, data, rowsPerPage]);
+  const [tableState, setTableState] = useState<SortableTableState>(intialState);
 
   const maxButtons = 3;
   const useGotoField = true;
@@ -152,15 +87,90 @@ export default function TableExample3() {
 
   const bulmaTable = SortableTable({
     columns,
-    data: currentData,
+    data,
+    activePage,
+    rowsPerPage,
     tableState,
     setTableState,
     style,
     iconStyle
   });
 
+  const searchFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const keyCode = e.keyCode || e.which;
+
+    if (keyCode === 13) {
+      e.preventDefault();
+      doSearch();
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    doSearch();
+  };
+
+  const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+  const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+
+  const doSearch = () => {
+    if (searchFieldInput && searchFieldInput.current) {
+      const searchQuery = searchFieldInput.current.value;
+    }
+  };
+
   return (
     <>
+      <nav className="level">
+        <div className="level-left">
+          <p className="level-item">
+            <button type="button" className="button is-danger" disabled aria-label="Delete" onClick={handleClickDelete}>
+              Delete
+            </button>
+          </p>
+          <p className="level-item">
+            <button
+              type="button"
+              className="button is-warning"
+              disabled
+              aria-label="Disconnect"
+              onClick={handleClickDisconnect}>
+              Disconnect
+            </button>
+          </p>
+        </div>
+
+        <div className="level-right">
+          <div className="level-item">
+            <p className="subtitle is-6">
+              <strong>{numberOfRows}</strong> elements
+            </p>
+          </div>
+          <div className="level-item">
+            <form onSubmit={handleSearchSubmit}>
+              <div className="field has-addons">
+                <p className="control">
+                  <input
+                    ref={searchFieldInput}
+                    className="input"
+                    type="text"
+                    placeholder="Find in table"
+                    onKeyPress={handleSearchKeyPress}
+                  />
+                </p>
+                <p className="control">
+                  <button type="submit" className="button">
+                    Search
+                  </button>
+                </p>
+              </div>
+            </form>
+          </div>
+        </div>
+      </nav>
+
       {bulmaTable}
       {bulmaPaginator}
     </>

@@ -29,7 +29,7 @@ const getPaginationClassName = (paginationPlacement: string) => {
 };
 
 const BulmaPaginator = (props: IBulmaPaginatorProps) => {
-  useWhyDidYouUpdate('BulmaPaginator', props);
+  // useWhyDidYouUpdate('BulmaPaginator', props);
   const {
     initialPage = 1,
     setInitialPage = () => {},

@@ -1,4 +1,13 @@
-import React, { Dispatch, SetStateAction, ChangeEvent, CSSProperties, HTMLAttributes, useCallback } from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  ChangeEvent,
+  CSSProperties,
+  HTMLAttributes,
+  useCallback,
+  useState,
+  useEffect
+} from 'react';
 import './bulma-table.scss';
 import produce, { Draft } from 'immer';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
@@ -36,8 +45,10 @@ export interface SortableTableIconInfo {
 }
 
 export interface SortableTableProps extends SortableTableIconInfo {
-  data: SortableTableData;
   columns: SortableTableColumn[];
+  data: SortableTableData;
+  activePage: number;
+  rowsPerPage?: number;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   style?: CSSProperties;
@@ -68,7 +79,7 @@ interface SortableTableHeaderItemProps extends SortableTableIconInfo {
 const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
   // useWhyDidYouUpdate('SortableTableHeaderItem', props);
   const { column, setTableState, index, sorting, iconStyle, iconDesc, iconAsc, iconBoth } = props;
-  console.log(`render header :: ${column.key}`);
+  // console.log(`render header :: ${column.key}`);
   const handleHeaderClick = useCallback(() => {
     if (column.sortable || column.sortable === undefined) {
       setTableState(
@@ -347,10 +358,118 @@ const nextSortingState = (state: SortingType): SortingType => {
   return next as SortingType;
 };
 
+const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
+  console.log('getting initial sortings');
+  const sortings = columns.map((column: SortableTableColumn) => {
+    let sorting = 'both';
+    if (column.defaultSorting) {
+      const defaultSorting = column.defaultSorting.toLowerCase();
+
+      if (defaultSorting === 'desc') {
+        sorting = 'desc';
+      } else if (defaultSorting === 'asc') {
+        sorting = 'asc';
+      }
+    }
+    return sorting as SortingType;
+  });
+
+  return sortings;
+};
+
+const getInitialCheckboxes = (data: SortableTableData): SortableCheckboxMap => {
+  console.log('getting initial checkboxes');
+  // the reduce function creates a map of ids and a boolean, initially false
+  const checkboxes = data.reduce(
+    (options: any, option: any) => ({
+      ...options,
+      [option.id]: false
+    }),
+    {}
+  );
+  return checkboxes;
+};
+
+const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPerPage: number): SortableTableData => {
+  console.log('getting data slice. activePage: ' + activePage + ' ,rowsPerPage:' + rowsPerPage);
+  const currentDataSlice = data.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage);
+  return currentDataSlice;
+};
+
+const getInitalTableState = (data: SortableTableData, columns: SortableTableColumn[]): SortableTableState => {
+  console.log('getting initial table state');
+  return {
+    sortings: getInitialSortings(columns),
+    isAllSelected: false,
+    checkboxes: getInitialCheckboxes(data)
+  };
+};
+
 // BulmaTable
 const BulmaTable = (props: SortableTableProps) => {
   // useWhyDidYouUpdate('BulmaTable', props);
-  const { columns, data, tableState, setTableState, style, iconStyle, iconDesc, iconAsc, iconBoth } = props;
+  const {
+    columns,
+    data,
+    activePage = 1,
+    rowsPerPage = 10,
+    tableState,
+    setTableState,
+    style,
+    iconStyle,
+    iconDesc,
+    iconAsc,
+    iconBoth
+  } = props;
+
+  // don't need to initialize the current data chunk since we are running an effect that does the same
+  const [currentData, setCurrentData] = useState<SortableTableData>([]);
+
+  // sorted data
+  const [sortedData, setSortedData] = useState<SortableTableData>([]);
+
+  useEffect(() => {
+    console.log('useEffect() being executed - initial setTableState');
+    setTableState(
+      // produce((draft: Draft<SortableTableState>) => {
+      //   draft.sortings = getInitialSortings(columns);
+      //   draft.isAllSelected = false;
+      //   draft.checkboxes = getInitialCheckboxes(data);
+      // })
+      getInitalTableState(data, columns)
+    );
+  }, [columns, data, setTableState]);
+
+  // this effect will run on intial rendering and each subsequent change to the dependency array
+  useEffect(() => {
+    if (tableState.sortings.length > 0) {
+      console.log('useEffect() being executed (sorting)');
+      const localSortedData = sortData(data, columns, tableState.sortings);
+      setSortedData(localSortedData);
+    }
+  }, [columns, data, tableState.sortings]);
+
+  // this effect will run on intial rendering and each subsequent change to the dependency array
+  useEffect(() => {
+    if (sortedData.length > 0) {
+      console.log(
+        'useEffect() being executed (slicing) - setCurrentData and setTableState. activePage: ' +
+          activePage +
+          ' ,rowsPerPage: ' +
+          rowsPerPage
+      );
+
+      const localDataSlice = getCurrentDataSlice(sortedData, activePage, rowsPerPage);
+      setCurrentData(localDataSlice);
+
+      // setting checkboes when using remote sorting and filtering
+      // setTableState(
+      //   produce((draft: Draft<SortableTableState>) => {
+      //     draft.checkboxes = getInitialCheckboxes(localDataSlice);
+      //   })
+      // );
+    }
+  }, [activePage, rowsPerPage, sortedData]);
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
@@ -394,10 +513,9 @@ const BulmaTable = (props: SortableTableProps) => {
     handleCheckboxChange
   });
 
-  const sortedData = sortData(data, columns, tableState.sortings);
   const sortableTableBody = SortableTableBody({
     columns,
-    data: sortedData,
+    data: currentData,
     tableState,
     setTableState,
     handleCheckboxChange
