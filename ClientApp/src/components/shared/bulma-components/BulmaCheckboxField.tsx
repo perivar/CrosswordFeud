@@ -8,7 +8,8 @@ export interface BulmaChexkboxFieldArguments {
   checkboxProps?: any;
 }
 
-const CheckboxField = ({ label, name, checked, handleChange, checkboxProps }: BulmaChexkboxFieldArguments) => {
+const CheckboxField = (props: BulmaChexkboxFieldArguments) => {
+  const { label, name, checked, handleChange, checkboxProps } = props;
   return (
     <>
       <div className="field">

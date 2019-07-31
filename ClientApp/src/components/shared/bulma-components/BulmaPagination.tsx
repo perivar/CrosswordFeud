@@ -57,6 +57,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
 
   const handleRowsPerPageChange = (e: React.FocusEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
+    setInitialPage(1);
   };
 
   const handleGotoKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {

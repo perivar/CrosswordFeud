@@ -12,6 +12,7 @@ import './bulma-table.scss';
 import produce, { Draft } from 'immer';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
 import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
+import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -32,6 +33,7 @@ export interface SortableTableColumn {
   dataStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9' },
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
+  searchable?: boolean;
   render?: (id: string) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
@@ -47,11 +49,12 @@ export interface SortableTableIconInfo {
 export interface SortableTableProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   data: SortableTableData;
-  activePage: number;
-  rowsPerPage?: number;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   style?: CSSProperties;
+  maxButtons?: number;
+  paginationPlacement?: PaginationPlacement;
+  useGotoField?: boolean;
 }
 
 export interface SortableTableState {
@@ -241,7 +244,7 @@ interface SortableTableBodyProps {
   columns: SortableTableColumn[];
   data: SortableTableData;
   tableState: SortableTableState;
-  setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  // setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -251,7 +254,7 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, data, tableState, setTableState, handleCheckboxChange } = props;
+  const { columns, data, tableState, handleCheckboxChange } = props;
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
       <MemoizedSortableTableRow
@@ -267,6 +270,142 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
   });
 
   return <tbody>{bodies}</tbody>;
+};
+
+interface SortableTableSearchBarProps {
+  columns: SortableTableColumn[];
+  sortedUnfilteredData: SortableTableData;
+  sortedAndFilteredData: SortableTableData;
+  setSortedAndFilteredData: Function;
+}
+
+// SortableTableSearchBar
+const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
+  const { columns, sortedUnfilteredData, sortedAndFilteredData, setSortedAndFilteredData } = props;
+
+  const searchFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
+
+  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const keyCode = e.keyCode || e.which;
+
+    if (keyCode === 13) {
+      e.preventDefault();
+      doSearch();
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    doSearch();
+  };
+
+  const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+  const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+
+  const doSearch = () => {
+    if (searchFieldInput && searchFieldInput.current) {
+      const searchQuery = searchFieldInput.current.value;
+
+      // https://dev.to/iam_timsmith/lets-build-a-search-bar-in-react-120j
+      let currentList: SortableTableData = [];
+
+      // Variable to hold the filtered list before putting into state
+      let newList: SortableTableData = [];
+
+      // If the search bar isn't empty
+      if (searchQuery !== '') {
+        // Variable to hold the original version of the list
+        currentList = sortedUnfilteredData;
+
+        // change search term to lowercase
+        const lowercasedFilter = searchQuery.toLowerCase();
+
+        // Use .filter() to determine which items should be displayed
+        // based on the search terms
+        newList = currentList.filter((item: any) => {
+          return Object.keys(item).some(key => {
+            // lookup columns with this key
+            const column = columns.find(a => a.key === key);
+            // check if the column has searchable set to true true or undefined
+            if (column && (column.searchable || column.searchable === undefined)) {
+              // get value using key
+              const value = item[key];
+              let lowercasedValue = value;
+              if (typeof value === 'string') {
+                // change current item to lowercase
+                lowercasedValue = value.toLowerCase();
+              } else if (typeof value === 'number') {
+                // change current item to string
+                lowercasedValue = value.toString();
+              }
+              // check to see if the current list item includes the search term
+              // If it does, it will be added to newList. Using lowercase eliminates
+              // issues with capitalization in search terms and search content
+              return lowercasedValue.includes(lowercasedFilter);
+            } else {
+              return null;
+            }
+          });
+        });
+      } else {
+        // If the search bar is empty, set newList to original task list
+        newList = sortedUnfilteredData;
+      }
+
+      // Set the filtered state based on what our rules added to newList
+      setSortedAndFilteredData(newList);
+    }
+  };
+
+  return (
+    <nav className="level">
+      <div className="level-left">
+        <p className="level-item">
+          <button type="button" className="button is-danger" disabled aria-label="Delete" onClick={handleClickDelete}>
+            Delete
+          </button>
+        </p>
+        <p className="level-item">
+          <button
+            type="button"
+            className="button is-warning"
+            disabled
+            aria-label="Disconnect"
+            onClick={handleClickDisconnect}>
+            Disconnect
+          </button>
+        </p>
+      </div>
+
+      <div className="level-right">
+        <div className="level-item">
+          <p className="subtitle is-6">
+            <strong>{sortedAndFilteredData.length}</strong> elements
+          </p>
+        </div>
+        <div className="level-item">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="field has-addons">
+              <p className="control">
+                <input
+                  ref={searchFieldInput}
+                  className="input"
+                  type="text"
+                  placeholder="Find in table"
+                  onKeyPress={handleSearchKeyPress}
+                />
+              </p>
+              <p className="control">
+                <button type="submit" className="button">
+                  Search
+                </button>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </nav>
+  );
 };
 
 // sort methods
@@ -411,11 +550,12 @@ const BulmaTable = (props: SortableTableProps) => {
   const {
     columns,
     data,
-    activePage = 1,
-    rowsPerPage = 10,
     tableState,
     setTableState,
     style,
+    maxButtons = 3,
+    paginationPlacement = 'left',
+    useGotoField = true,
     iconStyle,
     iconDesc,
     iconAsc,
@@ -426,7 +566,12 @@ const BulmaTable = (props: SortableTableProps) => {
   const [currentData, setCurrentData] = useState<SortableTableData>([]);
 
   // sorted data
-  const [sortedData, setSortedData] = useState<SortableTableData>([]);
+  const [sortedAndFilteredData, setSortedAndFilteredData] = useState<SortableTableData>([]);
+  const [sortedUnfilteredData, setSortedUnfilteredData] = useState<SortableTableData>([]);
+
+  // paging state
+  const [activePage, setActivePage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     console.log('useEffect() being executed - initial setTableState');
@@ -445,13 +590,14 @@ const BulmaTable = (props: SortableTableProps) => {
     if (tableState.sortings.length > 0) {
       console.log('useEffect() being executed (sorting)');
       const localSortedData = sortData(data, columns, tableState.sortings);
-      setSortedData(localSortedData);
+      setSortedAndFilteredData(localSortedData);
+      setSortedUnfilteredData(localSortedData);
     }
   }, [columns, data, tableState.sortings]);
 
   // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {
-    if (sortedData.length > 0) {
+    if (sortedAndFilteredData.length > 0) {
       console.log(
         'useEffect() being executed (slicing) - setCurrentData and setTableState. activePage: ' +
           activePage +
@@ -459,7 +605,7 @@ const BulmaTable = (props: SortableTableProps) => {
           rowsPerPage
       );
 
-      const localDataSlice = getCurrentDataSlice(sortedData, activePage, rowsPerPage);
+      const localDataSlice = getCurrentDataSlice(sortedAndFilteredData, activePage, rowsPerPage);
       setCurrentData(localDataSlice);
 
       // setting checkboes when using remote sorting and filtering
@@ -469,7 +615,7 @@ const BulmaTable = (props: SortableTableProps) => {
       //   })
       // );
     }
-  }, [activePage, rowsPerPage, sortedData]);
+  }, [activePage, rowsPerPage, sortedAndFilteredData]);
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
@@ -517,18 +663,41 @@ const BulmaTable = (props: SortableTableProps) => {
     columns,
     data: currentData,
     tableState,
-    setTableState,
+    // setTableState,
     handleCheckboxChange
+  });
+
+  const sortableTableSearchBar = SortableTableSearchBar({
+    columns,
+    sortedUnfilteredData,
+    sortedAndFilteredData,
+    setSortedAndFilteredData
+  });
+
+  // calculate number of rows from the posisbly sorted and filtered data
+  const numberOfRows = sortedAndFilteredData.length;
+
+  const bulmaPaginator = BulmaPaginator({
+    initialPage: activePage,
+    setInitialPage: setActivePage,
+    numberOfRows,
+    rowsPerPage,
+    setRowsPerPage,
+    maxButtons,
+    paginationPlacement,
+    useGotoField
   });
 
   return (
     <>
+      {sortableTableSearchBar}
       <div className="table-container">
         <table className="table is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}
           {sortableTableBody}
         </table>
       </div>
+      {bulmaPaginator}
     </>
   );
 };

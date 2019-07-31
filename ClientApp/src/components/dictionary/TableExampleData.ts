@@ -7,6 +7,7 @@ export interface Data {
   firstName: string;
   lastName: string;
   age: number;
+  [key: string]: any;
 }
 
 export const getUniqueData = (): Data[] => {
