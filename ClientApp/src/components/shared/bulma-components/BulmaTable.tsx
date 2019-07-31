@@ -61,6 +61,7 @@ export interface SortableTableState {
   sortings: SortingType[];
   isAllSelected: boolean;
   checkboxes: SortableCheckboxMap;
+  filter: string;
 }
 
 interface SortableTableHeaderProps extends SortableTableIconInfo {
@@ -272,16 +273,69 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
   return <tbody>{bodies}</tbody>;
 };
 
+// filter
+const filterData = (
+  data: SortableTableData,
+  columns: SortableTableColumn[],
+  searchQuery: string
+): SortableTableData => {
+  // https://dev.to/iam_timsmith/lets-build-a-search-bar-in-react-120j
+  let currentList: SortableTableData = [];
+
+  // Variable to hold the filtered list before putting into state
+  let newList: SortableTableData = [];
+
+  // If the search bar isn't empty
+  if (searchQuery !== '') {
+    // Variable to hold the original version of the list
+    currentList = data;
+
+    // change search term to lowercase
+    const lowercasedFilter = searchQuery.toLowerCase();
+
+    // Use .filter() to determine which items should be displayed
+    // based on the search terms
+    newList = currentList.filter((item: any) => {
+      return Object.keys(item).some(key => {
+        // lookup columns with this key
+        const column = columns.find(a => a.key === key);
+        // check if the column has searchable set to true true or undefined
+        if (column && (column.searchable || column.searchable === undefined)) {
+          // get value using key
+          const value = item[key];
+          let lowercasedValue = value;
+          if (typeof value === 'string') {
+            // change current item to lowercase
+            lowercasedValue = value.toLowerCase();
+          } else if (typeof value === 'number') {
+            // change current item to string
+            lowercasedValue = value.toString();
+          }
+          // check to see if the current list item includes the search term
+          // If it does, it will be added to newList. Using lowercase eliminates
+          // issues with capitalization in search terms and search content
+          return lowercasedValue.includes(lowercasedFilter);
+        } else {
+          return null;
+        }
+      });
+    });
+  } else {
+    // If the search bar is empty, set newList to original task list
+    newList = data;
+  }
+
+  return newList;
+};
+
 interface SortableTableSearchBarProps {
-  columns: SortableTableColumn[];
-  sortedUnfilteredData: SortableTableData;
-  sortedAndFilteredData: SortableTableData;
-  setSortedAndFilteredData: Function;
+  numberOfRows: number;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
 }
 
 // SortableTableSearchBar
 const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
-  const { columns, sortedUnfilteredData, sortedAndFilteredData, setSortedAndFilteredData } = props;
+  const { numberOfRows, setTableState } = props;
 
   const searchFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
 
@@ -305,55 +359,11 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
   const doSearch = () => {
     if (searchFieldInput && searchFieldInput.current) {
       const searchQuery = searchFieldInput.current.value;
-
-      // https://dev.to/iam_timsmith/lets-build-a-search-bar-in-react-120j
-      let currentList: SortableTableData = [];
-
-      // Variable to hold the filtered list before putting into state
-      let newList: SortableTableData = [];
-
-      // If the search bar isn't empty
-      if (searchQuery !== '') {
-        // Variable to hold the original version of the list
-        currentList = sortedUnfilteredData;
-
-        // change search term to lowercase
-        const lowercasedFilter = searchQuery.toLowerCase();
-
-        // Use .filter() to determine which items should be displayed
-        // based on the search terms
-        newList = currentList.filter((item: any) => {
-          return Object.keys(item).some(key => {
-            // lookup columns with this key
-            const column = columns.find(a => a.key === key);
-            // check if the column has searchable set to true true or undefined
-            if (column && (column.searchable || column.searchable === undefined)) {
-              // get value using key
-              const value = item[key];
-              let lowercasedValue = value;
-              if (typeof value === 'string') {
-                // change current item to lowercase
-                lowercasedValue = value.toLowerCase();
-              } else if (typeof value === 'number') {
-                // change current item to string
-                lowercasedValue = value.toString();
-              }
-              // check to see if the current list item includes the search term
-              // If it does, it will be added to newList. Using lowercase eliminates
-              // issues with capitalization in search terms and search content
-              return lowercasedValue.includes(lowercasedFilter);
-            } else {
-              return null;
-            }
-          });
-        });
-      } else {
-        // If the search bar is empty, set newList to original task list
-        newList = sortedUnfilteredData;
-      }
-
-      // Set the filtered state based on what our rules added to newList
-      setSortedAndFilteredData(newList);
+      setTableState(
+        produce((draft: Draft<SortableTableState>) => {
+          draft.filter = searchQuery;
+        })
+      );
     }
   };
 
@@ -380,7 +390,7 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
       <div className="level-right">
         <div className="level-item">
           <p className="subtitle is-6">
-            <strong>{sortedAndFilteredData.length}</strong> elements
+            <strong>{numberOfRows}</strong> elements
           </p>
         </div>
         <div className="level-item">
@@ -540,7 +550,8 @@ const getInitalTableState = (data: SortableTableData, columns: SortableTableColu
   return {
     sortings: getInitialSortings(columns),
     isAllSelected: false,
-    checkboxes: getInitialCheckboxes(data)
+    checkboxes: getInitialCheckboxes(data),
+    filter: ''
   };
 };
 
@@ -567,7 +578,6 @@ const BulmaTable = (props: SortableTableProps) => {
 
   // sorted data
   const [sortedAndFilteredData, setSortedAndFilteredData] = useState<SortableTableData>([]);
-  const [sortedUnfilteredData, setSortedUnfilteredData] = useState<SortableTableData>([]);
 
   // paging state
   const [activePage, setActivePage] = useState(1);
@@ -575,47 +585,28 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     console.log('useEffect() being executed - initial setTableState');
-    setTableState(
-      // produce((draft: Draft<SortableTableState>) => {
-      //   draft.sortings = getInitialSortings(columns);
-      //   draft.isAllSelected = false;
-      //   draft.checkboxes = getInitialCheckboxes(data);
-      // })
-      getInitalTableState(data, columns)
-    );
+    setTableState(getInitalTableState(data, columns));
   }, [columns, data, setTableState]);
 
   // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {
     if (tableState.sortings.length > 0) {
-      console.log('useEffect() being executed (sorting)');
+      console.log('useEffect() being executed (sorting and filtering)');
       const localSortedData = sortData(data, columns, tableState.sortings);
-      setSortedAndFilteredData(localSortedData);
-      setSortedUnfilteredData(localSortedData);
+
+      const localSortedAndFilteredData =
+        tableState.filter !== '' ? filterData(localSortedData, columns, tableState.filter) : localSortedData;
+
+      setSortedAndFilteredData(localSortedAndFilteredData);
+
+      if (localSortedAndFilteredData.length > rowsPerPage) {
+        const localDataSlice = getCurrentDataSlice(localSortedAndFilteredData, activePage, rowsPerPage);
+        setCurrentData(localDataSlice);
+      } else {
+        setCurrentData(localSortedAndFilteredData);
+      }
     }
-  }, [columns, data, tableState.sortings]);
-
-  // this effect will run on intial rendering and each subsequent change to the dependency array
-  useEffect(() => {
-    if (sortedAndFilteredData.length > 0) {
-      console.log(
-        'useEffect() being executed (slicing) - setCurrentData and setTableState. activePage: ' +
-          activePage +
-          ' ,rowsPerPage: ' +
-          rowsPerPage
-      );
-
-      const localDataSlice = getCurrentDataSlice(sortedAndFilteredData, activePage, rowsPerPage);
-      setCurrentData(localDataSlice);
-
-      // setting checkboes when using remote sorting and filtering
-      // setTableState(
-      //   produce((draft: Draft<SortableTableState>) => {
-      //     draft.checkboxes = getInitialCheckboxes(localDataSlice);
-      //   })
-      // );
-    }
-  }, [activePage, rowsPerPage, sortedAndFilteredData]);
+  }, [activePage, columns, data, rowsPerPage, tableState.filter, tableState.sortings]);
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
@@ -663,19 +654,16 @@ const BulmaTable = (props: SortableTableProps) => {
     columns,
     data: currentData,
     tableState,
-    // setTableState,
     handleCheckboxChange
-  });
-
-  const sortableTableSearchBar = SortableTableSearchBar({
-    columns,
-    sortedUnfilteredData,
-    sortedAndFilteredData,
-    setSortedAndFilteredData
   });
 
   // calculate number of rows from the posisbly sorted and filtered data
   const numberOfRows = sortedAndFilteredData.length;
+
+  const sortableTableSearchBar = SortableTableSearchBar({
+    numberOfRows,
+    setTableState
+  });
 
   const bulmaPaginator = BulmaPaginator({
     initialPage: activePage,

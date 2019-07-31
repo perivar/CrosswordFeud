@@ -55,7 +55,8 @@ const iconStyle = {
 const intialState: SortableTableState = {
   sortings: [],
   isAllSelected: false,
-  checkboxes: {}
+  checkboxes: {},
+  filter: ''
 };
 
 export default function TableExample3() {
