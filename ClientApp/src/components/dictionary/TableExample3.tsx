@@ -1,60 +1,53 @@
-import React, { useState } from 'react';
-import produce, { Draft } from 'immer';
-import { getUniqueData, Data } from './TableExampleData';
+import React, { useState, useEffect } from 'react';
+// import produce, { Draft } from 'immer';
 import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
   SortableActionButton
 } from '../shared/bulma-components/BulmaTable';
+import { useDataApi } from '../shared/hooks/data-api-hook';
 
-// render methods must have displayName
-const renderIdUrl = (id: string) => {
-  return <a href={'user/' + id}>{id}</a>;
-};
-renderIdUrl.displayName = 'RenderIdUrl';
+interface WordData {
+  wordId: number;
+  language: string;
+  value: string;
+  numberOfLetters: number;
+  numberOfWords: number;
+  relatedFrom: any[];
+  relatedTo: any[];
+  comment: string | null;
+  createdDate: string;
+  source: string;
+}
 
 const columns: SortableTableColumn[] = [
   {
     header: 'Id',
-    key: 'id'
-    // defaultSorting: 'ASC'
-    // headerStyle: { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
-    // dataStyle: { fontSize: '15px', backgroundColor: '#CCCCCC' },
-    // dataProps: { className: 'align-right' },
-    // render: renderIdUrl
+    key: 'wordId',
+    uniqueId: true
   },
   {
-    header: 'Age',
-    key: 'age',
-    // headerStyle: { fontSize: '20px' },
-    sortable: false
+    header: 'Synonym',
+    key: 'value'
   },
   {
-    header: 'First Name',
-    key: 'firstName',
-    defaultSorting: 'ASC',
-    // headerStyle: { fontSize: '15px' },
-    // headerProps: { className: 'align-left' }
-    searchable: false
+    header: 'Ant. Ord',
+    key: 'numberOfWords'
   },
   {
-    header: 'Last Name',
-    key: 'lastName'
-    // headerStyle: { fontSize: '15px' },
-    // headerProps: { className: 'align-left' }
+    header: 'Lengde',
+    key: 'numberOfLetters'
+  },
+  {
+    header: 'Bruker',
+    key: 'comment'
+  },
+  {
+    header: 'Dato',
+    key: 'createdDate'
   }
 ];
-
-const style = {
-  // backgroundColor: '#eee'
-};
-
-const iconStyle = {
-  // color: '#aaa',
-  // paddingLeft: '5px',
-  // paddingRight: '5px'
-};
 
 // initial table state
 const intialState: SortableTableState = {
@@ -65,22 +58,31 @@ const intialState: SortableTableState = {
 };
 
 export default function TableExample3() {
-  // data state
-  // have to memoize data to avoid triggering the effect all the time since the data object is changing every render
-  // const data = useMemo(() => getUniqueData(), []);
-  const [data, setData] = useState<Data[]>(() => getUniqueData());
-
+  const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<SortableTableState>(intialState);
+
+  // data api for reading data over ODATA
+  const { response } = useDataApi({
+    // , isLoading, isError, error, setUrl
+    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24top=100&%24count=true'
+  });
+
+  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
+  useEffect(() => {
+    if (response) {
+      console.log('useEffect() being executed (response)');
+      // console.log(response);
+
+      const localData = response.data.value;
+      const localTotalCount = response.data['@odata.count'];
+      setData(localData);
+    }
+  }, [response]);
 
   // create action buttons
   const handleOnDeleteClick = () => {
     const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
     console.log('delete: ' + ids);
-    setData(
-      produce((draft: Draft<Data[]>) => {
-        return draft.filter(element => !ids.includes(element.id!.toString()));
-      })
-    );
   };
   const deleteButton: React.ReactNode = SortableActionButton({
     label: 'Delete',
@@ -109,8 +111,6 @@ export default function TableExample3() {
     data,
     tableState,
     setTableState,
-    style,
-    iconStyle,
     actionButtons: actionButtons
   });
 

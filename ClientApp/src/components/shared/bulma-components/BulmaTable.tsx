@@ -28,6 +28,7 @@ export interface SortableCheckboxMap {
 export interface SortableTableColumn {
   header: string;
   key: string;
+  uniqueId?: boolean; // which column holds the id key
   defaultSorting?: string; // ASC or asc or DESC or desc
   headerStyle?: CSSProperties; // { fontSize: '15px', backgroundColor: '#FFDAB9', width: '100px' },
   headerProps?: HTMLAttributes<HTMLElement>; // { className: 'align-left' },
@@ -76,7 +77,6 @@ interface SortableTableHeaderProps extends SortableTableIconInfo {
 
 interface SortableTableHeaderItemProps extends SortableTableIconInfo {
   column: SortableTableColumn;
-  // tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   index: number;
   sorting?: SortingType;
@@ -207,6 +207,7 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
 interface SortableTableRowProps {
   data: SortableTableData;
   columns: SortableTableColumn[];
+  uniqueIdKey: string;
   isSelected: boolean;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -214,8 +215,9 @@ interface SortableTableRowProps {
 // SortableTableRow
 const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const { data, columns, isSelected, handleCheckboxChange } = props;
-  console.log(`render row :: ${data.id}`);
+  const { data, columns, uniqueIdKey, isSelected, handleCheckboxChange } = props;
+
+  console.log(`render row :: ${data[uniqueIdKey]}`);
 
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
@@ -223,26 +225,26 @@ const SortableTableRow = (props: SortableTableRowProps) => {
       value = column.render(value);
     }
     return (
-      <td key={`row-${data.id}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
+      <td key={`row-${data[uniqueIdKey]}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
         {value}
       </td>
     );
   });
 
   const checkbox = (
-    <td key={`row-${data.id}-select`}>
+    <td key={`row-${data[uniqueIdKey]}-select`}>
       <BulmaCheckboxField
         label=""
-        name={`${data.id}`}
+        name={`${data[uniqueIdKey]}`}
         checked={isSelected}
         handleChange={handleCheckboxChange}
-        checkboxProps={{ 'aria-label': `${isSelected ? 'Un-select' : 'Select'} row with id: ${data.id}` }}
+        checkboxProps={{ 'aria-label': `${isSelected ? 'Un-select' : 'Select'} row with id: ${data[uniqueIdKey]}` }}
       />
     </td>
   );
 
   return (
-    <tr key={`row-${data.id}`} className={isSelected ? 'is-selected' : ''}>
+    <tr key={`row-${data[uniqueIdKey]}`} className={isSelected ? 'is-selected' : ''}>
       {checkbox}
       {tds}
     </tr>
@@ -251,9 +253,9 @@ const SortableTableRow = (props: SortableTableRowProps) => {
 
 interface SortableTableBodyProps {
   columns: SortableTableColumn[];
+  uniqueIdKey: string;
   data: SortableTableData;
   tableState: SortableTableState;
-  // setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -263,14 +265,16 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, data, tableState, handleCheckboxChange } = props;
+  const { columns, uniqueIdKey, data, tableState, handleCheckboxChange } = props;
+
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
       <MemoizedSortableTableRow
-        key={`row-${row.id}`}
+        key={`row-${row[uniqueIdKey]}`}
+        uniqueIdKey={uniqueIdKey}
         data={row}
         columns={columns}
-        isSelected={tableState.checkboxes[row.id]}
+        isSelected={tableState.checkboxes[row[uniqueIdKey]]}
         handleCheckboxChange={handleCheckboxChange}
       />
     );
@@ -311,18 +315,22 @@ const filterData = (
         if (column && (column.searchable || column.searchable === undefined)) {
           // get value using key
           const value = item[key];
-          let lowercasedValue = value;
-          if (typeof value === 'string') {
-            // change current item to lowercase
-            lowercasedValue = value.toLowerCase();
-          } else if (typeof value === 'number') {
-            // change current item to string
-            lowercasedValue = value.toString();
+          if (value) {
+            let lowercasedValue = value;
+            if (typeof value === 'string') {
+              // change current item to lowercase
+              lowercasedValue = value.toLowerCase();
+            } else if (typeof value === 'number') {
+              // change current item to string
+              lowercasedValue = value.toString();
+            }
+            // check to see if the current list item includes the search term
+            // If it does, it will be added to newList. Using lowercase eliminates
+            // issues with capitalization in search terms and search content
+            return lowercasedValue.includes(lowercasedFilter);
+          } else {
+            return null;
           }
-          // check to see if the current list item includes the search term
-          // If it does, it will be added to newList. Using lowercase eliminates
-          // issues with capitalization in search terms and search content
-          return lowercasedValue.includes(lowercasedFilter);
         } else {
           return null;
         }
@@ -511,13 +519,13 @@ const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
   return sortings;
 };
 
-const getInitialCheckboxes = (data: SortableTableData): SortableCheckboxMap => {
+const getInitialCheckboxes = (data: SortableTableData, uniqueIdKey: string): SortableCheckboxMap => {
   // console.log('getting initial checkboxes');
   // the reduce function creates a map of ids and a boolean, initially false
   const checkboxes = data.reduce(
     (options: any, option: any) => ({
       ...options,
-      [option.id]: false
+      [option[uniqueIdKey]]: false
     }),
     {}
   );
@@ -530,12 +538,16 @@ const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPe
   return currentDataSlice;
 };
 
-const getInitalTableState = (data: SortableTableData, columns: SortableTableColumn[]): SortableTableState => {
+const getInitalTableState = (
+  data: SortableTableData,
+  columns: SortableTableColumn[],
+  uniqueIdKey: string
+): SortableTableState => {
   // console.log('getting initial table state');
   return {
     sortings: getInitialSortings(columns),
     isAllSelected: false,
-    checkboxes: getInitialCheckboxes(data),
+    checkboxes: getInitialCheckboxes(data, uniqueIdKey),
     filter: ''
   };
 };
@@ -560,6 +572,9 @@ const BulmaTable = (props: SortableTableProps) => {
     iconBoth
   } = props;
 
+  // unique id column key - default is 'id'
+  const [uniqueIdKey, setUniqueIdKey] = useState('id');
+
   // don't need to initialize the current data chunk since we are running an effect that does the same
   const [currentData, setCurrentData] = useState<SortableTableData>([]);
 
@@ -571,9 +586,17 @@ const BulmaTable = (props: SortableTableProps) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    console.log('useEffect() being executed (initializing table state)');
-    setTableState(getInitalTableState(data, columns));
-  }, [columns, data, setTableState]);
+    if (data.length > 0) {
+      console.log('useEffect() being executed (initializing table state)');
+      setTableState(getInitalTableState(data, columns, uniqueIdKey));
+
+      // see if one of the columns have specified an unique id key
+      const uniqueIdColumn = columns.find(a => a.uniqueId === true);
+      if (uniqueIdColumn) {
+        setUniqueIdKey(uniqueIdColumn.key);
+      }
+    }
+  }, [columns, data, setTableState, uniqueIdKey]);
 
   // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {
@@ -648,6 +671,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   const sortableTableBody = SortableTableBody({
     columns,
+    uniqueIdKey,
     data: currentData,
     tableState,
     handleCheckboxChange
