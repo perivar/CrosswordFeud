@@ -57,6 +57,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
+  actionButtons?: React.ReactNode[];
 }
 
 export interface SortableTableState {
@@ -335,17 +336,38 @@ const filterData = (
   return newList;
 };
 
+export interface SortableActionButtonProps {
+  label: string;
+  key: string;
+  classNames: string; // is-warning
+  disabled: boolean;
+  handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+}
+
+export const SortableActionButton = (props: SortableActionButtonProps) => {
+  const { label, key, classNames, disabled, handleOnClick } = props;
+  return (
+    <button
+      key={key}
+      type="button"
+      className={'button' + (classNames ? ' ' + classNames : '')}
+      disabled={disabled}
+      aria-label={label}
+      onClick={handleOnClick}>
+      {label}
+    </button>
+  );
+};
+
 interface SortableTableSearchBarProps {
   numberOfRows: number;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  actionButtons?: React.ReactNode[];
 }
 
 // SortableTableSearchBar
 const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
-  const { numberOfRows, setTableState } = props;
-
-  const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
-  const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
+  const { numberOfRows, setTableState, actionButtons } = props;
 
   const handleSearchSubmit = (filterQuery: string) => {
     setTableState(
@@ -358,21 +380,12 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
   return (
     <nav className="level">
       <div className="level-left">
-        <p className="level-item">
-          <button type="button" className="button is-danger" disabled aria-label="Delete" onClick={handleClickDelete}>
-            Delete
-          </button>
-        </p>
-        <p className="level-item">
-          <button
-            type="button"
-            className="button is-warning"
-            disabled
-            aria-label="Disconnect"
-            onClick={handleClickDisconnect}>
-            Disconnect
-          </button>
-        </p>
+        {actionButtons &&
+          actionButtons.map((button: any) => (
+            <p key={button.key} className="level-item">
+              {button}
+            </p>
+          ))}
       </div>
 
       <div className="level-right">
@@ -540,6 +553,7 @@ const BulmaTable = (props: SortableTableProps) => {
     paginationPlacement,
     useGotoField = true,
     alwaysUsePreviousNextButtons = true,
+    actionButtons,
     iconStyle,
     iconDesc,
     iconAsc,
@@ -641,7 +655,8 @@ const BulmaTable = (props: SortableTableProps) => {
 
   const sortableTableSearchBar = SortableTableSearchBar({
     numberOfRows,
-    setTableState
+    setTableState,
+    actionButtons
   });
 
   const bulmaPaginator = BulmaPaginator({
