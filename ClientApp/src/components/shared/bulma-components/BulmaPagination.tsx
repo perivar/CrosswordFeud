@@ -13,6 +13,7 @@ export interface IBulmaPaginatorProps {
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
+  alwaysUsePreviousNextButtons?: boolean;
 }
 
 const getPaginationClassName = (paginationPlacement: string) => {
@@ -38,10 +39,16 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
     setRowsPerPage = () => {},
     maxButtons = 5,
     paginationPlacement = 'left',
-    useGotoField = false
+    useGotoField = false,
+    alwaysUsePreviousNextButtons = false
   } = props;
   const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
-  const { activePage, visiblePieces, goToPage } = usePagination({ initialPage, numberOfPages, maxButtons });
+  const { activePage, visiblePieces, goToPage } = usePagination({
+    initialPage,
+    numberOfPages,
+    maxButtons,
+    alwaysUsePreviousNextButtons
+  });
 
   const gotoFieldInput: React.RefObject<HTMLInputElement> = React.createRef();
 
@@ -149,10 +156,10 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
 
             const { pageNumber } = visiblePiece;
             if (visiblePiece.type === 'page-number') {
-              const iActive = pageNumber === activePage;
-              const className = iActive ? 'is-current' : '';
+              const isActive = pageNumber === activePage;
+              const className = isActive ? 'is-current' : '';
 
-              if (iActive && useGotoField) {
+              if (isActive && useGotoField) {
                 const goToFieldWidth = Math.max(4.5, pageNumber.toString().length + 2);
                 return (
                   <li key={key}>

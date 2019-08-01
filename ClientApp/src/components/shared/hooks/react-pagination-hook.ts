@@ -4,10 +4,12 @@ export type ConfigArg = {
   numberOfPages: number;
   initialPage: number;
   maxButtons?: number;
+  alwaysUsePreviousNextButtons?: boolean;
 };
 
 type Config = ConfigArg & {
   maxButtons: number;
+  alwaysUsePreviousNextButtons: boolean;
 };
 
 export type PaginatorPiece =
@@ -35,12 +37,26 @@ export interface State {
 }
 
 function computeVisiblePieces(activePage: number, config: Config): PaginatorPiece[] {
-  const { numberOfPages, maxButtons } = config;
+  const { numberOfPages, maxButtons, alwaysUsePreviousNextButtons } = config;
   const visiblePieces: PaginatorPiece[] = [];
 
   if (numberOfPages <= maxButtons) {
     for (let page = 1; page <= numberOfPages; page++) {
       visiblePieces.push({ type: 'page-number', pageNumber: page });
+    }
+
+    if (alwaysUsePreviousNextButtons) {
+      visiblePieces.push({
+        type: 'previous',
+        pageNumber: Math.max(1, activePage - 1),
+        isDisabled: activePage === 1
+      });
+
+      visiblePieces.push({
+        type: 'next',
+        pageNumber: Math.min(numberOfPages, activePage + 1),
+        isDisabled: activePage === numberOfPages
+      });
     }
 
     return visiblePieces;
@@ -96,7 +112,7 @@ export function usePagination(_config: ConfigArg) {
     throw new TypeError(`usePagination(config): config must be an object. Go ${typeof _config} instead`);
   }
 
-  const config: Config = { maxButtons: 5, ..._config };
+  const config: Config = { maxButtons: 5, alwaysUsePreviousNextButtons: false, ..._config };
 
   if (config.initialPage > config.numberOfPages) {
     config.initialPage = config.numberOfPages;

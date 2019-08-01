@@ -56,6 +56,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
+  alwaysUsePreviousNextButtons?: boolean;
 }
 
 export interface SortableTableState {
@@ -538,6 +539,7 @@ const BulmaTable = (props: SortableTableProps) => {
     maxButtons,
     paginationPlacement,
     useGotoField = true,
+    alwaysUsePreviousNextButtons = true,
     iconStyle,
     iconDesc,
     iconAsc,
@@ -650,7 +652,8 @@ const BulmaTable = (props: SortableTableProps) => {
     setRowsPerPage,
     maxButtons,
     paginationPlacement,
-    useGotoField
+    useGotoField,
+    alwaysUsePreviousNextButtons
   });
 
   return (
