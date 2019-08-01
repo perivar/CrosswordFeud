@@ -73,7 +73,8 @@ export default function TableExample3() {
     tableState,
     setTableState,
     style,
-    iconStyle
+    iconStyle,
+    maxButtons: 3
   });
 
   return <>{bulmaTable}</>;

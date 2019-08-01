@@ -11,8 +11,9 @@ import React, {
 import './bulma-table.scss';
 import produce, { Draft } from 'immer';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
-import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
+// import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
+import { BulmaSearchField } from './BulmaSearchField';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -139,7 +140,12 @@ const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
   }
 
   return (
-    <th key={`header-${column.key}`} style={column.headerStyle} onClick={handleHeaderClick} {...column.headerProps}>
+    <th
+      className="is-unselectable"
+      key={`header-${column.key}`}
+      style={column.headerStyle}
+      onClick={handleHeaderClick}
+      {...column.headerProps}>
       {column.header}
       {sortIcon}
     </th>
@@ -337,65 +343,16 @@ interface SortableTableSearchBarProps {
 const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
   const { numberOfRows, setTableState } = props;
 
-  const searchInputRef: React.RefObject<HTMLInputElement> = React.createRef();
-
   const handleClickDelete = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
   const handleClickDisconnect = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {};
 
-  const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const keyCode = e.keyCode || e.which;
-
-    if (keyCode === 13) {
-      e.preventDefault();
-      doSearch();
-    }
+  const handleSearchSubmit = (filterQuery: string) => {
+    setTableState(
+      produce((draft: Draft<SortableTableState>) => {
+        draft.filter = filterQuery;
+      })
+    );
   };
-
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    doSearch();
-  };
-
-  const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    if (searchInputRef && searchInputRef.current) searchInputRef.current.value = '';
-    doSearch();
-  };
-
-  const doSearch = () => {
-    if (searchInputRef && searchInputRef.current) {
-      const filterQuery = searchInputRef.current.value;
-      setTableState(
-        produce((draft: Draft<SortableTableState>) => {
-          draft.filter = filterQuery;
-        })
-      );
-    }
-  };
-
-  const searchForm = (
-    <form onSubmit={handleSearchSubmit}>
-      <div className="field has-addons">
-        <div className="control is-expanded has-icons-right">
-          <input
-            ref={searchInputRef}
-            className="input"
-            type="text"
-            placeholder="Find in table"
-            onKeyPress={handleSearchKeyPress}
-          />
-          <button type="button" className="icon is-small is-right is-icon-button" onClick={handleSearchClear}>
-            <i className="fas fa-times fa-xs" />
-          </button>
-        </div>
-        <p className="control">
-          <button type="submit" className="button">
-            Search
-          </button>
-        </p>
-      </div>
-    </form>
-  );
 
   return (
     <nav className="level">
@@ -423,7 +380,9 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
             <strong>{numberOfRows}</strong> elements
           </p>
         </div>
-        <div className="level-item">{searchForm}</div>
+        <div className="level-item">
+          <BulmaSearchField type="addon" label="Search" placeholder="Find in table" handleSubmit={handleSearchSubmit} />
+        </div>
       </div>
     </nav>
   );
@@ -502,6 +461,7 @@ const sortDataByKey = (data: SortableTableData, key: string, fn: any): SortableT
   });
 };
 
+// get state methods
 const nextSortingState = (state: SortingType): SortingType => {
   let next;
   switch (state) {
@@ -519,7 +479,7 @@ const nextSortingState = (state: SortingType): SortingType => {
 };
 
 const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
-  console.log('getting initial sortings');
+  // console.log('getting initial sortings');
   const sortings = columns.map((column: SortableTableColumn) => {
     let sorting = 'both';
     if (column.defaultSorting) {
@@ -538,7 +498,7 @@ const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
 };
 
 const getInitialCheckboxes = (data: SortableTableData): SortableCheckboxMap => {
-  console.log('getting initial checkboxes');
+  // console.log('getting initial checkboxes');
   // the reduce function creates a map of ids and a boolean, initially false
   const checkboxes = data.reduce(
     (options: any, option: any) => ({
@@ -551,13 +511,13 @@ const getInitialCheckboxes = (data: SortableTableData): SortableCheckboxMap => {
 };
 
 const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPerPage: number): SortableTableData => {
-  console.log('getting data slice. activePage: ' + activePage + ' ,rowsPerPage:' + rowsPerPage);
+  // console.log('getting data slice. activePage: ' + activePage + ' ,rowsPerPage:' + rowsPerPage);
   const currentDataSlice = data.slice((activePage - 1) * rowsPerPage, activePage * rowsPerPage);
   return currentDataSlice;
 };
 
 const getInitalTableState = (data: SortableTableData, columns: SortableTableColumn[]): SortableTableState => {
-  console.log('getting initial table state');
+  // console.log('getting initial table state');
   return {
     sortings: getInitialSortings(columns),
     isAllSelected: false,
@@ -575,8 +535,8 @@ const BulmaTable = (props: SortableTableProps) => {
     tableState,
     setTableState,
     style,
-    maxButtons = 3,
-    paginationPlacement = 'left',
+    maxButtons,
+    paginationPlacement,
     useGotoField = true,
     iconStyle,
     iconDesc,
@@ -595,7 +555,7 @@ const BulmaTable = (props: SortableTableProps) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
-    console.log('useEffect() being executed - initial setTableState');
+    console.log('useEffect() being executed (initializing table state)');
     setTableState(getInitalTableState(data, columns));
   }, [columns, data, setTableState]);
 
@@ -615,6 +575,12 @@ const BulmaTable = (props: SortableTableProps) => {
         setCurrentData(localDataSlice);
       } else {
         setCurrentData(localSortedAndFilteredData);
+      }
+
+      // check if we need to change the active page
+      const localNumberOfPages = Math.ceil(localSortedAndFilteredData.length / rowsPerPage);
+      if (activePage > localNumberOfPages) {
+        setActivePage(localNumberOfPages); // 1 or localNumberOfPages?
       }
     }
   }, [activePage, columns, data, rowsPerPage, tableState.filter, tableState.sortings]);
@@ -650,6 +616,9 @@ const BulmaTable = (props: SortableTableProps) => {
     [setTableState]
   );
 
+  // calculate number of rows from the posisbly sorted and filtered data
+  const numberOfRows = sortedAndFilteredData.length;
+
   const sortableTableHeader = SortableTableHeader({
     columns,
     tableState,
@@ -667,9 +636,6 @@ const BulmaTable = (props: SortableTableProps) => {
     tableState,
     handleCheckboxChange
   });
-
-  // calculate number of rows from the posisbly sorted and filtered data
-  const numberOfRows = sortedAndFilteredData.length;
 
   const sortableTableSearchBar = SortableTableSearchBar({
     numberOfRows,

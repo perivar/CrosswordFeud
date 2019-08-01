@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { usePagination } from '../hooks/react-pagination-hook';
-import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
+// import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
 
 export type PaginationPlacement = 'inline' | 'centered' | 'left' | 'right';
 
@@ -37,7 +37,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
     rowsPerPage = 10,
     setRowsPerPage = () => {},
     maxButtons = 5,
-    paginationPlacement = 'inline',
+    paginationPlacement = 'left',
     useGotoField = false
   } = props;
   const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
@@ -127,7 +127,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
   const paginationClassName = getPaginationClassName(paginationPlacement);
 
   // calculate showing from x to y of total
-  const fromRow = (activePage - 1) * rowsPerPage + 1;
+  const fromRow = Math.min((activePage - 1) * rowsPerPage + 1, numberOfRows);
   const toRow = Math.min(activePage * rowsPerPage, numberOfRows);
 
   return (
