@@ -303,8 +303,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  onClickHiddenInput(event: React.TouchEvent<HTMLInputElement>): void;
-  onClickHiddenInput(event: React.MouseEvent<HTMLInputElement, MouseEvent>): void;
+  // onClickHiddenInput(event: React.TouchEvent<HTMLInputElement>): void;
+  // onClickHiddenInput(event: React.MouseEvent<HTMLInputElement, MouseEvent>): void;
   onClickHiddenInput(event: any): void {
     const focused = this.state.cellInFocus;
 
@@ -805,7 +805,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 }
 
 Crossword.defaultProps = {
-  onMove: (move: IMove) => {},
+  onMove: () => {}, // move: IMove
   loadGrid: (id: string) => loadGridState(id),
   saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid),
   data: {

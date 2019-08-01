@@ -74,6 +74,7 @@ $section-padding-large: 18rem 1.5rem;
 
 input {
     &[type='checkbox'],
+    &[type='range'],
     &[type='radio'] {
         margin-right: 0.5em;
     }

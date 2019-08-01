@@ -193,10 +193,10 @@ function Paginator({
   return (
     <nav className="pagination" role="navigation" aria-label="pagination">
       <ul className={pageContainerClass}>
-        {pages.map((page, index) => {
+        {pages.map(page => {
           if (page === LEFT_PAGE)
             return (
-              <li className={pageItemClass} key={index}>
+              <li className={pageItemClass} key="prev">
                 <button type="button" className={pageLinkClass} onClick={handleMoveLeft}>
                   {pagePrevText}
                 </button>
@@ -205,7 +205,7 @@ function Paginator({
 
           if (page === RIGHT_PAGE)
             return (
-              <li className={pageItemClass} key={index}>
+              <li className={pageItemClass} key="next">
                 <button type="button" className={pageLinkClass} onClick={handleMoveRight}>
                   {pageNextText}
                 </button>
@@ -213,7 +213,7 @@ function Paginator({
             );
 
           return (
-            <li className={`${pageItemClass}`} key={index}>
+            <li className={`${pageItemClass}`} key={'goto-' + page}>
               <button
                 type="button"
                 className={`${pageLinkClass} ${currentPage === page ? pageActiveClass : null}`}

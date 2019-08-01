@@ -134,7 +134,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
   const paginationClassName = getPaginationClassName(paginationPlacement);
 
   // calculate showing from x to y of total
-  const fromRow = Math.min((activePage - 1) * rowsPerPage + 1, numberOfRows);
+  const fromRow = Math.max(Math.min((activePage - 1) * rowsPerPage + 1, numberOfRows), 0);
   const toRow = Math.min(activePage * rowsPerPage, numberOfRows);
 
   return (

@@ -21,6 +21,7 @@ export default function BulmaPaginationExample() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [maxButtons, setMaxButtons] = useState(5);
   const [useGotoField, setUseGotoField] = useState<boolean>(false);
+  const [alwaysUsePreviousNextButtons, setAlwaysUsePreviousNextButtons] = useState<boolean>(false);
 
   // use radio button hook
   const { value: paginationPlacement, inputProps: paginationPlacementProps } = useRadioButtons<PaginationPlacement>(
@@ -63,7 +64,8 @@ export default function BulmaPaginationExample() {
     setRowsPerPage,
     maxButtons,
     paginationPlacement,
-    useGotoField
+    useGotoField,
+    alwaysUsePreviousNextButtons,
   });
 
   return (
@@ -123,23 +125,40 @@ export default function BulmaPaginationExample() {
           </div>
         </div>
         <div>
-          <div>Use Goto-field:</div>
+          <div>
+            <input
+              type="checkbox"
+              checked={alwaysUsePreviousNextButtons}
+              onChange={() => setAlwaysUsePreviousNextButtons(!alwaysUsePreviousNextButtons)}
+            />
+            Always use previous & next buttons?
+          </div>
+        </div>
+        <div>
           <div>
             <input type="checkbox" checked={useGotoField} onChange={() => setUseGotoField(!useGotoField)} />
-            {useGotoField}
+            Use goto-field?
           </div>
         </div>
         <div>
           <div>Pagination placement:</div>
           <div>
-            <input value="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
-            Left
-            <input value="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
-            Right
-            <input value="centered" checked={paginationPlacement === 'centered'} {...paginationPlacementProps} />
-            Centered
-            <input value="inline" checked={paginationPlacement === 'inline'} {...paginationPlacementProps} />
-            Inline
+            <label className="radio">
+              <input value="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
+              Left
+            </label>
+            <label className="radio">
+              <input value="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
+              Right
+            </label>
+            <label className="radio">
+              <input value="centered" checked={paginationPlacement === 'centered'} {...paginationPlacementProps} />
+              Centered
+            </label>
+            <label className="radio">
+              <input value="inline" checked={paginationPlacement === 'inline'} {...paginationPlacementProps} />
+              Inline
+            </label>
           </div>
         </div>
       </div>

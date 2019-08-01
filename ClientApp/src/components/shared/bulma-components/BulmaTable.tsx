@@ -596,7 +596,7 @@ const BulmaTable = (props: SortableTableProps) => {
       // check if we need to change the active page
       const localNumberOfPages = Math.ceil(localSortedAndFilteredData.length / rowsPerPage);
       if (activePage > localNumberOfPages) {
-        setActivePage(localNumberOfPages); // 1 or localNumberOfPages?
+        setActivePage(1); // 1 or localNumberOfPages?
       }
     }
   }, [activePage, columns, data, rowsPerPage, tableState.filter, tableState.sortings]);
