@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 // import produce, { Draft } from 'immer';
 import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
@@ -7,7 +7,6 @@ import BulmaTable, {
   SortableActionButton,
   CellInfo
 } from '../shared/bulma-components/BulmaTable';
-import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 
 interface WordData {
@@ -64,8 +63,11 @@ const renderEditable = (cellInfo: CellInfo) => {
 renderEditable.displayName = 'Editable';
 
 const handleSynonymSearch = (cellInfo: CellInfo, word: string) => {
-  console.log(cellInfo);
-  console.log('word: ' + word);
+  cellInfo.setUrl(
+    "http://116.203.83.168:8000/odata/Words/Synonyms(Word='" +
+      cellInfo.row.value +
+      "')?%24orderby=WordId%20desc&%24top=50&%24count=true"
+  );
 };
 
 const renderSynonymSearch = (cellInfo: CellInfo) => {
@@ -93,9 +95,9 @@ const columns: SortableTableColumn[] = [
   {
     header: 'Synonym',
     key: 'value',
-    render: renderEditable,
+    render: renderEditable
     // dataProps: { className: 'align-right' }
-    dataStyle: { verticalAlign: 'middle' }
+    // dataStyle: { verticalAlign: 'middle' }
   },
   {
     header: 'Ant. Ord',
@@ -128,24 +130,6 @@ export default function TableExample3() {
   const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<SortableTableState>(intialState);
 
-  // data api for reading data over ODATA
-  const { response, isLoading } = useDataApi({
-    // isError, error, setUrl
-    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24orderby=WordId%20desc&%24top=100&%24count=true'
-  });
-
-  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
-  useEffect(() => {
-    if (response) {
-      console.log('useEffect() being executed (response)');
-      // console.log(response);
-
-      const localData = response.data.value;
-      const localTotalCount = response.data['@odata.count'];
-      setData(localData);
-    }
-  }, [response]);
-
   // create action buttons
   const handleOnDeleteClick = () => {
     const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
@@ -176,10 +160,11 @@ export default function TableExample3() {
   const bulmaTable = BulmaTable({
     columns,
     data,
+    setData,
     tableState,
     setTableState,
-    isLoading,
     initialRowsPerPage: 15,
+    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
     actionButtons: actionButtons
   });
 

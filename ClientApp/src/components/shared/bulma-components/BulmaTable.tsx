@@ -8,8 +8,9 @@ import React, {
   useState,
   useEffect
 } from 'react';
-import './bulma-table.scss';
 import produce, { Draft } from 'immer';
+import { useDataApi } from '../hooks/data-api-hook';
+import './bulma-table.scss';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
 // import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
@@ -51,9 +52,10 @@ export interface SortableTableIconInfo {
 export interface SortableTableProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   data: SortableTableData;
+  setData?: Dispatch<React.SetStateAction<SortableTableData | any>>;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
-  isLoading?: boolean;
+  initialUrl?: string;
   style?: CSSProperties;
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
@@ -211,6 +213,7 @@ export interface CellInfo {
   column: SortableTableColumn;
   row: any;
   value: any;
+  setUrl: Function;
 }
 
 interface SortableTableRowProps {
@@ -218,20 +221,21 @@ interface SortableTableRowProps {
   columns: SortableTableColumn[];
   uniqueIdKey: string;
   isSelected: boolean;
+  setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // SortableTableRow
 const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const { data, columns, uniqueIdKey, isSelected, handleCheckboxChange } = props;
+  const { data, columns, uniqueIdKey, isSelected, setUrl, handleCheckboxChange } = props;
 
   console.log(`render row :: ${data[uniqueIdKey]}`);
 
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value, row: data };
+      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl };
       value = column.render(cellInfo);
     }
     return (
@@ -266,6 +270,7 @@ interface SortableTableBodyProps {
   uniqueIdKey: string;
   data: SortableTableData;
   tableState: SortableTableState;
+  setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -275,7 +280,7 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, uniqueIdKey, data, tableState, handleCheckboxChange } = props;
+  const { columns, uniqueIdKey, data, tableState, setUrl, handleCheckboxChange } = props;
 
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
@@ -286,6 +291,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
         columns={columns}
         isSelected={tableState.checkboxes[row[uniqueIdKey]]}
         handleCheckboxChange={handleCheckboxChange}
+        setUrl={setUrl}
       />
     );
 
@@ -568,9 +574,10 @@ const BulmaTable = (props: SortableTableProps) => {
   const {
     columns,
     data,
+    setData,
     tableState,
     setTableState,
-    isLoading,
+    initialUrl,
     style,
     maxButtons,
     paginationPlacement,
@@ -596,6 +603,25 @@ const BulmaTable = (props: SortableTableProps) => {
   // paging state
   const [activePage, setActivePage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
+
+  // data api for reading data over ODATA
+  const urlToLoad = initialUrl ? initialUrl : '';
+  const { response, isLoading, setUrl } = useDataApi({
+    // isError, error
+    initialUrl: urlToLoad
+  });
+
+  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
+  useEffect(() => {
+    if (response) {
+      console.log('useEffect() being executed (response)');
+      // console.log(response);
+
+      const localData = response.data.value;
+      const localTotalCount = response.data['@odata.count'];
+      if (setData) setData(localData);
+    }
+  }, [response, setData]);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -686,6 +712,7 @@ const BulmaTable = (props: SortableTableProps) => {
     uniqueIdKey,
     data: currentData,
     tableState,
+    setUrl,
     handleCheckboxChange
   });
 
