@@ -36,7 +36,7 @@ export interface SortableTableColumn {
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   searchable?: boolean;
-  render?: (id: string) => JSX.Element;
+  render?: (value: string) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -53,11 +53,13 @@ export interface SortableTableProps extends SortableTableIconInfo {
   data: SortableTableData;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  isLoading?: boolean;
   style?: CSSProperties;
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
+  initialRowsPerPage?: number;
   actionButtons?: React.ReactNode[];
 }
 
@@ -123,7 +125,7 @@ const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
         sortIcon = iconDesc;
       } else {
         sortIcon = (
-          <span className="icon has-text-grey-light" style={iconStyle}>
+          <span className="icon has-text-info" style={iconStyle}>
             <i className="fas fa-sort-up" />
           </span>
         );
@@ -133,7 +135,7 @@ const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
         sortIcon = iconAsc;
       } else {
         sortIcon = (
-          <span className="icon has-text-grey-light" style={iconStyle}>
+          <span className="icon has-text-info" style={iconStyle}>
             <i className="fas fa-sort-down" />
           </span>
         );
@@ -560,11 +562,13 @@ const BulmaTable = (props: SortableTableProps) => {
     data,
     tableState,
     setTableState,
+    isLoading,
     style,
     maxButtons,
     paginationPlacement,
     useGotoField = true,
     alwaysUsePreviousNextButtons = true,
+    initialRowsPerPage = 10,
     actionButtons,
     iconStyle,
     iconDesc,
@@ -583,7 +587,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   // paging state
   const [activePage, setActivePage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
 
   useEffect(() => {
     if (data.length > 0) {
@@ -704,6 +708,7 @@ const BulmaTable = (props: SortableTableProps) => {
           {sortableTableBody}
         </table>
       </div>
+      {isLoading ? <div className="is-loading" /> : ''}
       {bulmaPaginator}
     </>
   );

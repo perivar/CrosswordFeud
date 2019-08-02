@@ -21,6 +21,28 @@ interface WordData {
   source: string;
 }
 
+// render methods must have displayName
+const renderDateFormat = (dateObject: string) => {
+  const d = new Date(dateObject);
+  const day = d.getDate();
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+
+  let dayString = day.toString();
+  if (day < 10) {
+    dayString = '0' + day;
+  }
+
+  let monthString = month.toString();
+  if (month < 10) {
+    monthString = '0' + month;
+  }
+  var date = dayString + '/' + monthString + '/' + year;
+
+  return <>{date}</>;
+};
+renderDateFormat.displayName = 'DateFormat';
+
 const columns: SortableTableColumn[] = [
   {
     header: 'Id',
@@ -45,7 +67,8 @@ const columns: SortableTableColumn[] = [
   },
   {
     header: 'Dato',
-    key: 'createdDate'
+    key: 'createdDate',
+    render: renderDateFormat
   }
 ];
 
@@ -62,9 +85,9 @@ export default function TableExample3() {
   const [tableState, setTableState] = useState<SortableTableState>(intialState);
 
   // data api for reading data over ODATA
-  const { response } = useDataApi({
-    // , isLoading, isError, error, setUrl
-    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24top=100&%24count=true'
+  const { response, isLoading } = useDataApi({
+    // isError, error, setUrl
+    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24orderby=WordId%20desc&%24top=100&%24count=true'
   });
 
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
@@ -111,6 +134,8 @@ export default function TableExample3() {
     data,
     tableState,
     setTableState,
+    isLoading,
+    initialRowsPerPage: 15,
     actionButtons: actionButtons
   });
 
