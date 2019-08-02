@@ -105,7 +105,7 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
       //   {value}
       // </button>
       // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <a href="#" className="is-editable" onClick={handleClick}>
+      <a href="#" className="is-editable is-vcentered" onClick={handleClick}>
         {value ? value : <i>Empty</i>}
       </a>
     );

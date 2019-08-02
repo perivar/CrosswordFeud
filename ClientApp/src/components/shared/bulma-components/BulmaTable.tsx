@@ -209,6 +209,7 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
 export interface CellInfo {
   uniqueRowId: string;
   column: SortableTableColumn;
+  row: any;
   value: any;
 }
 
@@ -230,7 +231,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value };
+      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value, row: data };
       value = column.render(cellInfo);
     }
     return (

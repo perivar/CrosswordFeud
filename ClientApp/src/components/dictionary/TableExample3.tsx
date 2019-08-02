@@ -63,16 +63,39 @@ const renderEditable = (cellInfo: CellInfo) => {
 };
 renderEditable.displayName = 'Editable';
 
+const handleSynonymSearch = (cellInfo: CellInfo, word: string) => {
+  console.log(cellInfo);
+  console.log('word: ' + word);
+};
+
+const renderSynonymSearch = (cellInfo: CellInfo) => {
+  return (
+    <>
+      <button
+        type="button"
+        className="button is-link is-outlined"
+        value={cellInfo.value}
+        onClick={e => handleSynonymSearch(cellInfo, e.currentTarget.value)}>
+        {cellInfo.value}
+      </button>
+    </>
+  );
+};
+renderSynonymSearch.displayName = 'SynonymSearch';
+
 const columns: SortableTableColumn[] = [
   {
     header: 'Id',
     key: 'wordId',
-    uniqueId: true
+    uniqueId: true,
+    render: renderSynonymSearch
   },
   {
     header: 'Synonym',
     key: 'value',
-    render: renderEditable
+    render: renderEditable,
+    // dataProps: { className: 'align-right' }
+    dataStyle: { verticalAlign: 'middle' }
   },
   {
     header: 'Ant. Ord',
