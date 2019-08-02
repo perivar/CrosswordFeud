@@ -5,7 +5,7 @@ import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
   SortableActionButton,
-  CellInfo
+  RenderProps
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 
@@ -23,7 +23,7 @@ interface WordData {
 }
 
 // render methods must have displayName
-const renderDateFormat = (dateObject: CellInfo) => {
+const renderDateFormat = (dateObject: RenderProps) => {
   const d = new Date(dateObject.value);
   const day = d.getDate();
   const month = d.getMonth() + 1;
@@ -44,41 +44,44 @@ const renderDateFormat = (dateObject: CellInfo) => {
 };
 renderDateFormat.displayName = 'DateFormat';
 
-const handleValueChanged = (cellInfo: CellInfo, newValue: string) => {
+const handleValueChanged = (renderProps: RenderProps, newValue: string) => {
   // use immer
   // this.setState(
   //   produce((draft: Draft<TableExample1State>) => {
-  //     draft.data[cellInfo.index][cellInfo.column.id!] = newValue;
+  //     draft.data[renderProps.index][renderProps.column.id!] = newValue;
   //   })
   // );
-  console.log(cellInfo);
+  console.log(renderProps);
   console.log('new value: ' + newValue);
 };
 
-const renderEditable = (cellInfo: CellInfo) => {
+const renderEditable = (renderProps: RenderProps) => {
   return (
-    <BulmaEditableTextField value={cellInfo.value} onValueChanged={value => handleValueChanged(cellInfo, value)} />
+    <BulmaEditableTextField
+      value={renderProps.value}
+      onValueChanged={value => handleValueChanged(renderProps, value)}
+    />
   );
 };
 renderEditable.displayName = 'Editable';
 
-const handleSynonymSearch = (cellInfo: CellInfo, word: string) => {
-  cellInfo.setUrl(
+const handleSynonymSearch = (renderProps: RenderProps) => {
+  renderProps.setUrl(
     "http://116.203.83.168:8000/odata/Words/Synonyms(Word='" +
-      cellInfo.row.value +
+      renderProps.row.value +
       "')?%24orderby=WordId%20desc&%24top=50&%24count=true"
   );
 };
 
-const renderSynonymSearch = (cellInfo: CellInfo) => {
+const renderSynonymSearch = (renderProps: RenderProps) => {
   return (
     <>
       <button
         type="button"
-        className="button is-link is-outlined"
-        value={cellInfo.value}
-        onClick={e => handleSynonymSearch(cellInfo, e.currentTarget.value)}>
-        {cellInfo.value}
+        className="button is-link is-outlined is-fullwidth"
+        value={renderProps.value}
+        onClick={() => handleSynonymSearch(renderProps)}>
+        {renderProps.value}
       </button>
     </>
   );

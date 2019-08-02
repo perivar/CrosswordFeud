@@ -37,7 +37,7 @@ export interface SortableTableColumn {
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   searchable?: boolean;
-  render?: (value: CellInfo) => JSX.Element;
+  render?: (value: RenderProps) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -208,7 +208,7 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
   );
 };
 
-export interface CellInfo {
+export interface RenderProps {
   uniqueRowId: string;
   column: SortableTableColumn;
   row: any;
@@ -235,7 +235,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl };
+      const cellInfo: RenderProps = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl };
       value = column.render(cellInfo);
     }
     return (
@@ -619,6 +619,8 @@ const BulmaTable = (props: SortableTableProps) => {
 
       const localData = response.data.value;
       const localTotalCount = response.data['@odata.count'];
+      console.log('TotalCount: ' + localTotalCount);
+
       if (setData) setData(localData);
     }
   }, [response, setData]);
