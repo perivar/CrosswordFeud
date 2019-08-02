@@ -76,3 +76,18 @@ button.is-icon-button {
 .is-icon-button:hover {
     opacity: 1;
 }
+
+/* make sure the editable links are dashed */
+.is-editable,
+a.is-editable,
+a.is-editable:hover {
+    text-decoration: none;
+    border-bottom: dashed 1px;
+}
+
+.is-editable,
+a.is-editable,
+a.is-editable:hover {
+    text-decoration: none;
+    border-bottom: dashed 1px;
+}

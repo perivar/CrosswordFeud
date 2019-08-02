@@ -4,9 +4,11 @@ import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
-  SortableActionButton
+  SortableActionButton,
+  CellInfo
 } from '../shared/bulma-components/BulmaTable';
 import { useDataApi } from '../shared/hooks/data-api-hook';
+import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 
 interface WordData {
   wordId: number;
@@ -22,8 +24,8 @@ interface WordData {
 }
 
 // render methods must have displayName
-const renderDateFormat = (dateObject: string) => {
-  const d = new Date(dateObject);
+const renderDateFormat = (dateObject: CellInfo) => {
+  const d = new Date(dateObject.value);
   const day = d.getDate();
   const month = d.getMonth() + 1;
   const year = d.getFullYear();
@@ -43,6 +45,24 @@ const renderDateFormat = (dateObject: string) => {
 };
 renderDateFormat.displayName = 'DateFormat';
 
+const handleValueChanged = (cellInfo: CellInfo, newValue: string) => {
+  // use immer
+  // this.setState(
+  //   produce((draft: Draft<TableExample1State>) => {
+  //     draft.data[cellInfo.index][cellInfo.column.id!] = newValue;
+  //   })
+  // );
+  console.log(cellInfo);
+  console.log('new value: ' + newValue);
+};
+
+const renderEditable = (cellInfo: CellInfo) => {
+  return (
+    <BulmaEditableTextField value={cellInfo.value} onValueChanged={value => handleValueChanged(cellInfo, value)} />
+  );
+};
+renderEditable.displayName = 'Editable';
+
 const columns: SortableTableColumn[] = [
   {
     header: 'Id',
@@ -51,7 +71,8 @@ const columns: SortableTableColumn[] = [
   },
   {
     header: 'Synonym',
-    key: 'value'
+    key: 'value',
+    render: renderEditable
   },
   {
     header: 'Ant. Ord',

@@ -36,7 +36,7 @@ export interface SortableTableColumn {
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   searchable?: boolean;
-  render?: (value: string) => JSX.Element;
+  render?: (value: CellInfo) => JSX.Element;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -206,6 +206,12 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
   );
 };
 
+export interface CellInfo {
+  uniqueRowId: string;
+  column: SortableTableColumn;
+  value: any;
+}
+
 interface SortableTableRowProps {
   data: SortableTableData;
   columns: SortableTableColumn[];
@@ -224,7 +230,8 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      value = column.render(value);
+      const cellInfo: CellInfo = { uniqueRowId: data[uniqueIdKey], column, value };
+      value = column.render(cellInfo);
     }
     return (
       <td key={`row-${data[uniqueIdKey]}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
