@@ -8,13 +8,15 @@ import React, {
   useState,
   useEffect
 } from 'react';
+import axios, { AxiosInstance } from 'axios';
 import produce, { Draft } from 'immer';
 import { useDataApi } from '../hooks/data-api-hook';
 import './bulma-table.scss';
 import { BulmaCheckboxField } from './BulmaCheckboxField';
-// import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
 import { BulmaSearchField } from './BulmaSearchField';
+// import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
+import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -49,13 +51,24 @@ export interface SortableTableIconInfo {
   iconBoth?: JSX.Element;
 }
 
+export interface QueryParams {
+  limit: number;
+  offset: number;
+  search: string;
+  sort: string;
+  order: SortingType;
+  [key: string]: string | number;
+}
+
 export interface SortableTableProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   data: SortableTableData;
   setData?: Dispatch<React.SetStateAction<SortableTableData | any>>;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
-  initialUrl?: string;
+  dataBaseURL?: string;
+  dataURL?: string;
+  queryParams?: (params: QueryParams) => Record<string, string | number | boolean | undefined>;
   style?: CSSProperties;
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
@@ -516,7 +529,7 @@ const nextSortingState = (state: SortingType): SortingType => {
   return next as SortingType;
 };
 
-const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
+export const getInitialSortings = (columns: SortableTableColumn[]): SortingType[] => {
   // console.log('getting initial sortings');
   const sortings = columns.map((column: SortableTableColumn) => {
     let sorting = 'both';
@@ -568,6 +581,8 @@ const getInitalTableState = (
   };
 };
 
+const axiosInstance: AxiosInstance = axios.create({});
+
 // BulmaTable
 const BulmaTable = (props: SortableTableProps) => {
   // useWhyDidYouUpdate('BulmaTable', props);
@@ -577,7 +592,9 @@ const BulmaTable = (props: SortableTableProps) => {
     setData,
     tableState,
     setTableState,
-    initialUrl,
+    dataBaseURL,
+    dataURL,
+    queryParams,
     style,
     maxButtons,
     paginationPlacement,
@@ -605,11 +622,55 @@ const BulmaTable = (props: SortableTableProps) => {
   const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
 
   // data api for reading data over ODATA
-  const urlToLoad = initialUrl ? initialUrl : '';
-  const { response, isLoading, setUrl } = useDataApi({
+  const [url, setUrl] = useState(dataURL);
+  if (dataBaseURL) axiosInstance.defaults.baseURL = dataBaseURL;
+  const { response, isLoading, setUrl: fetchData } = useDataApi({
     // isError, error
-    initialUrl: urlToLoad
+    axios: axiosInstance
   });
+
+  useEffect(() => {
+    if (url) {
+      console.log('fetching data - initializing ...');
+
+      const getFullUrl = () => {
+        const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
+        const index = indexFound !== -1 ? indexFound : 0; // default to first column
+        const sort = columns[index].key;
+        const order = indexFound !== -1 ? tableState.sortings[index] : 'asc'; // default to asc
+        const params: QueryParams = {
+          limit: activePage * rowsPerPage,
+          offset: (activePage - 1) * rowsPerPage,
+          search: tableState.filter,
+          sort: sort,
+          order: order
+        };
+
+        const queryObject = queryParams ? queryParams(params) : params;
+
+        // have to reduce to remove any elements that are undefined
+        const queryString = Object.entries(queryObject)
+          .reduce(
+            (result, pair) => {
+              const [key, value] = pair;
+              if (value !== undefined && value !== null) {
+                result.push(key + '=' + value);
+              }
+              return result;
+            },
+            [] as string[]
+          )
+          .join('&');
+
+        return `${url}?${queryString}`;
+      };
+
+      const fullUrl = getFullUrl();
+      console.log('fetching data using url: ' + fullUrl);
+      fetchData(fullUrl);
+    }
+  }, [activePage, rowsPerPage, tableState.filter, tableState.sortings, url]); // eslint-disable-line react-hooks/exhaustive-deps
+  useDependenciesDebugger({ activePage, columns, fetchData, queryParams, rowsPerPage, tableState, url });
 
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
   useEffect(() => {
@@ -623,7 +684,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
       if (setData) setData(localData);
     }
-  }, [response, setData]);
+  }, [response]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (data.length > 0) {
@@ -636,7 +697,8 @@ const BulmaTable = (props: SortableTableProps) => {
         setUniqueIdKey(uniqueIdColumn.key);
       }
     }
-  }, [columns, data, setTableState, uniqueIdKey]);
+  }, [data, columns, setTableState, uniqueIdKey]);
+  useDependenciesDebugger({ data, columns, setTableState, uniqueIdKey });
 
   // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {

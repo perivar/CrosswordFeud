@@ -26,7 +26,6 @@
     "thunk": "^0.0.1",
     "react-table": "^6.10.0",
     "prop-types": "^15.7.2",
-    "reactstrap": "^8.0.1",
     "bulma": "^0.7.5",
     "bulma-extensions": "^6.2.7",
     "immer": "^3.1.3",

@@ -1,5 +1,5 @@
 import { useEffect, useReducer, useState } from 'react';
-import axios from 'axios';
+import defaultAxios, { AxiosInstance, AxiosStatic } from 'axios';
 
 interface IAction {
   type: string;
@@ -41,6 +41,7 @@ export function responseReducer(state: IState, action: IAction): IState {
 
 /**
  * Params
+ * @param  {AxiosInstance} axios - (optional) The custom axios instance
  * @param  {string} initialUrl - The request URL
  * @param  {('GET'|'POST'|'PUT'|'DELETE'|'HEAD'|'OPTIONS'|'PATCH')} method - The request method
  * @param  {object} [options={}] - (optional) The config options of Axios.js (https://goo.gl/UPLqaK)
@@ -48,7 +49,8 @@ export function responseReducer(state: IState, action: IAction): IState {
  */
 
 export interface DataApiProperties {
-  initialUrl: string;
+  axios?: AxiosInstance | AxiosStatic;
+  initialUrl?: string;
   method?: string;
   options?: any | null;
   callback?: Function;
@@ -66,10 +68,11 @@ interface DataApiReturn extends IState {
   setUrl: Function;
 }
 
-const CancelToken = axios.CancelToken;
+const CancelToken = defaultAxios.CancelToken;
 
 export const useDataApi = ({
-  initialUrl,
+  axios = defaultAxios,
+  initialUrl = '', // empty means it will not be executed until setUrl is used
   method = 'get',
   options = null, // cannot be {} as this will trigger an endless loop in useEffect
   callback
@@ -79,6 +82,8 @@ export const useDataApi = ({
 
   useEffect(() => {
     if (!url) return;
+
+    let unmounted = false;
 
     // Set up a cancellation source
     const source = CancelToken.source();
@@ -100,41 +105,51 @@ export const useDataApi = ({
           ...options,
           cancelToken: source.token
         });
-        callbackHandler(null, response);
-        dispatch({ type: actions.success, payload: response });
+
+        if (!unmounted) {
+          callbackHandler(null, response);
+          dispatch({ type: actions.success, payload: response });
+        }
       } catch (error) {
-        // check that this error is not because we cancelled it ourselves
-        if (!axios.isCancel(error)) {
+        // check that this error is not because we cancelled it ourselves				}
+        if (!unmounted) {
           callbackHandler(error, null);
           dispatch({ type: actions.fail, payload: error });
 
-          if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            // console.log(error.response.data);
-            // console.log(error.response.status);
-            // console.log(error.response.headers);
-            // setErrorMessage(error.response);
-          } else if (error.request) {
-            // The request was made but no response was received
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-            // http.ClientRequest in node.js
-            // console.log(error.request);
-            // setErrorMessage(error.request);
+          if (defaultAxios.isCancel(error)) {
+            console.log(`Axios request cancelled:${error.message}`);
           } else {
-            // Something happened in setting up the request that triggered an Error
-            // console.log('Error', error.message);
-            // setErrorMessage(error.message);
+            callbackHandler(error, null);
+            dispatch({ type: actions.fail, payload: error });
+
+            if (error.response) {
+              // The request was made and the server responded with a status code
+              // that falls out of the range of 2xx
+              // console.log(error.response.data);
+              // console.log(error.response.status);
+              // console.log(error.response.headers);
+              // setErrorMessage(error.response);
+            } else if (error.request) {
+              // The request was made but no response was received
+              // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+              // http.ClientRequest in node.js
+              // console.log(error.request);
+              // setErrorMessage(error.request);
+            } else {
+              // Something happened in setting up the request that triggered an Error
+              // console.log('Error', error.message);
+              // setErrorMessage(error.message);
+            }
           }
-          // console.log(error.config);
         }
       } finally {
-        // setIsLoading(false);
+        unmounted = true;
+        source.cancel('Cancelling in cleanup');
       }
     };
 
     fetchData();
-  }, [callback, method, options, url]);
+  }, [axios, callback, method, options, url]);
 
   return {
     ...results,

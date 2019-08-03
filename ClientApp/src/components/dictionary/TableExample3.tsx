@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 // import produce, { Draft } from 'immer';
 import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
   SortableActionButton,
-  RenderProps
+  RenderProps,
+  QueryParams,
+  getInitialSortings
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
+import { useOdata } from '../shared/hooks/odata-hook';
 
 interface WordData {
   wordId: number;
@@ -67,9 +70,8 @@ renderEditable.displayName = 'Editable';
 
 const handleSynonymSearch = (renderProps: RenderProps) => {
   renderProps.setUrl(
-    "http://116.203.83.168:8000/odata/Words/Synonyms(Word='" +
-      renderProps.row.value +
-      "')?%24orderby=WordId%20desc&%24top=50&%24count=true"
+    // "/odata/Words/Synonyms(Word='" + renderProps.row.value + "')?%24orderby=WordId%20desc&%24top=50&%24count=true"
+    "/odata/Words/Synonyms(Word='" + renderProps.row.value + "')"
   );
 };
 
@@ -123,7 +125,7 @@ const columns: SortableTableColumn[] = [
 
 // initial table state
 const intialState: SortableTableState = {
-  sortings: [],
+  sortings: getInitialSortings(columns),
   isAllSelected: false,
   checkboxes: {},
   filter: ''
@@ -160,6 +162,43 @@ export default function TableExample3() {
 
   const actionButtons: React.ReactNode[] = [deleteButton, disconnectButton];
 
+  // const { query, setTop, setSkip, setFilters, setOrderBy } = useOdata({});
+  // const queryParams = useCallback(
+  //   (params: QueryParams): string => {
+  //     setTop(params.limit);
+  //     setSkip(params.offset);
+  //     setFilters([
+  //       {
+  //         name: 'Value',
+  //         operation: 'contains',
+  //         value: params.search,
+  //         dataType: 'string'
+  //       }
+  //     ]);
+  //     setOrderBy([
+  //       {
+  //         name: params.sort,
+  //         direction: params.order === 'asc' ? 'asc' : params.order === 'desc' ? 'desc' : 'asc'
+  //       }
+  //     ]);
+  //     return query;
+  //   },
+  //   [query, setFilters, setOrderBy, setSkip, setTop]
+  // );
+
+  const queryParams = useCallback((params: QueryParams) => {
+    return {
+      $filter: params.search === '' ? undefined : "contains(Value,'" + params.search + "')",
+      $orderby:
+        (params.sort === undefined ? 'wordId' : params.sort) +
+        ' ' +
+        (params.order === undefined ? 'desc' : params.order),
+      $skip: params.offset,
+      $top: params.limit,
+      $count: true
+    };
+  }, []);
+
   const bulmaTable = BulmaTable({
     columns,
     data,
@@ -167,7 +206,9 @@ export default function TableExample3() {
     tableState,
     setTableState,
     initialRowsPerPage: 15,
-    initialUrl: 'http://116.203.83.168:8000/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
+    dataBaseURL: 'http://localhost:5000',
+    dataURL: '/odata/Words', // ?%24orderby=WordId%20desc&%24top=50&%24count=true
+    queryParams: queryParams,
     actionButtons: actionButtons
   });
 

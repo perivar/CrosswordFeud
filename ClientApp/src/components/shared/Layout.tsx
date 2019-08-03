@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Container } from 'reactstrap';
 import { NavMenu } from './NavMenu';
 
 export class Layout extends PureComponent<any, any> {
@@ -12,7 +11,7 @@ export class Layout extends PureComponent<any, any> {
           </div>
           <div className="hero-body">
             <div className="container has-text-centered">
-              <Container>{this.props.children}</Container>
+              <div>{this.props.children}</div>
             </div>
           </div>
           <div className="hero-foot">
