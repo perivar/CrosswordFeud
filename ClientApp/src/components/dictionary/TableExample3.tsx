@@ -186,18 +186,18 @@ export default function TableExample3() {
   //   [query, setFilters, setOrderBy, setSkip, setTop]
   // );
 
-  const queryParams = useCallback((params: QueryParams) => {
-    return {
-      $filter: params.search === '' ? undefined : "contains(Value,'" + params.search + "')",
-      $orderby:
-        (params.sort === undefined ? 'wordId' : params.sort) +
-        ' ' +
-        (params.order === undefined ? 'desc' : params.order),
-      $skip: params.offset,
-      $top: params.limit,
-      $count: true
-    };
-  }, []);
+  // const queryParams = useCallback((params: QueryParams) => {
+  //   return {
+  //     $filter: params.search === '' ? undefined : "contains(Value,'" + params.search + "')",
+  //     $orderby:
+  //       (params.sort === undefined ? 'wordId' : params.sort) +
+  //       ' ' +
+  //       (params.order === undefined ? 'desc' : params.order),
+  //     $skip: params.offset,
+  //     $top: params.limit,
+  //     $count: true
+  //   };
+  // }, []);
 
   const bulmaTable = BulmaTable({
     columns,
@@ -205,10 +205,31 @@ export default function TableExample3() {
     setData,
     tableState,
     setTableState,
-    initialRowsPerPage: 15,
-    dataBaseURL: 'http://localhost:5000',
-    dataURL: '/odata/Words', // ?%24orderby=WordId%20desc&%24top=50&%24count=true
-    queryParams: queryParams,
+    pagination: true,
+    search: true,
+    pageSize: 10,
+    baseUrl: 'http://localhost:5000',
+    url: '/odata/Words',
+    sidePagination: 'server',
+    sortOrder: 'desc',
+    queryParams: function(params) {
+      return {
+        $filter: params.search === '' ? undefined : "contains(Value,'" + params.search + "')",
+        $orderby:
+          (params.sort === undefined ? 'wordId' : params.sort) +
+          ' ' +
+          (params.order === undefined ? 'desc' : params.order),
+        $skip: params.offset,
+        $top: params.limit,
+        $count: true
+      };
+    },
+    responseHandler: function(res: any) {
+      return {
+        total: res['@odata.count'],
+        rows: res.value
+      };
+    },
     actionButtons: actionButtons
   });
 

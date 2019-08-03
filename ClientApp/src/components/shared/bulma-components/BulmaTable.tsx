@@ -16,7 +16,7 @@ import { BulmaCheckboxField } from './BulmaCheckboxField';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
 import { BulmaSearchField } from './BulmaSearchField';
 // import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
-import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
+// import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -60,21 +60,31 @@ export interface QueryParams {
   [key: string]: string | number;
 }
 
+export interface ResponseParams {
+  total: number;
+  rows: any;
+}
+
 export interface SortableTableProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   data: SortableTableData;
   setData?: Dispatch<React.SetStateAction<SortableTableData | any>>;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
-  dataBaseURL?: string;
-  dataURL?: string;
+  pagination?: boolean;
+  search?: boolean;
+  pageSize?: number;
+  baseUrl?: string;
+  url?: string;
+  sidePagination?: 'server' | 'local';
+  sortOrder?: 'desc' | 'asc';
   queryParams?: (params: QueryParams) => Record<string, string | number | boolean | undefined>;
+  responseHandler?: (response: any) => ResponseParams;
   style?: CSSProperties;
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
-  initialRowsPerPage?: number;
   actionButtons?: React.ReactNode[];
 }
 
@@ -567,19 +577,19 @@ const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPe
   return currentDataSlice;
 };
 
-const getInitalTableState = (
-  data: SortableTableData,
-  columns: SortableTableColumn[],
-  uniqueIdKey: string
-): SortableTableState => {
-  // console.log('getting initial table state');
-  return {
-    sortings: getInitialSortings(columns),
-    isAllSelected: false,
-    checkboxes: getInitialCheckboxes(data, uniqueIdKey),
-    filter: ''
-  };
-};
+// const getInitalTableState = (
+//   data: SortableTableData,
+//   columns: SortableTableColumn[],
+//   uniqueIdKey: string
+// ): SortableTableState => {
+//   // console.log('getting initial table state');
+//   return {
+//     sortings: getInitialSortings(columns),
+//     isAllSelected: false,
+//     checkboxes: getInitialCheckboxes(data, uniqueIdKey),
+//     filter: ''
+//   };
+// };
 
 const axiosInstance: AxiosInstance = axios.create({});
 
@@ -592,15 +602,20 @@ const BulmaTable = (props: SortableTableProps) => {
     setData,
     tableState,
     setTableState,
-    dataBaseURL,
-    dataURL,
+    pagination = true,
+    search = true,
+    pageSize = 10,
+    baseUrl: dataBaseURL,
+    url: dataURL,
+    sidePagination = 'local',
+    sortOrder = 'asc',
     queryParams,
+    responseHandler,
     style,
     maxButtons,
     paginationPlacement,
     useGotoField = true,
     alwaysUsePreviousNextButtons = true,
-    initialRowsPerPage = 10,
     actionButtons,
     iconStyle,
     iconDesc,
@@ -619,9 +634,11 @@ const BulmaTable = (props: SortableTableProps) => {
 
   // paging state
   const [activePage, setActivePage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(initialRowsPerPage);
+  const [rowsPerPage, setRowsPerPage] = useState(pageSize);
+  const [numberOfRows, setNumberOfRows] = useState(0);
 
   // data api for reading data over ODATA
+  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response object
   const [url, setUrl] = useState(dataURL);
   if (dataBaseURL) axiosInstance.defaults.baseURL = dataBaseURL;
   const { response, isLoading, setUrl: fetchData } = useDataApi({
@@ -629,67 +646,11 @@ const BulmaTable = (props: SortableTableProps) => {
     axios: axiosInstance
   });
 
-  useEffect(() => {
-    if (url) {
-      console.log('fetching data - initializing ...');
-
-      const getFullUrl = () => {
-        const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
-        const index = indexFound !== -1 ? indexFound : 0; // default to first column
-        const sort = columns[index].key;
-        const order = indexFound !== -1 ? tableState.sortings[index] : 'asc'; // default to asc
-        const params: QueryParams = {
-          limit: activePage * rowsPerPage,
-          offset: (activePage - 1) * rowsPerPage,
-          search: tableState.filter,
-          sort: sort,
-          order: order
-        };
-
-        const queryObject = queryParams ? queryParams(params) : params;
-
-        // have to reduce to remove any elements that are undefined
-        const queryString = Object.entries(queryObject)
-          .reduce(
-            (result, pair) => {
-              const [key, value] = pair;
-              if (value !== undefined && value !== null) {
-                result.push(key + '=' + value);
-              }
-              return result;
-            },
-            [] as string[]
-          )
-          .join('&');
-
-        return `${url}?${queryString}`;
-      };
-
-      const fullUrl = getFullUrl();
-      console.log('fetching data using url: ' + fullUrl);
-      fetchData(fullUrl);
-    }
-  }, [activePage, rowsPerPage, tableState.filter, tableState.sortings, url]); // eslint-disable-line react-hooks/exhaustive-deps
-  useDependenciesDebugger({ activePage, rowsPerPage, tableState, url });
-
-  // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
-  useEffect(() => {
-    if (response) {
-      console.log('useEffect() being executed (response)');
-      // console.log(response);
-
-      const localData = response.data.value;
-      const localTotalCount = response.data['@odata.count'];
-      console.log('TotalCount: ' + localTotalCount);
-
-      if (setData) setData(localData);
-    }
-  }, [response]); // eslint-disable-line react-hooks/exhaustive-deps
+  // useEffect means run on intial rendering and each subsequent change to the dependency array
 
   useEffect(() => {
-    if (data.length > 0) {
-      console.log('useEffect() being executed (initializing table state)');
-      setTableState(getInitalTableState(data, columns, uniqueIdKey));
+    if (columns.length > 0) {
+      console.log('useEffect() being executed (initializing uniqueIdColumn)');
 
       // see if one of the columns have specified an unique id key
       const uniqueIdColumn = columns.find(a => a.uniqueId === true);
@@ -697,34 +658,143 @@ const BulmaTable = (props: SortableTableProps) => {
         setUniqueIdKey(uniqueIdColumn.key);
       }
     }
-  }, [data, columns, setTableState, uniqueIdKey]);
-  useDependenciesDebugger({ data, columns, setTableState, uniqueIdKey });
+  }, [columns]);
 
-  // this effect will run on intial rendering and each subsequent change to the dependency array
   useEffect(() => {
-    if (tableState.sortings.length > 0) {
-      console.log('useEffect() being executed (sorting and filtering)');
-      const localSortedData = sortData(data, columns, tableState.sortings);
+    if (url) {
+      console.log('fetching data - initializing ...');
 
-      const localSortedAndFilteredData =
-        tableState.filter !== '' ? filterData(localSortedData, columns, tableState.filter) : localSortedData;
+      const getFullUrl = () => {
+        if (sidePagination === 'server') {
+          const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
+          const index = indexFound !== -1 ? indexFound : 0; // default to first column
+          const sort = columns[index].key;
+          const order = indexFound !== -1 ? tableState.sortings[index] : sortOrder; // default to sortOrder
+          const params: QueryParams = {
+            limit: rowsPerPage,
+            offset: (activePage - 1) * rowsPerPage,
+            search: tableState.filter,
+            sort: sort,
+            order: order
+          };
 
-      setSortedAndFilteredData(localSortedAndFilteredData);
+          const queryObject = queryParams ? queryParams(params) : params;
 
-      if (localSortedAndFilteredData.length > rowsPerPage) {
-        const localDataSlice = getCurrentDataSlice(localSortedAndFilteredData, activePage, rowsPerPage);
-        setCurrentData(localDataSlice);
+          // have to reduce to remove any elements that are undefined
+          const queryString = Object.entries(queryObject)
+            .reduce(
+              (result, pair) => {
+                const [key, value] = pair;
+                if (value !== undefined && value !== null) {
+                  result.push(key + '=' + value);
+                }
+                return result;
+              },
+              [] as string[]
+            )
+            .join('&');
+          return `${url}?${queryString}`;
+        } else {
+          return `${url}`;
+        }
+      };
+
+      const fullUrl = getFullUrl();
+      console.log('fetching data using url: ' + fullUrl);
+      fetchData(fullUrl);
+    }
+  }, [
+    activePage,
+    columns,
+    fetchData,
+    queryParams,
+    rowsPerPage,
+    sidePagination,
+    sortOrder,
+    tableState.filter,
+    tableState.sortings,
+    url
+  ]);
+
+  useEffect(() => {
+    if (response) {
+      console.log('useEffect() being executed (response)');
+
+      let localData = [];
+      let localTotalCount = 0;
+      if (responseHandler) {
+        const { total, rows } = responseHandler(response.data);
+        localData = rows;
+        localTotalCount = total;
       } else {
-        setCurrentData(localSortedAndFilteredData);
+        localData = response.data.value;
+        localTotalCount = response.data.value.length;
       }
+      console.log('TotalCount: ' + localTotalCount);
+      setNumberOfRows(localTotalCount);
+
+      if (setData) setData(localData);
 
       // check if we need to change the active page
-      const localNumberOfPages = Math.ceil(localSortedAndFilteredData.length / rowsPerPage);
+      const localNumberOfPages = Math.ceil(localTotalCount / rowsPerPage);
       if (activePage > localNumberOfPages) {
         setActivePage(1); // 1 or localNumberOfPages?
       }
     }
-  }, [activePage, columns, data, rowsPerPage, tableState.filter, tableState.sortings]);
+  }, [response]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (data.length > 0) {
+      console.log('useEffect() being executed (initializing table state for checkboxes)');
+      setTableState(
+        produce((draft: Draft<SortableTableState>) => {
+          draft.checkboxes = getInitialCheckboxes(data, uniqueIdKey);
+        })
+      );
+    }
+  }, [data, setTableState, uniqueIdKey]);
+
+  useEffect(() => {
+    if (data.length > 0 && tableState.sortings.length > 0) {
+      if (sidePagination === 'server') {
+        console.log('useEffect() being executed (server-side sorting and filtering)');
+        setCurrentData(data);
+      } else {
+        console.log('useEffect() being executed (local sorting and filtering)');
+        const localSortedData = sortData(data, columns, tableState.sortings);
+
+        const localSortedAndFilteredData =
+          tableState.filter !== '' ? filterData(localSortedData, columns, tableState.filter) : localSortedData;
+
+        setSortedAndFilteredData(localSortedAndFilteredData);
+
+        // calculate number of rows from the possisly sorted and filtered data
+        setNumberOfRows(localSortedAndFilteredData.length);
+
+        if (localSortedAndFilteredData.length > rowsPerPage) {
+          const localDataSlice = getCurrentDataSlice(localSortedAndFilteredData, activePage, rowsPerPage);
+          setCurrentData(localDataSlice);
+        } else {
+          setCurrentData(localSortedAndFilteredData);
+        }
+
+        // check if we need to change the active page
+        const localNumberOfPages = Math.ceil(localSortedAndFilteredData.length / rowsPerPage);
+        if (activePage > localNumberOfPages) {
+          setActivePage(1); // 1 or localNumberOfPages?
+        }
+      }
+    }
+  }, [
+    activePage,
+    columns,
+    data,
+    rowsPerPage,
+    sidePagination,
+    sortedAndFilteredData.length,
+    tableState.filter,
+    tableState.sortings
+  ]);
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
@@ -756,9 +826,6 @@ const BulmaTable = (props: SortableTableProps) => {
     },
     [setTableState]
   );
-
-  // calculate number of rows from the posisbly sorted and filtered data
-  const numberOfRows = sortedAndFilteredData.length;
 
   const sortableTableHeader = SortableTableHeader({
     columns,
@@ -800,7 +867,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   return (
     <>
-      {sortableTableSearchBar}
+      {search ? sortableTableSearchBar : ''}
       <div className="table-container">
         <table className="table is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}
@@ -808,7 +875,7 @@ const BulmaTable = (props: SortableTableProps) => {
         </table>
       </div>
       {isLoading ? <div className="is-loading" /> : ''}
-      {bulmaPaginator}
+      {pagination ? bulmaPaginator : ''}
     </>
   );
 };

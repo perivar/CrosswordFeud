@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from 'react';
+import { useRef, useMemo } from 'react';
 
 // https://stackoverflow.com/questions/55187563/determine-which-dependency-array-variable-caused-useeffect-hook-to-fire
 // This can then be used by copying a dependency array literal and just changing it to be an object literal:
