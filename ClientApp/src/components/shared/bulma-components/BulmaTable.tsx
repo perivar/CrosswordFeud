@@ -6,7 +6,8 @@ import React, {
   HTMLAttributes,
   useCallback,
   useState,
-  useEffect
+  useEffect,
+  useRef
 } from 'react';
 import axios, { AxiosInstance } from 'axios';
 import produce, { Draft } from 'immer';
@@ -237,6 +238,7 @@ export interface RenderProps {
   row: any;
   value: any;
   setUrl: Function;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
 }
 
 interface SortableTableRowProps {
@@ -245,20 +247,21 @@ interface SortableTableRowProps {
   uniqueIdKey: string;
   isSelected: boolean;
   setUrl: Function;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // SortableTableRow
 const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const { data, columns, uniqueIdKey, isSelected, setUrl, handleCheckboxChange } = props;
+  const { data, columns, uniqueIdKey, isSelected, setUrl, setTableState, handleCheckboxChange } = props;
 
   console.log(`render row :: ${data[uniqueIdKey]}`);
 
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      const cellInfo: RenderProps = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl };
+      const cellInfo: RenderProps = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl, setTableState };
       value = column.render(cellInfo);
     }
     return (
@@ -293,6 +296,7 @@ interface SortableTableBodyProps {
   uniqueIdKey: string;
   data: SortableTableData;
   tableState: SortableTableState;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
   setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -303,7 +307,7 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, uniqueIdKey, data, tableState, setUrl, handleCheckboxChange } = props;
+  const { columns, uniqueIdKey, data, tableState, setTableState, setUrl, handleCheckboxChange } = props;
 
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
@@ -315,6 +319,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
         isSelected={tableState.checkboxes[row[uniqueIdKey]]}
         handleCheckboxChange={handleCheckboxChange}
         setUrl={setUrl}
+        setTableState={setTableState}
       />
     );
 
@@ -408,13 +413,14 @@ export const SortableActionButton = (props: SortableActionButtonProps) => {
 
 interface SortableTableSearchBarProps {
   numberOfRows: number;
+  tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   actionButtons?: React.ReactNode[];
 }
 
 // SortableTableSearchBar
 const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
-  const { numberOfRows, setTableState, actionButtons } = props;
+  const { numberOfRows, tableState, setTableState, actionButtons } = props;
 
   const handleSearchSubmit = (filterQuery: string) => {
     setTableState(
@@ -442,7 +448,13 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
           </p>
         </div>
         <div className="level-item">
-          <BulmaSearchField type="addon" label="Search" placeholder="Find in table" handleSubmit={handleSearchSubmit} />
+          <BulmaSearchField
+            type="addon"
+            label="Search"
+            value={tableState.filter}
+            placeholder="Find in table"
+            handleSubmit={handleSearchSubmit}
+          />
         </div>
       </div>
     </nav>
@@ -593,6 +605,15 @@ const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPe
 
 const axiosInstance: AxiosInstance = axios.create({});
 
+// https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
+// function usePrevious(value: any) {
+//   const ref = useRef();
+//   useEffect(() => {
+//     ref.current = value;
+//   });
+//   return ref.current;
+// }
+
 // BulmaTable
 const BulmaTable = (props: SortableTableProps) => {
   // useWhyDidYouUpdate('BulmaTable', props);
@@ -660,11 +681,12 @@ const BulmaTable = (props: SortableTableProps) => {
     }
   }, [columns]);
 
+  const prevUrlRef = useRef<string | undefined>();
   useEffect(() => {
-    // TODO this fires several times when only changing rows and local pagination
     if (url) {
       console.log('fetching data - initializing ...');
 
+      // inline method to get full url
       const getFullUrl = () => {
         if (sidePagination === 'server') {
           const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
@@ -700,12 +722,28 @@ const BulmaTable = (props: SortableTableProps) => {
         }
       };
 
-      const fullUrl = getFullUrl();
+      // check if url has changed
+      const hasUrlChanged = prevUrlRef.current !== url;
+      let fullUrl = '';
+
+      if (sidePagination === 'local') {
+        if (!hasUrlChanged) {
+          return;
+        } else {
+          // url has changed
+          fullUrl = getFullUrl();
+        }
+      } else {
+        // server pagination
+        fullUrl = getFullUrl();
+      }
+
       console.log('fetching data using url: ' + fullUrl);
       fetchData(fullUrl);
     }
-  }, [activePage, columns, rowsPerPage, sidePagination, sortOrder, url]); // eslint-disable-line react-hooks/exhaustive-deps
-  useDependenciesDebugger({ activePage, columns, rowsPerPage, sidePagination, sortOrder, url });
+
+    prevUrlRef.current = url;
+  }, [activePage, columns, rowsPerPage, sidePagination, sortOrder, url, tableState.sortings, tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (response) {
@@ -776,7 +814,10 @@ const BulmaTable = (props: SortableTableProps) => {
         }
       }
     }
-  }, [activePage, columns, data, rowsPerPage, sidePagination, tableState]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [activePage, columns, data, rowsPerPage, sidePagination, tableState.sortings, tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // debug what has changed between renders
+  useDependenciesDebugger({ activePage, columns, data, rowsPerPage, sidePagination, sortOrder, url, tableState });
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
@@ -825,12 +866,14 @@ const BulmaTable = (props: SortableTableProps) => {
     uniqueIdKey,
     data: currentData,
     tableState,
+    setTableState,
     setUrl,
     handleCheckboxChange
   });
 
   const sortableTableSearchBar = SortableTableSearchBar({
     numberOfRows,
+    tableState,
     setTableState,
     actionButtons
   });

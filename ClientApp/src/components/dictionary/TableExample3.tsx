@@ -1,16 +1,15 @@
-import React, { useState, useCallback } from 'react';
-// import produce, { Draft } from 'immer';
+import React, { useState } from 'react';
+import produce, { Draft } from 'immer';
 import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
   SortableActionButton,
   RenderProps,
-  QueryParams,
   getInitialSortings
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
-import { useOdata } from '../shared/hooks/odata-hook';
+// import { useOdata } from '../shared/hooks/odata-hook';
 
 interface WordData {
   wordId: number;
@@ -69,10 +68,14 @@ const renderEditable = (renderProps: RenderProps) => {
 renderEditable.displayName = 'Editable';
 
 const handleSynonymSearch = (renderProps: RenderProps) => {
-  renderProps.setUrl(
-    // "/odata/Words/Synonyms(Word='" + renderProps.row.value + "')?%24orderby=WordId%20desc&%24top=50&%24count=true"
-    "/odata/Words/Synonyms(Word='" + renderProps.row.value + "')"
+  // reset filter
+  renderProps.setTableState(
+    produce((draft: Draft<SortableTableState>) => {
+      draft.filter = '';
+    })
   );
+
+  renderProps.setUrl("/odata/Words/Synonyms(Word='" + renderProps.row.value + "')");
 };
 
 const renderSynonymSearch = (renderProps: RenderProps) => {
@@ -208,10 +211,10 @@ export default function TableExample3() {
     pagination: true,
     search: true,
     pageSize: 10,
-    // baseUrl: 'http://localhost:5000',
-    // url: '/odata/Words',
-    url: 'http://localhost:5000/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
-    // sidePagination: 'server',
+    baseUrl: 'http://localhost:5000',
+    url: '/odata/Words',
+    // url: '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
+    sidePagination: 'server',
     sortOrder: 'desc',
     queryParams: function(params) {
       return {
