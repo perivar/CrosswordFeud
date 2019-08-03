@@ -670,7 +670,7 @@ const BulmaTable = (props: SortableTableProps) => {
       fetchData(fullUrl);
     }
   }, [activePage, rowsPerPage, tableState.filter, tableState.sortings, url]); // eslint-disable-line react-hooks/exhaustive-deps
-  useDependenciesDebugger({ activePage, columns, fetchData, queryParams, rowsPerPage, tableState, url });
+  useDependenciesDebugger({ activePage, rowsPerPage, tableState, url });
 
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response
   useEffect(() => {
