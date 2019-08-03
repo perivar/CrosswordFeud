@@ -208,9 +208,10 @@ export default function TableExample3() {
     pagination: true,
     search: true,
     pageSize: 10,
-    baseUrl: 'http://localhost:5000',
-    url: '/odata/Words',
-    sidePagination: 'server',
+    // baseUrl: 'http://localhost:5000',
+    // url: '/odata/Words',
+    url: 'http://localhost:5000/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
+    // sidePagination: 'server',
     sortOrder: 'desc',
     queryParams: function(params) {
       return {

@@ -16,7 +16,7 @@ import { BulmaCheckboxField } from './BulmaCheckboxField';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
 import { BulmaSearchField } from './BulmaSearchField';
 // import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
-// import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
+import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -661,6 +661,7 @@ const BulmaTable = (props: SortableTableProps) => {
   }, [columns]);
 
   useEffect(() => {
+    // TODO this fires several times when only changing rows and local pagination
     if (url) {
       console.log('fetching data - initializing ...');
 
@@ -703,18 +704,8 @@ const BulmaTable = (props: SortableTableProps) => {
       console.log('fetching data using url: ' + fullUrl);
       fetchData(fullUrl);
     }
-  }, [
-    activePage,
-    columns,
-    fetchData,
-    queryParams,
-    rowsPerPage,
-    sidePagination,
-    sortOrder,
-    tableState.filter,
-    tableState.sortings,
-    url
-  ]);
+  }, [activePage, columns, rowsPerPage, sidePagination, sortOrder, url]); // eslint-disable-line react-hooks/exhaustive-deps
+  useDependenciesDebugger({ activePage, columns, rowsPerPage, sidePagination, sortOrder, url });
 
   useEffect(() => {
     if (response) {
@@ -785,16 +776,7 @@ const BulmaTable = (props: SortableTableProps) => {
         }
       }
     }
-  }, [
-    activePage,
-    columns,
-    data,
-    rowsPerPage,
-    sidePagination,
-    sortedAndFilteredData.length,
-    tableState.filter,
-    tableState.sortings
-  ]);
+  }, [activePage, columns, data, rowsPerPage, sidePagination, tableState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {
