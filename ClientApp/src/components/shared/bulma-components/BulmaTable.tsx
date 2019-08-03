@@ -411,16 +411,17 @@ export const SortableActionButton = (props: SortableActionButtonProps) => {
   );
 };
 
-interface SortableTableSearchBarProps {
+interface SortableTableTopBarProps {
   numberOfRows: number;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  search: boolean;
   actionButtons?: React.ReactNode[];
 }
 
 // SortableTableSearchBar
-const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
-  const { numberOfRows, tableState, setTableState, actionButtons } = props;
+const SortableTableTopBar = (props: SortableTableTopBarProps) => {
+  const { numberOfRows, tableState, search, setTableState, actionButtons } = props;
 
   const handleSearchSubmit = (filterQuery: string) => {
     setTableState(
@@ -448,13 +449,17 @@ const SortableTableSearchBar = (props: SortableTableSearchBarProps) => {
           </p>
         </div>
         <div className="level-item">
-          <BulmaSearchField
-            type="addon"
-            label="Search"
-            value={tableState.filter}
-            placeholder="Find in table"
-            handleSubmit={handleSearchSubmit}
-          />
+          {search ? (
+            <BulmaSearchField
+              type="addon"
+              label="Search"
+              value={tableState.filter}
+              placeholder="Find in table"
+              handleSubmit={handleSearchSubmit}
+            />
+          ) : (
+            ''
+          )}
         </div>
       </div>
     </nav>
@@ -626,8 +631,8 @@ const BulmaTable = (props: SortableTableProps) => {
     pagination = true,
     search = true,
     pageSize = 10,
-    baseUrl: dataBaseURL,
-    url: dataURL,
+    baseUrl: initialBaseUrl,
+    url: initialUrl,
     sidePagination = 'local',
     sortOrder = 'asc',
     queryParams,
@@ -651,7 +656,7 @@ const BulmaTable = (props: SortableTableProps) => {
   const [currentData, setCurrentData] = useState<SortableTableData>([]);
 
   // sorted data
-  const [sortedAndFilteredData, setSortedAndFilteredData] = useState<SortableTableData>([]);
+  // const [sortedAndFilteredData, setSortedAndFilteredData] = useState<SortableTableData>([]);
 
   // paging state
   const [activePage, setActivePage] = useState(1);
@@ -660,8 +665,8 @@ const BulmaTable = (props: SortableTableProps) => {
 
   // data api for reading data over ODATA
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response object
-  const [url, setUrl] = useState(dataURL);
-  if (dataBaseURL) axiosInstance.defaults.baseURL = dataBaseURL;
+  const [url, setUrl] = useState(initialUrl);
+  if (initialBaseUrl) axiosInstance.defaults.baseURL = initialBaseUrl;
   const { response, isLoading, setUrl: fetchData } = useDataApi({
     // isError, error
     axios: axiosInstance
@@ -671,7 +676,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (columns.length > 0) {
-      console.log('useEffect() being executed (initializing uniqueIdColumn)');
+      console.log('useEffect() - initializing uniqueIdColumn');
 
       // see if one of the columns have specified an unique id key
       const uniqueIdColumn = columns.find(a => a.uniqueId === true);
@@ -684,7 +689,7 @@ const BulmaTable = (props: SortableTableProps) => {
   const prevUrlRef = useRef<string | undefined>();
   useEffect(() => {
     if (url) {
-      console.log('fetching data - initializing ...');
+      console.log('useEffect() - fetching data - checking if we need to do anything ...');
 
       // inline method to get full url
       const getFullUrl = () => {
@@ -738,7 +743,7 @@ const BulmaTable = (props: SortableTableProps) => {
         fullUrl = getFullUrl();
       }
 
-      console.log('fetching data using url: ' + fullUrl);
+      console.log('useEffect() - fetching data - fetching data using url: ' + fullUrl);
       fetchData(fullUrl);
     }
 
@@ -747,19 +752,19 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (response) {
-      console.log('useEffect() being executed (response)');
+      console.log('useEffect() - handling response');
 
       let localData = [];
       let localTotalCount = 0;
       if (responseHandler) {
         const { total, rows } = responseHandler(response.data);
         localData = rows;
-        localTotalCount = total;
+        localTotalCount = total ? total : rows.length;
       } else {
         localData = response.data.value;
         localTotalCount = response.data.value.length;
       }
-      console.log('TotalCount: ' + localTotalCount);
+      console.log('useEffect() - total count: ' + localTotalCount);
       setNumberOfRows(localTotalCount);
 
       if (setData) setData(localData);
@@ -774,7 +779,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log('useEffect() being executed (initializing table state for checkboxes)');
+      console.log('useEffect() - initializing table state for checkboxes');
       setTableState(
         produce((draft: Draft<SortableTableState>) => {
           draft.checkboxes = getInitialCheckboxes(data, uniqueIdKey);
@@ -786,16 +791,16 @@ const BulmaTable = (props: SortableTableProps) => {
   useEffect(() => {
     if (data.length > 0 && tableState.sortings.length > 0) {
       if (sidePagination === 'server') {
-        console.log('useEffect() being executed (server-side sorting and filtering)');
+        console.log('useEffect() - server-side sorting and filtering');
         setCurrentData(data);
       } else {
-        console.log('useEffect() being executed (local sorting and filtering)');
+        console.log('useEffect() - local sorting and filtering');
         const localSortedData = sortData(data, columns, tableState.sortings);
 
         const localSortedAndFilteredData =
           tableState.filter !== '' ? filterData(localSortedData, columns, tableState.filter) : localSortedData;
 
-        setSortedAndFilteredData(localSortedAndFilteredData);
+        // setSortedAndFilteredData(localSortedAndFilteredData);
 
         // calculate number of rows from the possisly sorted and filtered data
         setNumberOfRows(localSortedAndFilteredData.length);
@@ -871,11 +876,12 @@ const BulmaTable = (props: SortableTableProps) => {
     handleCheckboxChange
   });
 
-  const sortableTableSearchBar = SortableTableSearchBar({
+  const sortableTableTopBar = SortableTableTopBar({
     numberOfRows,
     tableState,
     setTableState,
-    actionButtons
+    actionButtons,
+    search
   });
 
   const bulmaPaginator = BulmaPaginator({
@@ -892,7 +898,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   return (
     <>
-      {search ? sortableTableSearchBar : ''}
+      {sortableTableTopBar}
       <div className="table-container">
         <table className="table is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}

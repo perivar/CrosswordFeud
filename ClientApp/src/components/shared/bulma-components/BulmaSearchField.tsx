@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 interface SearchFieldProps {
   type: 'addon' | 'grouped';
@@ -13,11 +13,10 @@ const SearchField = (props: SearchFieldProps) => {
   const { type, label, placeholder, value, handleSubmit } = props;
 
   const searchInputRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const [tempValue, setTempValue] = useState<string>(value);
 
   useEffect(() => {
-    setTempValue(value);
-  }, [value]);
+    if (searchInputRef && searchInputRef.current) searchInputRef.current.value = value;
+  }, [searchInputRef, value]);
 
   const handleSearchKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const keyCode = e.keyCode || e.which;
@@ -36,7 +35,6 @@ const SearchField = (props: SearchFieldProps) => {
   const handleSearchClear = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (searchInputRef && searchInputRef.current) searchInputRef.current.value = '';
-    setTempValue('');
     doSearch();
   };
 
@@ -56,8 +54,6 @@ const SearchField = (props: SearchFieldProps) => {
             type="text"
             placeholder={placeholder}
             onKeyPress={handleSearchKeyPress}
-            value={tempValue}
-            onChange={event => setTempValue(event.target.value)}
           />
           <button type="button" className="icon is-small is-right is-icon-button" onClick={handleSearchClear}>
             <i className="fas fa-times fa-xs" />

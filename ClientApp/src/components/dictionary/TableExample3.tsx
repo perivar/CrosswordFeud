@@ -163,7 +163,18 @@ export default function TableExample3() {
     handleOnClick: handleOnDisconnectClick
   });
 
-  const actionButtons: React.ReactNode[] = [deleteButton, disconnectButton];
+  const handleResetClick = () => {
+    console.log('reset');
+  };
+  const resetButton: React.ReactNode = SortableActionButton({
+    label: 'Reset',
+    key: 'reset',
+    classNames: 'is-primary',
+    disabled: false,
+    handleOnClick: handleResetClick
+  });
+
+  const actionButtons: React.ReactNode[] = [deleteButton, disconnectButton, resetButton];
 
   // const { query, setTop, setSkip, setFilters, setOrderBy } = useOdata({});
   // const queryParams = useCallback(

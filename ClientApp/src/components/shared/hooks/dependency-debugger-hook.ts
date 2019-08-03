@@ -20,6 +20,9 @@ function difference(newObject: any, baseObject: any) {
   });
 }
 
+const isEmptyObj = (object: any) =>
+  !Object.getOwnPropertySymbols(object).length && !Object.getOwnPropertyNames(object).length;
+
 const compareInputs = (inputKeys: any, oldInputs: any, newInputs: any) => {
   inputKeys.forEach((key: any) => {
     const oldInput = oldInputs[key];
@@ -27,7 +30,8 @@ const compareInputs = (inputKeys: any, oldInputs: any, newInputs: any) => {
     if (oldInput !== newInput) {
       console.log('change detected', key, 'old:', oldInput, 'new:', newInput);
       // console.log(JSON.stringify(difference(oldInput, newInput)));
-      console.log(difference(oldInput, newInput));
+      const diff = difference(oldInput, newInput);
+      if (!isEmptyObj(diff)) console.log(diff);
     }
   });
 };
