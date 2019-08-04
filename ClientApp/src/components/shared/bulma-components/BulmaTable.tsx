@@ -41,7 +41,7 @@ export interface SortableTableColumn {
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   searchable?: boolean;
-  render?: (value: RenderProps) => React.ReactNode;
+  render?: (value: RenderProps) => ReactNode;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -76,7 +76,7 @@ export interface ActionButtonProps {
 
 export interface ActionButton {
   key: string;
-  render?: (value: ActionButtonProps) => React.ReactNode;
+  render?: (value: ActionButtonProps) => ReactNode;
 }
 
 export interface SortableTableProps extends SortableTableIconInfo {
@@ -416,7 +416,7 @@ export interface SortableActionButtonProps {
   handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-export const SortableActionButton = (props: SortableActionButtonProps): React.ReactNode => {
+export const SortableActionButton = (props: SortableActionButtonProps): ReactNode => {
   const { label, key, classNames, disabled, handleOnClick } = props;
   return (
     <button
