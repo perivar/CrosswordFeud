@@ -18,7 +18,7 @@ import { BulmaCheckboxField } from './BulmaCheckboxField';
 import BulmaPaginator, { PaginationPlacement } from './BulmaPagination';
 import { BulmaSearchField } from './BulmaSearchField';
 // import { useWhyDidYouUpdate } from '../hooks/why-did-you-update-hook';
-import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
+// import { useDependenciesDebugger } from '../hooks/dependency-debugger-hook';
 
 export type SortingType = 'desc' | 'asc' | 'both';
 
@@ -416,7 +416,7 @@ export interface SortableActionButtonProps {
   handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-export const SortableActionButton = (props: SortableActionButtonProps): ReactNode => {
+export const SortableActionButton = (props: SortableActionButtonProps) => {
   const { label, key, classNames, disabled, handleOnClick } = props;
   return (
     <button
@@ -846,7 +846,7 @@ const BulmaTable = (props: SortableTableProps) => {
   }, [activePage, columns, data, rowsPerPage, sidePagination, tableState.sortings, tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // debug what has changed between renders
-  useDependenciesDebugger({ activePage, columns, data, rowsPerPage, sidePagination, sortOrder, url, tableState });
+  // useDependenciesDebugger({ activePage, columns, data, rowsPerPage, sidePagination, sortOrder, url, tableState });
 
   const handleCheckboxChange = useCallback(
     (changeEvent: ChangeEvent<HTMLInputElement>) => {

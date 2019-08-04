@@ -96,12 +96,12 @@ const renderSynonymSearch = (renderProps: RenderProps) => {
 // renderSynonymSearch.displayName = 'SynonymSearch';
 
 // create action buttons
-const renderDeleteButton = (renderProps: ActionButtonProps): React.ReactNode => {
+const renderDeleteButton = (renderProps: ActionButtonProps) => {
   const handleOnDeleteClick = () => {
     const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
     console.log('delete: ' + ids);
   };
-  const deleteButton: React.ReactNode = SortableActionButton({
+  const deleteButton = SortableActionButton({
     label: 'Delete',
     key: 'deleteRows',
     classNames: 'is-danger',
@@ -114,12 +114,12 @@ const renderDeleteButton = (renderProps: ActionButtonProps): React.ReactNode => 
   return deleteButton;
 };
 
-const renderDisconnectButton = (renderProps: ActionButtonProps): React.ReactNode => {
+const renderDisconnectButton = (renderProps: ActionButtonProps) => {
   const handleOnDisconnectClick = () => {
     const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
     console.log('disconnect: ' + ids);
   };
-  const disconnectButton: React.ReactNode = SortableActionButton({
+  const disconnectButton = SortableActionButton({
     label: 'Disconnect',
     key: 'disconnectRows',
     classNames: 'is-warning',
@@ -132,7 +132,7 @@ const renderDisconnectButton = (renderProps: ActionButtonProps): React.ReactNode
   return disconnectButton;
 };
 
-const renderResetButton = (renderProps: ActionButtonProps): React.ReactNode => {
+const renderResetButton = (renderProps: ActionButtonProps) => {
   const handleResetClick = () => {
     // reset filter
     // renderProps.setTableState(
@@ -144,7 +144,7 @@ const renderResetButton = (renderProps: ActionButtonProps): React.ReactNode => {
     renderProps.setTableState(intialState);
     renderProps.setUrl('/odata/Words');
   };
-  const resetButton: React.ReactNode = SortableActionButton({
+  const resetButton = SortableActionButton({
     label: 'Reset',
     key: 'resetRows',
     classNames: 'is-primary',
