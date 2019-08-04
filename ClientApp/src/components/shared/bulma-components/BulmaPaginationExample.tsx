@@ -65,7 +65,7 @@ export default function BulmaPaginationExample() {
     maxButtons,
     paginationPlacement,
     useGotoField,
-    alwaysUsePreviousNextButtons,
+    alwaysUsePreviousNextButtons
   });
 
   return (

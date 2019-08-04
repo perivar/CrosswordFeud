@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export interface BulmaInputFieldArguments {
   label: string;
@@ -10,7 +10,7 @@ export interface BulmaInputFieldArguments {
   value: string;
   submitted: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  icon?: JSX.Element;
+  icon?: ReactNode;
 }
 
 const InputField = ({

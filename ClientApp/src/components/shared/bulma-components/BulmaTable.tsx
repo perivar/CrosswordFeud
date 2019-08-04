@@ -48,9 +48,9 @@ export interface SortableTableColumn {
 
 export interface SortableTableIconInfo {
   iconStyle?: CSSProperties;
-  iconDesc?: JSX.Element;
-  iconAsc?: JSX.Element;
-  iconBoth?: JSX.Element;
+  iconDesc?: ReactNode;
+  iconAsc?: ReactNode;
+  iconBoth?: ReactNode;
 }
 
 export interface QueryParams {
