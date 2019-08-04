@@ -6,7 +6,9 @@ import BulmaTable, {
   SortableTableColumn,
   SortableActionButton,
   RenderProps,
-  getInitialSortings
+  getInitialSortings,
+  ActionButtonProps,
+  ActionButton
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 // import { useOdata } from '../shared/hooks/odata-hook';
@@ -24,7 +26,7 @@ interface WordData {
   source: string;
 }
 
-// render methods must have displayName
+// column render methods
 const renderDateFormat = (dateObject: RenderProps) => {
   const d = new Date(dateObject.value);
   const day = d.getDate();
@@ -44,7 +46,7 @@ const renderDateFormat = (dateObject: RenderProps) => {
 
   return <>{date}</>;
 };
-renderDateFormat.displayName = 'DateFormat';
+// renderDateFormat.displayName = 'DateFormat';
 
 const handleValueChanged = (renderProps: RenderProps, newValue: string) => {
   // use immer
@@ -65,7 +67,7 @@ const renderEditable = (renderProps: RenderProps) => {
     />
   );
 };
-renderEditable.displayName = 'Editable';
+// renderEditable.displayName = 'Editable';
 
 const handleSynonymSearch = (renderProps: RenderProps) => {
   // reset filter
@@ -91,7 +93,82 @@ const renderSynonymSearch = (renderProps: RenderProps) => {
     </>
   );
 };
-renderSynonymSearch.displayName = 'SynonymSearch';
+// renderSynonymSearch.displayName = 'SynonymSearch';
+
+// create action buttons
+const renderDeleteButton = (renderProps: ActionButtonProps): React.ReactNode => {
+  const handleOnDeleteClick = () => {
+    const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+    console.log('delete: ' + ids);
+  };
+  const deleteButton: React.ReactNode = SortableActionButton({
+    label: 'Delete',
+    key: 'deleteRows',
+    classNames: 'is-danger',
+    disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
+      ? false
+      : true,
+    handleOnClick: handleOnDeleteClick
+  });
+
+  return deleteButton;
+};
+
+const renderDisconnectButton = (renderProps: ActionButtonProps): React.ReactNode => {
+  const handleOnDisconnectClick = () => {
+    const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+    console.log('disconnect: ' + ids);
+  };
+  const disconnectButton: React.ReactNode = SortableActionButton({
+    label: 'Disconnect',
+    key: 'disconnectRows',
+    classNames: 'is-warning',
+    disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
+      ? false
+      : true,
+    handleOnClick: handleOnDisconnectClick
+  });
+
+  return disconnectButton;
+};
+
+const renderResetButton = (renderProps: ActionButtonProps): React.ReactNode => {
+  const handleResetClick = () => {
+    // reset filter
+    // renderProps.setTableState(
+    //   produce((draft: Draft<SortableTableState>) => {
+    //     draft.filter = '';
+    //   })
+    // );
+
+    renderProps.setTableState(intialState);
+    renderProps.setUrl('/odata/Words');
+  };
+  const resetButton: React.ReactNode = SortableActionButton({
+    label: 'Reset',
+    key: 'resetRows',
+    classNames: 'is-primary',
+    disabled: false,
+    handleOnClick: handleResetClick
+  });
+
+  return resetButton;
+};
+
+const actionButtons: ActionButton[] = [
+  {
+    key: 'deleteRows',
+    render: renderDeleteButton
+  },
+  {
+    key: 'disconectRows',
+    render: renderDisconnectButton
+  },
+  {
+    key: 'resetRows',
+    render: renderResetButton
+  }
+];
 
 const columns: SortableTableColumn[] = [
   {
@@ -137,44 +214,6 @@ const intialState: SortableTableState = {
 export default function TableExample3() {
   const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<SortableTableState>(intialState);
-
-  // create action buttons
-  const handleOnDeleteClick = () => {
-    const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
-    console.log('delete: ' + ids);
-  };
-  const deleteButton: React.ReactNode = SortableActionButton({
-    label: 'Delete',
-    key: 'deleteRows',
-    classNames: 'is-danger',
-    disabled: Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]) ? false : true,
-    handleOnClick: handleOnDeleteClick
-  });
-
-  const handleOnDisconnectClick = () => {
-    const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
-    console.log('disconnect: ' + ids);
-  };
-  const disconnectButton: React.ReactNode = SortableActionButton({
-    label: 'Disconnect',
-    key: 'disconnectRows',
-    classNames: 'is-warning',
-    disabled: Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]) ? false : true,
-    handleOnClick: handleOnDisconnectClick
-  });
-
-  const handleResetClick = () => {
-    console.log('reset');
-  };
-  const resetButton: React.ReactNode = SortableActionButton({
-    label: 'Reset',
-    key: 'reset',
-    classNames: 'is-primary',
-    disabled: false,
-    handleOnClick: handleResetClick
-  });
-
-  const actionButtons: React.ReactNode[] = [deleteButton, disconnectButton, resetButton];
 
   // const { query, setTop, setSkip, setFilters, setOrderBy } = useOdata({});
   // const queryParams = useCallback(

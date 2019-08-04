@@ -7,7 +7,8 @@ import React, {
   useCallback,
   useState,
   useEffect,
-  useRef
+  useRef,
+  ReactNode
 } from 'react';
 import axios, { AxiosInstance } from 'axios';
 import produce, { Draft } from 'immer';
@@ -40,7 +41,7 @@ export interface SortableTableColumn {
   dataProps?: HTMLAttributes<HTMLElement>; // { className: 'align-right' },
   sortable?: boolean;
   searchable?: boolean;
-  render?: (value: RenderProps) => JSX.Element;
+  render?: (value: RenderProps) => React.ReactNode;
   descSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
@@ -66,6 +67,18 @@ export interface ResponseParams {
   rows: any;
 }
 
+export interface ActionButtonProps {
+  tableState: SortableTableState;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  url?: string;
+  setUrl: Function;
+}
+
+export interface ActionButton {
+  key: string;
+  render?: (value: ActionButtonProps) => React.ReactNode;
+}
+
 export interface SortableTableProps extends SortableTableIconInfo {
   columns: SortableTableColumn[];
   data: SortableTableData;
@@ -77,7 +90,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   pageSize?: number;
   baseUrl?: string;
   url?: string;
-  sidePagination?: 'server' | 'local';
+  sidePagination?: 'server' | 'client';
   sortOrder?: 'desc' | 'asc';
   queryParams?: (params: QueryParams) => Record<string, string | number | boolean | undefined>;
   responseHandler?: (response: any) => ResponseParams;
@@ -86,7 +99,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
-  actionButtons?: React.ReactNode[];
+  actionButtons?: ActionButton[];
 }
 
 export interface SortableTableState {
@@ -261,8 +274,15 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
     if (column.render) {
-      const cellInfo: RenderProps = { uniqueRowId: data[uniqueIdKey], column, value, row: data, setUrl, setTableState };
-      value = column.render(cellInfo);
+      const renderInfo: RenderProps = {
+        uniqueRowId: data[uniqueIdKey],
+        column,
+        value,
+        row: data,
+        setUrl,
+        setTableState
+      };
+      value = column.render(renderInfo);
     }
     return (
       <td key={`row-${data[uniqueIdKey]}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
@@ -396,7 +416,7 @@ export interface SortableActionButtonProps {
   handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-export const SortableActionButton = (props: SortableActionButtonProps) => {
+export const SortableActionButton = (props: SortableActionButtonProps): React.ReactNode => {
   const { label, key, classNames, disabled, handleOnClick } = props;
   return (
     <button
@@ -416,12 +436,14 @@ interface SortableTableTopBarProps {
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   search: boolean;
-  actionButtons?: React.ReactNode[];
+  url?: string;
+  setUrl: Function;
+  actionButtons?: ActionButton[];
 }
 
 // SortableTableSearchBar
 const SortableTableTopBar = (props: SortableTableTopBarProps) => {
-  const { numberOfRows, tableState, search, setTableState, actionButtons } = props;
+  const { numberOfRows, tableState, search, setTableState, url, setUrl, actionButtons } = props;
 
   const handleSearchSubmit = (filterQuery: string) => {
     setTableState(
@@ -431,13 +453,15 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
     );
   };
 
+  const actionInfo: ActionButtonProps = { tableState, setTableState, url, setUrl };
+
   return (
     <nav className="level">
       <div className="level-left">
         {actionButtons &&
-          actionButtons.map((button: any) => (
-            <p key={button.key} className="level-item">
-              {button}
+          actionButtons.map((actionButton: ActionButton) => (
+            <p key={actionButton.key} className="level-item">
+              {actionButton.render && actionButton.render(actionInfo)}
             </p>
           ))}
       </div>
@@ -633,7 +657,7 @@ const BulmaTable = (props: SortableTableProps) => {
     pageSize = 10,
     baseUrl: initialBaseUrl,
     url: initialUrl,
-    sidePagination = 'local',
+    sidePagination = 'client',
     sortOrder = 'asc',
     queryParams,
     responseHandler,
@@ -731,7 +755,7 @@ const BulmaTable = (props: SortableTableProps) => {
       const hasUrlChanged = prevUrlRef.current !== url;
       let fullUrl = '';
 
-      if (sidePagination === 'local') {
+      if (sidePagination === 'client') {
         if (!hasUrlChanged) {
           return;
         } else {
@@ -880,8 +904,10 @@ const BulmaTable = (props: SortableTableProps) => {
     numberOfRows,
     tableState,
     setTableState,
-    actionButtons,
-    search
+    search,
+    url,
+    setUrl,
+    actionButtons
   });
 
   const bulmaPaginator = BulmaPaginator({
