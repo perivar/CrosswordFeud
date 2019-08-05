@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react';
 // import TableExample1 from './TableExample1';
 // import TableExample2 from './TableExample2';
 import TableExample3 from './TableExample3';
+// import BulmaTableExample from '../shared/bulma-components/BulmaTableExample';
 
 interface DictionaryComponentProps {
   empty: any;
@@ -16,5 +17,6 @@ interface DictionaryComponentState {
 export default class DictionaryComponent extends PureComponent<DictionaryComponentProps, DictionaryComponentState> {
   render() {
     return <TableExample3 />;
+    // return <BulmaTableExample />;
   }
 }

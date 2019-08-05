@@ -8,7 +8,8 @@ import BulmaTable, {
   SortableTableColumn,
   SortableActionButton,
   ActionButton,
-  ActionButtonProps
+  ActionButtonProps,
+  getInitialSortings
 } from './BulmaTable';
 import { PaginationPlacement } from './BulmaPagination';
 import useRadioButtons from '../hooks/radio-buttons-hook';
@@ -63,7 +64,7 @@ const iconStyle = {
 
 // initial table state
 const intialState: SortableTableState = {
-  sortings: [],
+  sortings: getInitialSortings(columns),
   isAllSelected: false,
   checkboxes: {},
   filter: ''
@@ -73,6 +74,9 @@ export default function BulmaTableExample() {
   const [maxButtons, setMaxButtons] = useState(5);
   const [useGotoField, setUseGotoField] = useState<boolean>(false);
   const [alwaysUsePreviousNextButtons, setAlwaysUsePreviousNextButtons] = useState<boolean>(false);
+  const [pagination, setPagination] = useState<boolean>(true);
+  const [search, setSearch] = useState<boolean>(true);
+  const [pageSize, setPageSize] = useState<number>(5);
 
   // use radio button hook
   const { value: paginationPlacement, inputProps: paginationPlacementProps } = useRadioButtons<PaginationPlacement>(
@@ -120,6 +124,9 @@ export default function BulmaTableExample() {
     data,
     tableState,
     setTableState,
+    pagination,
+    search,
+    pageSize,
     style,
     maxButtons,
     paginationPlacement,
@@ -132,10 +139,10 @@ export default function BulmaTableExample() {
   return (
     <>
       <div className="container box">
-        <h1>BulmaTable demo</h1>
+        <h1 className="is-size-5">BulmaTable demo</h1>
         <div>
-          <div>Max buttons:</div>
           <div>
+            Max buttons:&nbsp;
             <input
               type="range"
               value={maxButtons}
@@ -160,6 +167,31 @@ export default function BulmaTableExample() {
           <div>
             <input type="checkbox" checked={useGotoField} onChange={() => setUseGotoField(!useGotoField)} />
             Use goto-field?
+          </div>
+        </div>
+        <div>
+          <div>
+            <input type="checkbox" checked={pagination} onChange={() => setPagination(!pagination)} />
+            Use pagination?
+          </div>
+        </div>
+        <div>
+          <div>
+            <input type="checkbox" checked={search} onChange={() => setSearch(!search)} />
+            Use search?
+          </div>
+        </div>
+        <div>
+          <div>
+            page size:&nbsp;
+            <input
+              type="range"
+              value={pageSize}
+              min={5}
+              max={30}
+              onChange={event => setPageSize(Number(event.target.value))}
+            />
+            {pageSize}
           </div>
         </div>
         <div>

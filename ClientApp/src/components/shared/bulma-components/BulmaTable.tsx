@@ -699,6 +699,11 @@ const BulmaTable = (props: SortableTableProps) => {
   // useEffect means run on intial rendering and each subsequent change to the dependency array
 
   useEffect(() => {
+    console.log('useEffect() - updating rowsPerPage using pageSize');
+    setRowsPerPage(pageSize);
+  }, [pageSize]);
+
+  useEffect(() => {
     if (columns.length > 0) {
       console.log('useEffect() - initializing uniqueIdColumn');
 
