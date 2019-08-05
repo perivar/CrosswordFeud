@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import produce, { Draft } from 'immer';
 import '../shared/bulma-components/bulma-table.scss';
 import BulmaTable, {
@@ -8,10 +8,11 @@ import BulmaTable, {
   RenderProps,
   getInitialSortings,
   ActionButtonProps,
-  ActionButton
+  ActionButton,
+  QueryParams
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
-// import { useOdata } from '../shared/hooks/odata-hook';
+import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
 
 interface WordData {
   wordId: number;
@@ -203,6 +204,34 @@ const columns: SortableTableColumn[] = [
   }
 ];
 
+// convert QueryParams2ODataValues
+const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
+  const top = params && params.limit;
+  const skip = params && params.offset;
+  const filters: OdataFilter[] | undefined =
+    params && params.search
+      ? [
+          {
+            name: 'Value',
+            operation: 'contains',
+            value: params.search,
+            dataType: 'string'
+          }
+        ]
+      : undefined;
+  const orderBy: OrderBy[] | undefined =
+    params && params.sort && params.order
+      ? [
+          {
+            name: params.sort,
+            direction: params.order === 'asc' ? 'asc' : params.order === 'desc' ? 'desc' : 'asc'
+          }
+        ]
+      : undefined;
+
+  return { top, skip, filters, orderBy, count: true };
+};
+
 // initial table state
 const intialState: SortableTableState = {
   sortings: getInitialSortings(columns),
@@ -215,29 +244,9 @@ export default function TableExample3() {
   const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<SortableTableState>(intialState);
 
-  // const { query, setTop, setSkip, setFilters, setOrderBy } = useOdata({});
-  // const queryParams = useCallback(
-  //   (params: QueryParams): string => {
-  //     setTop(params.limit);
-  //     setSkip(params.offset);
-  //     setFilters([
-  //       {
-  //         name: 'Value',
-  //         operation: 'contains',
-  //         value: params.search,
-  //         dataType: 'string'
-  //       }
-  //     ]);
-  //     setOrderBy([
-  //       {
-  //         name: params.sort,
-  //         direction: params.order === 'asc' ? 'asc' : params.order === 'desc' ? 'desc' : 'asc'
-  //       }
-  //     ]);
-  //     return query;
-  //   },
-  //   [query, setFilters, setOrderBy, setSkip, setTop]
-  // );
+  const queryParams = useCallback((params: QueryParams) => {
+    return getOdataQueryObject(convertQueryParamsToODataValues(params));
+  }, []);
 
   // const queryParams = useCallback((params: QueryParams) => {
   //   return {
@@ -266,19 +275,8 @@ export default function TableExample3() {
     // url: '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
     sidePagination: 'server',
     sortOrder: 'desc',
-    queryParams: function(params) {
-      return {
-        $filter: params.search === '' ? undefined : "contains(Value,'" + params.search + "')",
-        $orderby:
-          (params.sort === undefined ? 'wordId' : params.sort) +
-          ' ' +
-          (params.order === undefined ? 'desc' : params.order),
-        $skip: params.offset,
-        $top: params.limit,
-        $count: true
-      };
-    },
-    responseHandler: function(res: any) {
+    queryParams: queryParams,
+    responseHandler: res => {
       return {
         total: res['@odata.count'],
         rows: res.value

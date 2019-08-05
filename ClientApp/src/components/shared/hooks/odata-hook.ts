@@ -1,4 +1,5 @@
 import { useState } from 'react';
+// import produce, { Draft } from 'immer';
 
 export type FilterOperation =
   | 'contains'
@@ -47,21 +48,102 @@ const mapToOdataFilter = ({ name, operation: operand, value, dataType }: OdataFi
   throw Error(`unknown operand '${operand}'`);
 };
 
-interface InitialValues {
-  initialPageSize?: number;
-  initialOrderBy?: OrderBy[];
+const getOdataOrderBy = (orderBy: OrderBy[] | undefined) => {
+  const orderByPara = orderBy && orderBy.map(sort => `${sort.name} ${sort.direction}`).join(',');
+  return orderByPara;
+};
+
+const getOdataFilter = (filters: OdataFilter[] | undefined) => {
+  const filter =
+    filters && filters.length > 0 && `${filters.map(mapToOdataFilter).reduce((prev, curr) => `${prev} and ${curr}`)}`;
+
+  return filter;
+};
+
+export const getOdataQuery = ({ top = 20, skip = 0, filters, orderBy, count = false }: OdataValues) => {
+  const orderByPara = getOdataOrderBy(orderBy);
+  const filter = getOdataFilter(filters);
+  const orderByQuery = orderByPara ? `&$orderBy=${orderByPara}` : '';
+  const queryString = `$top=${top}${skip ? `&$skip=${skip}` : ''}${
+    filter ? `&$filter=${filter}` : ''
+  }${orderByQuery}&$count=${count}`;
+
+  return queryString;
+};
+
+export const getOdataQueryObject = ({ top = 20, skip = 0, filters, orderBy, count = false }: OdataValues) => {
+  const orderByPara = getOdataOrderBy(orderBy);
+  const filter = getOdataFilter(filters);
+
+  const queryObject = {
+    $top: top,
+    $skip: skip,
+    $filter: filter,
+    $orderBy: orderByPara,
+    $count: count
+  };
+
+  return queryObject;
+};
+
+export interface OdataValues {
+  top?: number;
+  skip?: number;
+  filters?: OdataFilter[] | undefined;
+  orderBy?: OrderBy[] | undefined;
+  count?: boolean;
 }
 
-export const useOdata = ({ initialPageSize = 20, initialOrderBy = [] }: InitialValues) => {
-  const [top, setTop] = useState(initialPageSize);
-  const [skip, setSkip] = useState(0);
-  const [filters, setFilters] = useState<OdataFilter[]>([]);
-  const [orderBy, setOrderBy] = useState<OrderBy[]>(initialOrderBy);
-  const orderByPara = orderBy.map(sort => `${sort.name} ${sort.direction}`).join(',');
-  const orderByQuery = orderByPara ? `&$orderBy=${orderByPara}` : '';
+export const useOdata = ({ top = 20, skip = 0, filters, orderBy, count = false }: OdataValues) => {
+  const [state, setState] = useState<OdataValues>({ top, skip, filters, orderBy, count });
 
-  const query = `$top=${top}${skip ? `&$skip=${skip}` : ''}${
-    filters.length > 0 ? `&$filter=${filters.map(mapToOdataFilter).reduce((prev, curr) => `${prev} and ${curr}`)}` : ''
-  }${orderByQuery}`;
-  return { query, setTop, top, setSkip, setFilters, setOrderBy };
+  const queryString = getOdataQuery({
+    top: state.top,
+    skip: state.skip,
+    filters: state.filters,
+    orderBy: state.orderBy,
+    count: state.count
+  });
+
+  const queryObject = getOdataQueryObject({
+    top: state.top,
+    skip: state.skip,
+    filters: state.filters,
+    orderBy: state.orderBy,
+    count: state.count
+  });
+
+  /*
+  const setTop = (top: number) => {
+    setState(
+      produce((draft: Draft<OdataValues>) => {
+        draft.top = top;
+      })
+    );
+  };
+  const setSkip = (skip: number) => {
+    setState(
+      produce((draft: Draft<OdataValues>) => {
+        draft.skip = skip;
+      })
+    );
+  };
+  const setFilters = (filters: OdataFilter[]) => {
+    setState(
+      produce((draft: Draft<OdataValues>) => {
+        draft.filters = filters;
+      })
+    );
+  };
+  const setOrderBy = (orderBy: OrderBy[]) => {
+    setState(
+      produce((draft: Draft<OdataValues>) => {
+        draft.orderBy = orderBy;
+      })
+    );
+	};
+	*/
+
+  //return { queryString, queryObject, state, setState, setTop, setSkip, setFilters, setOrderBy };
+  return { queryString, queryObject, state, setState };
 };
