@@ -6,10 +6,10 @@ export type PaginationPlacement = 'inline' | 'centered' | 'left' | 'right';
 
 export interface IBulmaPaginatorProps {
   initialPage: number;
-  setInitialPage?: Function;
+  setInitialPage?: (pageNumber: number) => void;
   numberOfRows: number;
   rowsPerPage?: number;
-  setRowsPerPage?: Function;
+  setRowsPerPage?: (rowsNumber: number) => void;
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
@@ -55,7 +55,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
   // subscribe to any changes to initialPage
   useEffect(() => {
     goToPage(initialPage);
-  }, [goToPage, initialPage]);
+  }, [goToPage, initialPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClick = (pageNumber: number, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();

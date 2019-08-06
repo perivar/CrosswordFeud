@@ -135,14 +135,13 @@ const renderDisconnectButton = (renderProps: ActionButtonProps) => {
 
 const renderResetButton = (renderProps: ActionButtonProps) => {
   const handleResetClick = () => {
-    // reset filter
-    // renderProps.setTableState(
-    //   produce((draft: Draft<SortableTableState>) => {
-    //     draft.filter = '';
-    //   })
-    // );
+    renderProps.setTableState(
+      produce((draft: Draft<SortableTableState>) => {
+        draft.filter = '';
+        draft.sortings = getInitialSortings(columns);
+      })
+    );
 
-    renderProps.setTableState(intialState);
     renderProps.setUrl('/odata/Words');
   };
   const resetButton = SortableActionButton({
@@ -282,7 +281,37 @@ export default function TableExample3() {
         rows: res.value
       };
     },
-    actionButtons: actionButtons
+    actionButtons: actionButtons,
+    // onAll: (type: string, param: any) => {
+    //   console.log('onAll: ' + type + ' - ' + param);
+    // },
+    // onSort: (sortings: any) => {
+    //   console.log('onSort: ' + sortings);
+    // },
+    // onCheck: (id: string) => {
+    //   console.log('onCheck: ' + id);
+    // },
+    // onUncheck: (id: string) => {
+    //   console.log('onUncheck: ' + id);
+    // },
+    // onCheckAll: () => {
+    //   console.log('onCheckAll');
+    // },
+    // onUncheckAll: () => {
+    //   console.log('onUncheckAll');
+    // },
+    onLoadSuccess: (data: any, totalCount: number) => {
+      console.log('onLoadSuccess: ' + totalCount);
+    }
+    // onLoadError: (error: any) => {
+    //   console.log('onLoadError: ' + error);
+    // },
+    // onPageChange: (pageNumber: number) => {
+    //   console.log('onPageChange: ' + pageNumber);
+    // },
+    // onSearch: (query: string) => {
+    //   console.log('onSearch: ' + query);
+    // }
   });
 
   return <>{bulmaTable}</>;

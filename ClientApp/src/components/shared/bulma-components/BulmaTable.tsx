@@ -100,6 +100,16 @@ export interface SortableTableProps extends SortableTableIconInfo {
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
   actionButtons?: ActionButton[];
+  onAll?: (type: string, param?: any) => void;
+  onSort?: (sortings: any) => void;
+  onCheck?: (id: string) => void;
+  onUncheck?: (id: string) => void;
+  onCheckAll?: () => void;
+  onUncheckAll?: () => void;
+  onLoadSuccess?: (data: any, totalCount: number) => void;
+  onLoadError?: (error: any) => void;
+  onPageChange?: (pageNumber: number) => void;
+  onSearch?: (query: string) => void;
 }
 
 export interface SortableTableState {
@@ -269,7 +279,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
   const { data, columns, uniqueIdKey, isSelected, setUrl, setTableState, handleCheckboxChange } = props;
 
-  console.log(`render row :: ${data[uniqueIdKey]}`);
+  // console.log(`render row :: ${data[uniqueIdKey]}`);
 
   const tds = columns.map((column: SortableTableColumn) => {
     let value = data[column.key];
@@ -667,6 +677,16 @@ const BulmaTable = (props: SortableTableProps) => {
     useGotoField = true,
     alwaysUsePreviousNextButtons = true,
     actionButtons,
+    onAll,
+    onSort,
+    onCheck,
+    onUncheck,
+    onCheckAll,
+    onUncheckAll,
+    onLoadSuccess,
+    onLoadError,
+    onPageChange,
+    onSearch,
     iconStyle,
     iconDesc,
     iconAsc,
@@ -691,8 +711,8 @@ const BulmaTable = (props: SortableTableProps) => {
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response object
   const [url, setUrl] = useState(initialUrl);
   if (initialBaseUrl) axiosInstance.defaults.baseURL = initialBaseUrl;
-  const { response, isLoading, setUrl: fetchData } = useDataApi({
-    // isError, error
+  const { response, error, isLoading, setUrl: fetchData } = useDataApi({
+    // isError
     axios: axiosInstance
   });
 
@@ -781,7 +801,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (response) {
-      console.log('useEffect() - handling response');
+      console.log('useEffect() - handling load success (response)');
 
       let localData = [];
       let localTotalCount = 0;
@@ -793,7 +813,10 @@ const BulmaTable = (props: SortableTableProps) => {
         localData = response.data.value;
         localTotalCount = response.data.value.length;
       }
-      console.log('useEffect() - total count: ' + localTotalCount);
+      console.log('useEffect() - handling response. Total count: ' + localTotalCount);
+      if (onLoadSuccess) onLoadSuccess(localData, localTotalCount);
+      if (onAll) onAll('onLoadSuccess', { localData, localTotalCount });
+
       setNumberOfRows(localTotalCount);
 
       if (setData) setData(localData);
@@ -805,6 +828,14 @@ const BulmaTable = (props: SortableTableProps) => {
       }
     }
   }, [response]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (error) {
+      console.log('useEffect() - handling load error');
+      if (onLoadError) onLoadError(error);
+      if (onAll) onAll('onLoadSuccess', error);
+    }
+  }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (data.length > 0) {
@@ -823,7 +854,7 @@ const BulmaTable = (props: SortableTableProps) => {
         console.log('useEffect() - server-side sorting and filtering');
         setCurrentData(data);
       } else {
-        console.log('useEffect() - local sorting and filtering');
+        console.log('useEffect() - local (client) sorting and filtering');
         const localSortedData = sortData(data, columns, tableState.sortings);
 
         const localSortedAndFilteredData =
@@ -850,6 +881,51 @@ const BulmaTable = (props: SortableTableProps) => {
     }
   }, [activePage, columns, data, rowsPerPage, sidePagination, tableState.sortings, tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // trigger events
+  const prevPageRef = useRef<number>(1);
+  useEffect(() => {
+    // check if page has changed
+    const hasPageChanged = prevPageRef.current !== activePage;
+
+    if (hasPageChanged) {
+      console.log('useEffect() - changed page to: ' + activePage);
+      if (onPageChange) onPageChange(activePage);
+      if (onAll) onAll('onPageChange', activePage);
+    }
+
+    prevPageRef.current = activePage;
+  }, [activePage]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const prevSortingsRef = useRef<SortingType[]>(tableState.sortings);
+  useEffect(() => {
+    console.log('useEffect() - handling changed tableState.sortings');
+
+    // check if sortings has changed
+    const hasSortingsChanged = prevSortingsRef.current !== tableState.sortings;
+
+    if (hasSortingsChanged) {
+      if (onSort) onSort(tableState.sortings);
+      if (onAll) onAll('onSort', tableState.sortings);
+    }
+
+    prevSortingsRef.current = tableState.sortings;
+  }, [tableState.sortings]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const prevSearchFilterRef = useRef<string>('');
+  useEffect(() => {
+    console.log('useEffect() - handling changed tableState.filter');
+
+    // check if sortings has changed
+    const hasSearchFilterChanged = prevSearchFilterRef.current !== tableState.filter;
+
+    if (hasSearchFilterChanged) {
+      if (onSearch) onSearch(tableState.filter);
+      if (onAll) onAll('onSearch', tableState.filter);
+    }
+
+    prevSearchFilterRef.current = tableState.filter;
+  }, [tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // debug what has changed between renders
   // useDependenciesDebugger({ activePage, columns, data, rowsPerPage, sidePagination, sortOrder, url, tableState });
 
@@ -863,6 +939,15 @@ const BulmaTable = (props: SortableTableProps) => {
             // toggle isAllSelected
             draft.isAllSelected = !draft.isAllSelected;
 
+            // trigger events
+            if (draft.isAllSelected) {
+              if (onCheckAll) onCheckAll();
+              if (onAll) onAll('onCheckAll');
+            } else {
+              if (onUncheckAll) onUncheckAll();
+              if (onAll) onAll('onUncheckAll');
+            }
+
             // and update all checkboxes
             Object.keys(draft.checkboxes).forEach(id => {
               draft.checkboxes[id] = draft.isAllSelected;
@@ -875,13 +960,22 @@ const BulmaTable = (props: SortableTableProps) => {
             // only toggle the given id
             draft.checkboxes[id] = !draft.checkboxes[id];
 
+            // trigger events
+            if (draft.checkboxes[id]) {
+              if (onCheck) onCheck(id);
+              if (onAll) onAll('onCheck', id);
+            } else {
+              if (onUncheck) onUncheck(id);
+              if (onAll) onAll('onUncheck', id);
+            }
+
             // check if all is selected
             draft.isAllSelected = Object.keys(draft.checkboxes).every(id => draft.checkboxes[id]);
           })
         );
       }
     },
-    [setTableState]
+    [setTableState] // eslint-disable-line react-hooks/exhaustive-deps
   );
 
   const sortableTableHeader = SortableTableHeader({
