@@ -143,20 +143,30 @@ export default function BulmaPaginationExample() {
         <div>
           <div>Pagination placement:</div>
           <div>
-            <label className="radio">
-              <input value="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="left">
+              <input value="left" id="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
               Left
             </label>
-            <label className="radio">
-              <input value="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="right">
+              <input value="right" id="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
               Right
             </label>
-            <label className="radio">
-              <input value="centered" checked={paginationPlacement === 'centered'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="centered">
+              <input
+                value="centered"
+                id="centered"
+                checked={paginationPlacement === 'centered'}
+                {...paginationPlacementProps}
+              />
               Centered
             </label>
-            <label className="radio">
-              <input value="inline" checked={paginationPlacement === 'inline'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="inline">
+              <input
+                value="inline"
+                id="inline"
+                checked={paginationPlacement === 'inline'}
+                {...paginationPlacementProps}
+              />
               Inline
             </label>
           </div>

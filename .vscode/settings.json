@@ -4,7 +4,6 @@
   "editor.insertSpaces": false,
   "editor.tabSize": 4,
   "editor.formatOnSave": true,
-  //   "files.autoSave": "onFocusChange",
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false,
@@ -39,8 +38,6 @@
       "autoFix": true
     }
   ],
-  //   "sasslint.enable": false,
-  //   "sasslint.trace.server": "messages",
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
@@ -55,12 +52,6 @@
     "active": true,
     "text": "Add placeholder."
   },
-  //   "prettier.disableLanguages": [
-  //     "javascript",
-  //     "javascriptreact",
-  //     "typescript",
-  //     "typescriptreact"
-  //   ],
   "prettier.eslintIntegration": true,
   "prettier.stylelintIntegration": true
 }

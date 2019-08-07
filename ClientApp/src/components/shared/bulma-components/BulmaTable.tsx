@@ -110,6 +110,14 @@ export interface SortableTableProps extends SortableTableIconInfo {
   onLoadError?: (error: any) => void;
   onPageChange?: (pageNumber: number) => void;
   onSearch?: (query: string) => void;
+  previousText?: string;
+  nextText?: string;
+  rowsPerPageText?: string;
+  renderShowing?: (fromRow: number, toRow: number, numberOfRows: number) => React.ReactNode;
+  findInText?: string;
+  searchText?: string;
+  elementsText?: string;
+  renderNumberOfRows?: (numberOfRows: number, tableState: SortableTableState) => React.ReactNode;
 }
 
 export interface SortableTableState {
@@ -449,11 +457,27 @@ interface SortableTableTopBarProps {
   url?: string;
   setUrl: Function;
   actionButtons?: ActionButton[];
+  findInText?: string;
+  searchText?: string;
+  elementsText?: string;
+  renderNumberOfRows?: (numberOfRows: number, tableState: SortableTableState) => React.ReactNode;
 }
 
 // SortableTableSearchBar
 const SortableTableTopBar = (props: SortableTableTopBarProps) => {
-  const { numberOfRows, tableState, search, setTableState, url, setUrl, actionButtons } = props;
+  const {
+    numberOfRows,
+    tableState,
+    search,
+    setTableState,
+    url,
+    setUrl,
+    actionButtons,
+    findInText = 'Find in table',
+    searchText = 'Search',
+    elementsText = 'elements',
+    renderNumberOfRows
+  } = props;
 
   const handleSearchSubmit = (filterQuery: string) => {
     setTableState(
@@ -478,21 +502,23 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
 
       <div className="level-right">
         <div className="level-item">
-          <p className="subtitle is-6">
-            <strong>{numberOfRows}</strong> elements
-          </p>
+          {renderNumberOfRows ? (
+            renderNumberOfRows(numberOfRows, tableState)
+          ) : (
+            <p>
+              <strong>{numberOfRows}</strong> {elementsText}
+            </p>
+          )}
         </div>
         <div className="level-item">
-          {search ? (
+          {search && (
             <BulmaSearchField
               type="addon"
-              label="Search"
+              label={searchText}
               value={tableState.filter}
-              placeholder="Find in table"
+              placeholder={findInText}
               handleSubmit={handleSearchSubmit}
             />
-          ) : (
-            ''
           )}
         </div>
       </div>
@@ -690,7 +716,15 @@ const BulmaTable = (props: SortableTableProps) => {
     iconStyle,
     iconDesc,
     iconAsc,
-    iconBoth
+    iconBoth,
+    previousText,
+    nextText,
+    rowsPerPageText,
+    renderShowing,
+    findInText,
+    searchText,
+    elementsText,
+    renderNumberOfRows
   } = props;
 
   // unique id column key - default is 'id'
@@ -698,9 +732,6 @@ const BulmaTable = (props: SortableTableProps) => {
 
   // don't need to initialize the current data chunk since we are running an effect that does the same
   const [currentData, setCurrentData] = useState<SortableTableData>([]);
-
-  // sorted data
-  // const [sortedAndFilteredData, setSortedAndFilteredData] = useState<SortableTableData>([]);
 
   // paging state
   const [activePage, setActivePage] = useState(1);
@@ -860,8 +891,6 @@ const BulmaTable = (props: SortableTableProps) => {
         const localSortedAndFilteredData =
           tableState.filter !== '' ? filterData(localSortedData, columns, tableState.filter) : localSortedData;
 
-        // setSortedAndFilteredData(localSortedAndFilteredData);
-
         // calculate number of rows from the possisly sorted and filtered data
         setNumberOfRows(localSortedAndFilteredData.length);
 
@@ -1006,7 +1035,11 @@ const BulmaTable = (props: SortableTableProps) => {
     search,
     url,
     setUrl,
-    actionButtons
+    actionButtons,
+    findInText,
+    searchText,
+    elementsText,
+    renderNumberOfRows
   });
 
   const bulmaPaginator = BulmaPaginator({
@@ -1018,7 +1051,11 @@ const BulmaTable = (props: SortableTableProps) => {
     maxButtons,
     paginationPlacement,
     useGotoField,
-    alwaysUsePreviousNextButtons
+    alwaysUsePreviousNextButtons,
+    previousText,
+    nextText,
+    rowsPerPageText,
+    renderShowing
   });
 
   return (
@@ -1030,8 +1067,8 @@ const BulmaTable = (props: SortableTableProps) => {
           {sortableTableBody}
         </table>
       </div>
-      {isLoading ? <div className="is-loading" /> : ''}
-      {pagination ? bulmaPaginator : ''}
+      {isLoading && <div className="is-loading" />}
+      {pagination && bulmaPaginator}
     </>
   );
 };

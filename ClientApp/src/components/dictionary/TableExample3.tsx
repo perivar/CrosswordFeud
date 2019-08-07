@@ -73,8 +73,9 @@ const renderEditable = (renderProps: RenderProps) => {
 const handleSynonymSearch = (renderProps: RenderProps) => {
   // reset filter
   renderProps.setTableState(
-    produce((draft: Draft<SortableTableState>) => {
+    produce((draft: Draft<ExtendedTableState>) => {
       draft.filter = '';
+      draft.extraInfo = renderProps.row.value;
     })
   );
 
@@ -103,7 +104,7 @@ const renderDeleteButton = (renderProps: ActionButtonProps) => {
     console.log('delete: ' + ids);
   };
   const deleteButton = SortableActionButton({
-    label: 'Delete',
+    label: 'Slett',
     key: 'deleteRows',
     classNames: 'is-danger',
     disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
@@ -121,7 +122,7 @@ const renderDisconnectButton = (renderProps: ActionButtonProps) => {
     console.log('disconnect: ' + ids);
   };
   const disconnectButton = SortableActionButton({
-    label: 'Disconnect',
+    label: 'Koble fra',
     key: 'disconnectRows',
     classNames: 'is-warning',
     disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
@@ -136,16 +137,17 @@ const renderDisconnectButton = (renderProps: ActionButtonProps) => {
 const renderResetButton = (renderProps: ActionButtonProps) => {
   const handleResetClick = () => {
     renderProps.setTableState(
-      produce((draft: Draft<SortableTableState>) => {
+      produce((draft: Draft<ExtendedTableState>) => {
         draft.filter = '';
         draft.sortings = getInitialSortings(columns);
+        draft.extraInfo = '';
       })
     );
 
     renderProps.setUrl('/odata/Words');
   };
   const resetButton = SortableActionButton({
-    label: 'Reset',
+    label: 'Tilbakestill',
     key: 'resetRows',
     classNames: 'is-primary',
     disabled: false,
@@ -231,17 +233,22 @@ const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
   return { top, skip, filters, orderBy, count: true };
 };
 
+interface ExtendedTableState extends SortableTableState {
+  extraInfo?: string;
+}
+
 // initial table state
-const intialState: SortableTableState = {
+const intialState: ExtendedTableState = {
   sortings: getInitialSortings(columns),
   isAllSelected: false,
   checkboxes: {},
-  filter: ''
+  filter: '',
+  extraInfo: ''
 };
 
 export default function TableExample3() {
   const [data, setData] = useState<WordData[]>(() => []);
-  const [tableState, setTableState] = useState<SortableTableState>(intialState);
+  const [tableState, setTableState] = useState<ExtendedTableState>(intialState);
 
   const queryParams = useCallback((params: QueryParams) => {
     return getOdataQueryObject(convertQueryParamsToODataValues(params));
@@ -259,6 +266,30 @@ export default function TableExample3() {
   //     $count: true
   //   };
   // }, []);
+
+  const renderShowing = useCallback((fromRow: number, toRow: number, numberOfRows: number) => {
+    return (
+      <>
+        Viser {fromRow} til {toRow} av {numberOfRows} treff
+      </>
+    );
+  }, []);
+
+  const renderNumberOfRows = useCallback((numberOfRows: number, tableState: ExtendedTableState) => {
+    return (
+      <>
+        {tableState.extraInfo ? (
+          <p>
+            Fant <strong>{numberOfRows}</strong> synonym til {tableState.extraInfo}
+          </p>
+        ) : (
+          <p>
+            Viser <strong>{numberOfRows}</strong> ord
+          </p>
+        )}
+      </>
+    );
+  }, []);
 
   const bulmaTable = BulmaTable({
     columns,
@@ -282,36 +313,14 @@ export default function TableExample3() {
       };
     },
     actionButtons: actionButtons,
-    // onAll: (type: string, param: any) => {
-    //   console.log('onAll: ' + type + ' - ' + param);
-    // },
-    // onSort: (sortings: any) => {
-    //   console.log('onSort: ' + sortings);
-    // },
-    // onCheck: (id: string) => {
-    //   console.log('onCheck: ' + id);
-    // },
-    // onUncheck: (id: string) => {
-    //   console.log('onUncheck: ' + id);
-    // },
-    // onCheckAll: () => {
-    //   console.log('onCheckAll');
-    // },
-    // onUncheckAll: () => {
-    //   console.log('onUncheckAll');
-    // },
-    onLoadSuccess: (data: any, totalCount: number) => {
-      console.log('onLoadSuccess: ' + totalCount);
-    }
-    // onLoadError: (error: any) => {
-    //   console.log('onLoadError: ' + error);
-    // },
-    // onPageChange: (pageNumber: number) => {
-    //   console.log('onPageChange: ' + pageNumber);
-    // },
-    // onSearch: (query: string) => {
-    //   console.log('onSearch: ' + query);
-    // }
+    previousText: 'Forrige',
+    nextText: 'Neste',
+    rowsPerPageText: 'rader på hver side',
+    renderShowing: renderShowing,
+    findInText: 'Finn',
+    searchText: 'Søk',
+    elementsText: 'treff',
+    renderNumberOfRows
   });
 
   return <>{bulmaTable}</>;

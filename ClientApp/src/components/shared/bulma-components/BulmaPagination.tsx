@@ -14,6 +14,10 @@ export interface IBulmaPaginatorProps {
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
+  previousText?: string;
+  nextText?: string;
+  rowsPerPageText?: string;
+  renderShowing?: (fromRow: number, toRow: number, numberOfRows: number) => React.ReactNode;
 }
 
 const getPaginationClassName = (paginationPlacement: string) => {
@@ -40,7 +44,11 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
     maxButtons = 5,
     paginationPlacement = 'left',
     useGotoField = false,
-    alwaysUsePreviousNextButtons = false
+    alwaysUsePreviousNextButtons = false,
+    previousText = 'Previous',
+    nextText = 'Next',
+    rowsPerPageText = 'rows per page',
+    renderShowing
   } = props;
   const numberOfPages = Math.ceil(numberOfRows / rowsPerPage);
   const { activePage, visiblePieces, goToPage } = usePagination({
@@ -104,7 +112,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
           aria-label="Previous"
           onClick={event => handleClick(pageNumber, event)}
           disabled={visiblePiece.isDisabled}>
-          &laquo; Previous
+          &laquo; {previousText}
         </button>
       );
     }
@@ -121,7 +129,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
           aria-label="Next"
           onClick={event => handleClick(pageNumber, event)}
           disabled={visiblePiece.isDisabled}>
-          Next &raquo;
+          {nextText} &raquo;
         </button>
       );
     }
@@ -213,7 +221,13 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
       <div className="level">
         <div className="level-left">
           <div className="level-item">
-            Showing {fromRow} to {toRow} of {numberOfRows} rows
+            {renderShowing ? (
+              renderShowing(fromRow, toRow, numberOfRows)
+            ) : (
+              <>
+                Showing {fromRow} to {toRow} of {numberOfRows} rows
+              </>
+            )}
           </div>
         </div>
         <div className="level-right">
@@ -244,7 +258,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
               </select>
             </div>
           </div>
-          <div className="level-item">rows per page</div>
+          <div className="level-item">{rowsPerPageText}</div>
         </div>
       </div>
     </>

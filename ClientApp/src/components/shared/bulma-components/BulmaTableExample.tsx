@@ -133,7 +133,37 @@ export default function BulmaTableExample() {
     useGotoField,
     alwaysUsePreviousNextButtons,
     iconStyle,
-    actionButtons: actionButtons
+    actionButtons: actionButtons,
+    onAll: (type: string, param: any) => {
+      console.log('onAll: ' + type + ' - ' + param);
+    },
+    onSort: (sortings: any) => {
+      console.log('onSort: ' + sortings);
+    },
+    onCheck: (id: string) => {
+      console.log('onCheck: ' + id);
+    },
+    onUncheck: (id: string) => {
+      console.log('onUncheck: ' + id);
+    },
+    onCheckAll: () => {
+      console.log('onCheckAll');
+    },
+    onUncheckAll: () => {
+      console.log('onUncheckAll');
+    },
+    onLoadSuccess: (data: any, totalCount: number) => {
+      console.log('onLoadSuccess: ' + totalCount);
+    },
+    onLoadError: (error: any) => {
+      console.log('onLoadError: ' + error);
+    },
+    onPageChange: (pageNumber: number) => {
+      console.log('onPageChange: ' + pageNumber);
+    },
+    onSearch: (query: string) => {
+      console.log('onSearch: ' + query);
+    }
   });
 
   return (
@@ -197,20 +227,30 @@ export default function BulmaTableExample() {
         <div>
           <div>Pagination placement:</div>
           <div>
-            <label className="radio">
-              <input value="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="left">
+              <input value="left" id="left" checked={paginationPlacement === 'left'} {...paginationPlacementProps} />
               Left
             </label>
-            <label className="radio">
-              <input value="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="right">
+              <input value="right" id="right" checked={paginationPlacement === 'right'} {...paginationPlacementProps} />
               Right
             </label>
-            <label className="radio">
-              <input value="centered" checked={paginationPlacement === 'centered'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="centered">
+              <input
+                value="centered"
+                id="centered"
+                checked={paginationPlacement === 'centered'}
+                {...paginationPlacementProps}
+              />
               Centered
             </label>
-            <label className="radio">
-              <input value="inline" checked={paginationPlacement === 'inline'} {...paginationPlacementProps} />
+            <label className="radio" htmlFor="inline">
+              <input
+                value="inline"
+                id="inline"
+                checked={paginationPlacement === 'inline'}
+                {...paginationPlacementProps}
+              />
               Inline
             </label>
           </div>
