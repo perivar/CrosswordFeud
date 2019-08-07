@@ -1,6 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import produce, { Draft } from 'immer';
+import axios from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
+import { useSelector } from 'react-redux';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
@@ -13,6 +15,8 @@ import BulmaTable, {
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
+import { IStoreState } from '../../state/store';
+// import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
   wordId: number;
@@ -26,184 +30,6 @@ interface WordData {
   createdDate: string;
   source: string;
 }
-
-// column render methods
-const renderDateFormat = (dateObject: RenderProps) => {
-  const d = new Date(dateObject.value);
-  const day = d.getDate();
-  const month = d.getMonth() + 1;
-  const year = d.getFullYear();
-
-  let dayString = day.toString();
-  if (day < 10) {
-    dayString = '0' + day;
-  }
-
-  let monthString = month.toString();
-  if (month < 10) {
-    monthString = '0' + month;
-  }
-  var date = dayString + '/' + monthString + '/' + year;
-
-  return <>{date}</>;
-};
-// renderDateFormat.displayName = 'DateFormat';
-
-const handleValueChanged = (renderProps: RenderProps, newValue: string) => {
-  // use immer
-  // this.setState(
-  //   produce((draft: Draft<TableExample1State>) => {
-  //     draft.data[renderProps.index][renderProps.column.id!] = newValue;
-  //   })
-  // );
-  console.log(renderProps);
-  console.log('new value: ' + newValue);
-};
-
-const renderEditable = (renderProps: RenderProps) => {
-  return (
-    <BulmaEditableTextField
-      value={renderProps.value}
-      onValueChanged={value => handleValueChanged(renderProps, value)}
-    />
-  );
-};
-// renderEditable.displayName = 'Editable';
-
-const handleSynonymSearch = (renderProps: RenderProps) => {
-  // reset filter
-  renderProps.setTableState(
-    produce((draft: Draft<ExtendedTableState>) => {
-      draft.filter = '';
-      draft.extraInfo = renderProps.row.value;
-    })
-  );
-
-  renderProps.setUrl("/odata/Words/Synonyms(Word='" + renderProps.row.value + "')");
-};
-
-const renderSynonymSearch = (renderProps: RenderProps) => {
-  return (
-    <>
-      <button
-        type="button"
-        className="button is-link is-outlined is-fullwidth"
-        value={renderProps.value}
-        onClick={() => handleSynonymSearch(renderProps)}>
-        {renderProps.value}
-      </button>
-    </>
-  );
-};
-// renderSynonymSearch.displayName = 'SynonymSearch';
-
-// create action buttons
-const renderDeleteButton = (renderProps: ActionButtonProps) => {
-  const handleOnDeleteClick = () => {
-    const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
-    console.log('delete: ' + ids);
-  };
-  const deleteButton = SortableActionButton({
-    label: 'Slett',
-    key: 'deleteRows',
-    classNames: 'is-danger',
-    disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
-      ? false
-      : true,
-    handleOnClick: handleOnDeleteClick
-  });
-
-  return deleteButton;
-};
-
-const renderDisconnectButton = (renderProps: ActionButtonProps) => {
-  const handleOnDisconnectClick = () => {
-    const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
-    console.log('disconnect: ' + ids);
-  };
-  const disconnectButton = SortableActionButton({
-    label: 'Koble fra',
-    key: 'disconnectRows',
-    classNames: 'is-warning',
-    disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
-      ? false
-      : true,
-    handleOnClick: handleOnDisconnectClick
-  });
-
-  return disconnectButton;
-};
-
-const renderResetButton = (renderProps: ActionButtonProps) => {
-  const handleResetClick = () => {
-    renderProps.setTableState(
-      produce((draft: Draft<ExtendedTableState>) => {
-        draft.filter = '';
-        draft.sortings = getInitialSortings(columns);
-        draft.extraInfo = '';
-      })
-    );
-
-    renderProps.setUrl('/odata/Words');
-  };
-  const resetButton = SortableActionButton({
-    label: 'Tilbakestill',
-    key: 'resetRows',
-    classNames: 'is-primary',
-    disabled: false,
-    handleOnClick: handleResetClick
-  });
-
-  return resetButton;
-};
-
-const actionButtons: ActionButton[] = [
-  {
-    key: 'deleteRows',
-    render: renderDeleteButton
-  },
-  {
-    key: 'disconectRows',
-    render: renderDisconnectButton
-  },
-  {
-    key: 'resetRows',
-    render: renderResetButton
-  }
-];
-
-const columns: SortableTableColumn[] = [
-  {
-    header: 'Id',
-    key: 'wordId',
-    uniqueId: true,
-    render: renderSynonymSearch
-  },
-  {
-    header: 'Synonym',
-    key: 'value',
-    render: renderEditable
-    // dataProps: { className: 'align-right' }
-    // dataStyle: { verticalAlign: 'middle' }
-  },
-  {
-    header: 'Ant. Ord',
-    key: 'numberOfWords'
-  },
-  {
-    header: 'Lengde',
-    key: 'numberOfLetters'
-  },
-  {
-    header: 'Bruker',
-    key: 'comment'
-  },
-  {
-    header: 'Dato',
-    key: 'createdDate',
-    render: renderDateFormat
-  }
-];
 
 // convert QueryParams2ODataValues
 const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
@@ -233,20 +59,250 @@ const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
   return { top, skip, filters, orderBy, count: true };
 };
 
-interface ExtendedTableState extends SortableTableState {
-  extraInfo?: string;
-}
+const authHeader = () => {
+  // return authorization header with jwt token
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
 
-// initial table state
-const intialState: ExtendedTableState = {
-  sortings: getInitialSortings(columns),
-  isAllSelected: false,
-  checkboxes: {},
-  filter: '',
-  extraInfo: ''
+  if (user && user.token) {
+    return { Authorization: 'Bearer ' + user.token } as any;
+  } else {
+    return {} as any;
+  }
 };
 
 export default function TableExample3() {
+  const baseUrl = 'http://localhost:5000';
+
+  // use redux store
+  const authentication = useSelector((state: IStoreState) => state.authentication);
+
+  // define columns
+  const columns: SortableTableColumn[] = useMemo(() => {
+    const renderSynonymSearch = (renderProps: RenderProps) => {
+      const handleSynonymSearch = (renderProps: RenderProps) => {
+        // reset filter
+        renderProps.setTableState(
+          produce((draft: Draft<ExtendedTableState>) => {
+            draft.filter = '';
+            draft.extraInfo = renderProps.row.value;
+          })
+        );
+
+        renderProps.setUrl("/odata/Words/Synonyms(Word='" + renderProps.row.value + "')");
+      };
+
+      return (
+        <>
+          <button
+            type="button"
+            className="button is-link is-outlined is-fullwidth"
+            value={renderProps.value}
+            onClick={() => handleSynonymSearch(renderProps)}>
+            {renderProps.value}
+          </button>
+        </>
+      );
+    };
+
+    const renderEditable = (renderProps: RenderProps) => {
+      const handleValueChanged = (renderProps: RenderProps, newValue: string) => {
+        // update row with the new value
+        renderProps.row.value = newValue;
+        // console.log(renderProps);
+
+        const editParams = {
+          url: baseUrl + '/api/words/' + renderProps.uniqueRowId,
+          data: JSON.stringify(renderProps.row),
+          type: 'PUT',
+          dataType: 'json', // this is for parsing received data
+          contentType: 'application/json; charset=UTF-8', // this is for sending data
+          // headers: authHeader()
+          headers: authentication.logon.token ? { Authorization: 'Bearer ' + authentication.logon.token } : {}
+        };
+
+        axios(editParams)
+          .then(response => {
+            console.log(response.data);
+            renderProps.setUrl(renderProps.url);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      };
+
+      return (
+        <BulmaEditableTextField
+          value={renderProps.value}
+          onValueChanged={value => handleValueChanged(renderProps, value)}
+        />
+      );
+    };
+
+    const renderDateFormat = (dateObject: RenderProps) => {
+      const d = new Date(dateObject.value);
+      const day = d.getDate();
+      const month = d.getMonth() + 1;
+      const year = d.getFullYear();
+
+      let dayString = day.toString();
+      if (day < 10) {
+        dayString = '0' + day;
+      }
+
+      let monthString = month.toString();
+      if (month < 10) {
+        monthString = '0' + month;
+      }
+      var date = dayString + '/' + monthString + '/' + year;
+
+      return <>{date}</>;
+    };
+    // renderDateFormat.displayName = 'DateFormat';
+
+    return [
+      {
+        header: 'Id',
+        key: 'wordId',
+        uniqueId: true,
+        render: renderSynonymSearch
+      },
+      {
+        header: 'Synonym',
+        key: 'value',
+        render: renderEditable
+        // dataProps: { className: 'align-right' }
+        // dataStyle: { verticalAlign: 'middle' }
+      },
+      {
+        header: 'Ant. Ord',
+        key: 'numberOfWords'
+      },
+      {
+        header: 'Lengde',
+        key: 'numberOfLetters'
+      },
+      {
+        header: 'Bruker',
+        key: 'comment'
+      },
+      {
+        header: 'Dato',
+        key: 'createdDate',
+        render: renderDateFormat
+      }
+    ];
+  }, [authentication.logon.token]);
+
+  // define action buttons
+  const actionButtons: ActionButton[] = useMemo(() => {
+    const renderDeleteButton = (renderProps: ActionButtonProps) => {
+      const handleOnDeleteClick = () => {
+        const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+        console.log('delete: ' + ids);
+
+        const deleteParams = {
+          url: baseUrl + '/api/words/delete',
+          data: JSON.stringify(ids),
+          type: 'DELETE',
+          cache: false,
+          dataType: 'json', // this is for parsing received data
+          contentType: 'application/json; charset=UTF-8', // this is for sending data
+          // headers: authHeader()
+          headers: authentication.logon.token ? { Authorization: 'Bearer ' + authentication.logon.token } : {}
+        };
+
+        axios(deleteParams)
+          .then(response => {
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      };
+      const deleteButton = SortableActionButton({
+        label: 'Slett',
+        key: 'deleteRows',
+        classNames: 'is-danger',
+        disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
+          ? false
+          : true,
+        handleOnClick: handleOnDeleteClick
+      });
+
+      return deleteButton;
+    };
+
+    const renderDisconnectButton = (renderProps: ActionButtonProps) => {
+      const handleOnDisconnectClick = () => {
+        const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+        console.log('disconnect: ' + ids);
+      };
+      const disconnectButton = SortableActionButton({
+        label: 'Koble fra',
+        key: 'disconnectRows',
+        classNames: 'is-warning',
+        disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
+          ? false
+          : true,
+        handleOnClick: handleOnDisconnectClick
+      });
+
+      return disconnectButton;
+    };
+
+    const renderResetButton = (renderProps: ActionButtonProps) => {
+      const handleResetClick = () => {
+        // reset
+        renderProps.setTableState(
+          produce((draft: Draft<ExtendedTableState>) => {
+            draft.filter = '';
+            draft.sortings = getInitialSortings(columns);
+            draft.extraInfo = '';
+          })
+        );
+
+        renderProps.setUrl('/odata/Words');
+      };
+      const resetButton = SortableActionButton({
+        label: 'Tilbakestill',
+        key: 'resetRows',
+        classNames: 'is-primary',
+        disabled: false,
+        handleOnClick: handleResetClick
+      });
+
+      return resetButton;
+    };
+
+    return [
+      {
+        key: 'deleteRows',
+        render: renderDeleteButton
+      },
+      {
+        key: 'disconectRows',
+        render: renderDisconnectButton
+      },
+      {
+        key: 'resetRows',
+        render: renderResetButton
+      }
+    ];
+  }, [authentication.logon.token, columns]);
+
+  // initial table state
+  interface ExtendedTableState extends SortableTableState {
+    extraInfo?: string;
+  }
+
+  const intialState: ExtendedTableState = {
+    sortings: getInitialSortings(columns),
+    isAllSelected: false,
+    checkboxes: {},
+    filter: '',
+    extraInfo: ''
+  };
+
   const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<ExtendedTableState>(intialState);
 
@@ -300,7 +356,7 @@ export default function TableExample3() {
     pagination: true,
     search: true,
     pageSize: 10,
-    baseUrl: 'http://localhost:5000',
+    baseUrl,
     url: '/odata/Words',
     // url: '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
     sidePagination: 'server',

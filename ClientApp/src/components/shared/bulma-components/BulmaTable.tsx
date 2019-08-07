@@ -268,6 +268,7 @@ export interface RenderProps {
   column: SortableTableColumn;
   row: any;
   value: any;
+  url?: string;
   setUrl: Function;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
 }
@@ -277,6 +278,7 @@ interface SortableTableRowProps {
   columns: SortableTableColumn[];
   uniqueIdKey: string;
   isSelected: boolean;
+  url?: string;
   setUrl: Function;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
@@ -285,7 +287,7 @@ interface SortableTableRowProps {
 // SortableTableRow
 const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const { data, columns, uniqueIdKey, isSelected, setUrl, setTableState, handleCheckboxChange } = props;
+  const { data, columns, uniqueIdKey, isSelected, url, setUrl, setTableState, handleCheckboxChange } = props;
 
   // console.log(`render row :: ${data[uniqueIdKey]}`);
 
@@ -297,6 +299,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
         column,
         value,
         row: data,
+        url,
         setUrl,
         setTableState
       };
@@ -335,6 +338,7 @@ interface SortableTableBodyProps {
   data: SortableTableData;
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
+  url?: string;
   setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -345,7 +349,7 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, uniqueIdKey, data, tableState, setTableState, setUrl, handleCheckboxChange } = props;
+  const { columns, uniqueIdKey, data, tableState, setTableState, url, setUrl, handleCheckboxChange } = props;
 
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
@@ -356,6 +360,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
         columns={columns}
         isSelected={tableState.checkboxes[row[uniqueIdKey]]}
         handleCheckboxChange={handleCheckboxChange}
+        url={url}
         setUrl={setUrl}
         setTableState={setTableState}
       />
@@ -1024,6 +1029,7 @@ const BulmaTable = (props: SortableTableProps) => {
     data: currentData,
     tableState,
     setTableState,
+    url,
     setUrl,
     handleCheckboxChange
   });
