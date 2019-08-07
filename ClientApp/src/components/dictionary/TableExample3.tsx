@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import produce, { Draft } from 'immer';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
 import { useSelector } from 'react-redux';
 import BulmaTable, {
@@ -71,7 +71,7 @@ const authHeader = () => {
 };
 
 export default function TableExample3() {
-  const baseUrl = 'http://localhost:5000';
+  const baseUrl = 'http://localhost:8000';
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
@@ -110,14 +110,18 @@ export default function TableExample3() {
         renderProps.row.value = newValue;
         // console.log(renderProps);
 
-        const editParams = {
+        const editParams: AxiosRequestConfig = {
           url: baseUrl + '/api/words/' + renderProps.uniqueRowId,
+          method: 'PUT',
           data: JSON.stringify(renderProps.row),
-          type: 'PUT',
-          dataType: 'json', // this is for parsing received data
-          contentType: 'application/json; charset=UTF-8', // this is for sending data
+          responseType: 'json', // this is for parsing received data
           // headers: authHeader()
-          headers: authentication.logon.token ? { Authorization: 'Bearer ' + authentication.logon.token } : {}
+          headers: authentication.logon.token
+            ? {
+                Authorization: 'Bearer ' + authentication.logon.token,
+                'Content-Type': 'application/json;charset=UTF-8'
+              }
+            : {}
         };
 
         axios(editParams)
@@ -200,15 +204,18 @@ export default function TableExample3() {
         const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
         console.log('delete: ' + ids);
 
-        const deleteParams = {
+        const deleteParams: AxiosRequestConfig = {
           url: baseUrl + '/api/words/delete',
+          method: 'DELETE',
           data: JSON.stringify(ids),
-          type: 'DELETE',
-          cache: false,
-          dataType: 'json', // this is for parsing received data
-          contentType: 'application/json; charset=UTF-8', // this is for sending data
+          responseType: 'json', // this is for parsing received data
           // headers: authHeader()
-          headers: authentication.logon.token ? { Authorization: 'Bearer ' + authentication.logon.token } : {}
+          headers: authentication.logon.token
+            ? {
+                Authorization: 'Bearer ' + authentication.logon.token,
+                'Content-Type': 'application/json;charset=UTF-8'
+              }
+            : {}
         };
 
         axios(deleteParams)
