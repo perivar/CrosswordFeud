@@ -16,6 +16,7 @@ import BulmaTable, {
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
 import { IStoreState } from '../../state/store';
+import { history } from '../../history';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
@@ -71,10 +72,16 @@ const authHeader = () => {
 };
 
 export default function TableExample3() {
-  const baseUrl = 'http://localhost:8000';
+  const baseUrl = 'http://localhost:5000';
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
+
+  // redirect to login if we don't have the auth-token
+  if (!authentication.logon.token) {
+    // http://localhost:3000/login
+    history.push('/login');
+  }
 
   // define columns
   const columns: SortableTableColumn[] = useMemo(() => {
@@ -107,13 +114,13 @@ export default function TableExample3() {
     const renderEditable = (renderProps: RenderProps) => {
       const handleValueChanged = (renderProps: RenderProps, newValue: string) => {
         // update row with the new value
-        renderProps.row.value = newValue;
-        // console.log(renderProps);
+        const clonedRow = { ...renderProps.row };
+        clonedRow.value = newValue;
 
         const editParams: AxiosRequestConfig = {
           url: baseUrl + '/api/words/' + renderProps.uniqueRowId,
           method: 'PUT',
-          data: JSON.stringify(renderProps.row),
+          data: JSON.stringify(clonedRow),
           responseType: 'json', // this is for parsing received data
           // headers: authHeader()
           headers: authentication.logon.token
@@ -126,8 +133,17 @@ export default function TableExample3() {
 
         axios(editParams)
           .then(response => {
+            // update the row
+            setData(
+              produce((draft: Draft<WordData[]>) => {
+                const index = draft.findIndex(w => w.wordId === renderProps.row.wordId);
+                if (index !== -1) {
+                  draft[index] = response.data;
+                }
+              })
+            );
+            console.log('successfully updated row');
             console.log(response.data);
-            renderProps.setUrl(renderProps.url);
           })
           .catch(error => {
             console.error(error);
@@ -220,6 +236,16 @@ export default function TableExample3() {
 
         axios(deleteParams)
           .then(response => {
+            // remove the row(s)
+            // setData(
+            //   produce((draft: Draft<WordData[]>) => {
+            //     const index = draft.findIndex(w => w.wordId === renderProps.row.wordId);
+            //     if (index !== -1) {
+            //       draft[index] = response.data;
+            //     }
+            //   })
+            // );
+            console.log('successfully deleted row(s)');
             console.log(response.data);
           })
           .catch(error => {

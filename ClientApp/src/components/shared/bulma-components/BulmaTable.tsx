@@ -597,7 +597,8 @@ const sortData = (data: SortableTableData, columns: SortableTableColumn[], sorti
 };
 
 const sortDataByKey = (data: SortableTableData, key: string, fn: any): SortableTableData => {
-  const clone = Array.apply(null, data as any);
+  // const clone = Object.assign([], data);
+  const clone = [...(data as any)];
 
   return clone.sort((a: any, b: any) => {
     return fn(a[key], b[key]);
