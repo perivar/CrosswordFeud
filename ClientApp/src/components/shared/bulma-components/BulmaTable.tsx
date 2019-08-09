@@ -431,29 +431,6 @@ const filterData = (
   return newList;
 };
 
-export interface SortableActionButtonProps {
-  label: string;
-  key: string;
-  classNames: string; // is-warning
-  disabled: boolean;
-  handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-}
-
-export const SortableActionButton = (props: SortableActionButtonProps) => {
-  const { label, key, classNames, disabled, handleOnClick } = props;
-  return (
-    <button
-      key={key}
-      type="button"
-      className={'button' + (classNames ? ' ' + classNames : '')}
-      disabled={disabled}
-      aria-label={label}
-      onClick={handleOnClick}>
-      {label}
-    </button>
-  );
-};
-
 interface SortableTableTopBarProps {
   numberOfRows: number;
   tableState: SortableTableState;
@@ -756,13 +733,13 @@ const BulmaTable = (props: SortableTableProps) => {
   // useEffect means run on intial rendering and each subsequent change to the dependency array
 
   useEffect(() => {
-    console.log('useEffect() - updating rowsPerPage using pageSize');
+    // console.log('useEffect() - updating rowsPerPage using pageSize');
     setRowsPerPage(pageSize);
   }, [pageSize]);
 
   useEffect(() => {
     if (columns.length > 0) {
-      console.log('useEffect() - initializing uniqueIdColumn');
+      // console.log('useEffect() - initializing uniqueIdColumn');
 
       // see if one of the columns have specified an unique id key
       const uniqueIdColumn = columns.find(a => a.uniqueId === true);
@@ -775,7 +752,7 @@ const BulmaTable = (props: SortableTableProps) => {
   const prevUrlRef = useRef<string | undefined>();
   useEffect(() => {
     if (url) {
-      console.log('useEffect() - fetching data - checking if we need to do anything ...');
+      // console.log('useEffect() - fetching data - checking if we need to do anything ...');
 
       // inline method to get full url
       const getFullUrl = () => {
@@ -829,7 +806,7 @@ const BulmaTable = (props: SortableTableProps) => {
         fullUrl = getFullUrl();
       }
 
-      console.log('useEffect() - fetching data - fetching data using url: ' + fullUrl);
+      // console.log('useEffect() - fetching data - fetching data using url: ' + fullUrl);
       fetchData(fullUrl);
     }
 
@@ -838,7 +815,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (response) {
-      console.log('useEffect() - handling load success (response)');
+      // console.log('useEffect() - handling load success (response)');
 
       let localData = [];
       let localTotalCount = 0;
@@ -850,7 +827,7 @@ const BulmaTable = (props: SortableTableProps) => {
         localData = response.data.value;
         localTotalCount = response.data.value.length;
       }
-      console.log('useEffect() - handling response. Total count: ' + localTotalCount);
+      // console.log('useEffect() - handling response. Total count: ' + localTotalCount);
       if (onLoadSuccess) onLoadSuccess(localData, localTotalCount);
       if (onAll) onAll('onLoadSuccess', { localData, localTotalCount });
 
@@ -868,7 +845,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (error) {
-      console.log('useEffect() - handling load error');
+      // console.log('useEffect() - handling load error');
       if (onLoadError) onLoadError(error);
       if (onAll) onAll('onLoadSuccess', error);
     }
@@ -876,7 +853,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   useEffect(() => {
     if (data.length > 0) {
-      console.log('useEffect() - initializing table state for checkboxes');
+      // console.log('useEffect() - initializing table state for checkboxes');
       setTableState(
         produce((draft: Draft<SortableTableState>) => {
           draft.checkboxes = getInitialCheckboxes(data, uniqueIdKey);
@@ -888,10 +865,10 @@ const BulmaTable = (props: SortableTableProps) => {
   useEffect(() => {
     if (data.length > 0 && tableState.sortings.length > 0) {
       if (sidePagination === 'server') {
-        console.log('useEffect() - server-side sorting and filtering');
+        // console.log('useEffect() - server-side sorting and filtering');
         setCurrentData(data);
       } else {
-        console.log('useEffect() - local (client) sorting and filtering');
+        // console.log('useEffect() - local (client) sorting and filtering');
         const localSortedData = sortData(data, columns, tableState.sortings);
 
         const localSortedAndFilteredData =
@@ -923,7 +900,7 @@ const BulmaTable = (props: SortableTableProps) => {
     const hasPageChanged = prevPageRef.current !== activePage;
 
     if (hasPageChanged) {
-      console.log('useEffect() - changed page to: ' + activePage);
+      // console.log('useEffect() - changed page to: ' + activePage);
       if (onPageChange) onPageChange(activePage);
       if (onAll) onAll('onPageChange', activePage);
     }
@@ -933,7 +910,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   const prevSortingsRef = useRef<SortingType[]>(tableState.sortings);
   useEffect(() => {
-    console.log('useEffect() - handling changed tableState.sortings');
+    // console.log('useEffect() - handling changed tableState.sortings');
 
     // check if sortings has changed
     const hasSortingsChanged = prevSortingsRef.current !== tableState.sortings;
@@ -948,7 +925,7 @@ const BulmaTable = (props: SortableTableProps) => {
 
   const prevSearchFilterRef = useRef<string>('');
   useEffect(() => {
-    console.log('useEffect() - handling changed tableState.filter');
+    // console.log('useEffect() - handling changed tableState.filter');
 
     // check if sortings has changed
     const hasSearchFilterChanged = prevSearchFilterRef.current !== tableState.filter;

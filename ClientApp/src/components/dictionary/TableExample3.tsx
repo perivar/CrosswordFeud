@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState, useCallback, useMemo } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -6,7 +7,6 @@ import { useSelector } from 'react-redux';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
-  SortableActionButton,
   RenderProps,
   getInitialSortings,
   ActionButtonProps,
@@ -17,6 +17,9 @@ import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditable
 import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
 import { IStoreState } from '../../state/store';
 import { history } from '../../history';
+import { BulmaNotificationType, BulmaNotification } from '../shared/bulma-components/BulmaNotification';
+import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButton';
+import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
@@ -60,19 +63,43 @@ const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
   return { top, skip, filters, orderBy, count: true };
 };
 
+const getErrorMessage = (error: any) => {
+	if (error.response) {
+		// The request was made and the server responded with a status code
+		// that falls out of the range of 2xx
+		if (error.response.status === 401) {
+			return "No access";
+		} else {
+			return JSON.stringify(error.response.data, null, 0);
+		}
+	} else {
+		// The request was made but no response was received or 
+		// something happened in setting up the request that triggered an Error
+		return error.message;
+	}
+}
+
 const authHeader = () => {
   // return authorization header with jwt token
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   if (user && user.token) {
-    return { Authorization: 'Bearer ' + user.token } as any;
+    return {
+      Authorization: 'Bearer ' + user.token,
+      'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
+    };
   } else {
-    return {} as any;
+    return {};
   }
 };
 
+//------------------------------------------------
 export default function TableExample3() {
   const baseUrl = 'http://localhost:5000';
+
+  const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
+  const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
+  const [notificationMessage, setNotificationMessage] = useState<string>('');
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
@@ -122,13 +149,13 @@ export default function TableExample3() {
           method: 'PUT',
           data: JSON.stringify(clonedRow),
           responseType: 'json', // this is for parsing received data
-          // headers: authHeader()
-          headers: authentication.logon.token
-            ? {
-                Authorization: 'Bearer ' + authentication.logon.token,
-                'Content-Type': 'application/json;charset=UTF-8'
-              }
-            : {}
+          headers: authHeader()
+          // headers: authentication.logon.token
+          //   ? {
+          //       Authorization: 'Bearer ' + authentication.logon.token,
+          //       'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
+          //     }
+          //   : {}
         };
 
         axios(editParams)
@@ -146,8 +173,10 @@ export default function TableExample3() {
             console.log(response.data);
           })
           .catch(error => {
-            console.error(error);
-          });
+						setNotificationType('danger');
+						setNotificationMessage(getErrorMessage(error));
+						setNotificationDisplaying(true);
+					});
       };
 
       return (
@@ -211,7 +240,7 @@ export default function TableExample3() {
         render: renderDateFormat
       }
     ];
-  }, [authentication.logon.token]);
+  }, []);
 
   // define action buttons
   const actionButtons: ActionButton[] = useMemo(() => {
@@ -225,37 +254,40 @@ export default function TableExample3() {
           method: 'DELETE',
           data: JSON.stringify(ids),
           responseType: 'json', // this is for parsing received data
-          // headers: authHeader()
-          headers: authentication.logon.token
-            ? {
-                Authorization: 'Bearer ' + authentication.logon.token,
-                'Content-Type': 'application/json;charset=UTF-8'
-              }
-            : {}
+          headers: authHeader()
+          // headers: authentication.logon.token
+          //   ? {
+          //       Authorization: 'Bearer ' + authentication.logon.token,
+          //       'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
+          //     }
+          //   : {}
         };
 
         axios(deleteParams)
           .then(response => {
             // remove the row(s)
-            // setData(
-            //   produce((draft: Draft<WordData[]>) => {
-            //     const index = draft.findIndex(w => w.wordId === renderProps.row.wordId);
-            //     if (index !== -1) {
-            //       draft[index] = response.data;
-            //     }
-            //   })
-            // );
-            console.log('successfully deleted row(s)');
+            setData(
+              produce((draft: Draft<WordData[]>) => {
+                const nonDeletedRows = draft.filter(element => !ids.includes(element.wordId.toString()));
+                if (nonDeletedRows.length > 0) {
+                  return nonDeletedRows;
+                }
+              })
+            );
+            console.log('successfully deleted row(s): ');
             console.log(response.data);
           })
           .catch(error => {
-            console.error(error);
-          });
+						setNotificationType('danger');
+						setNotificationMessage(getErrorMessage(error));
+						setNotificationDisplaying(true);
+					});
       };
-      const deleteButton = SortableActionButton({
-        label: 'Slett',
+      const deleteButton = BulmaConfirmButton({
+        type: 'danger',
+				label: 'Slett',
+				confirmLabel: 'Bekreft sletting',
         key: 'deleteRows',
-        classNames: 'is-danger',
         disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
           ? false
           : true,
@@ -270,10 +302,11 @@ export default function TableExample3() {
         const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
         console.log('disconnect: ' + ids);
       };
-      const disconnectButton = SortableActionButton({
-        label: 'Koble fra',
+      const disconnectButton = BulmaConfirmButton({
+        type: 'warning',
+				label: 'Koble fra',
+				confirmLabel: 'Bekreft koble fra',
         key: 'disconnectRows',
-        classNames: 'is-warning',
         disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
           ? false
           : true,
@@ -296,10 +329,10 @@ export default function TableExample3() {
 
         renderProps.setUrl('/odata/Words');
       };
-      const resetButton = SortableActionButton({
+      const resetButton = BulmaButton({
+        type: 'primary',
         label: 'Tilbakestill',
         key: 'resetRows',
-        classNames: 'is-primary',
         disabled: false,
         handleOnClick: handleResetClick
       });
@@ -321,7 +354,7 @@ export default function TableExample3() {
         render: renderResetButton
       }
     ];
-  }, [authentication.logon.token, columns]);
+  }, [columns]);
 
   // initial table state
   interface ExtendedTableState extends SortableTableState {
@@ -378,8 +411,8 @@ export default function TableExample3() {
         )}
       </>
     );
-  }, []);
-
+	}, []);
+	
   const bulmaTable = BulmaTable({
     columns,
     data,
@@ -409,8 +442,18 @@ export default function TableExample3() {
     findInText: 'Finn',
     searchText: 'Søk',
     elementsText: 'treff',
-    renderNumberOfRows
+    renderNumberOfRows,
+    onLoadError: error => {
+			setNotificationType('danger');
+			setNotificationMessage(getErrorMessage(error));
+			setNotificationDisplaying(true);
+		}
   });
 
-  return <>{bulmaTable}</>;
+	return (
+		<>
+			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
+			{bulmaTable}
+		</>
+	);
 }

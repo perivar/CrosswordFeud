@@ -6,13 +6,13 @@ import './bulma-table.scss';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
-  SortableActionButton,
   ActionButton,
   ActionButtonProps,
   getInitialSortings
 } from './BulmaTable';
 import { PaginationPlacement } from './BulmaPagination';
 import useRadioButtons from '../hooks/radio-buttons-hook';
+import { BulmaConfirmButton } from './BulmaConfirmButton';
 
 // render methods must have displayName
 const renderIdUrl = (id: string) => {
@@ -99,10 +99,11 @@ export default function BulmaTableExample() {
     );
   };
 
-  const deleteButton: React.ReactNode = SortableActionButton({
+  const deleteButton: React.ReactNode = BulmaConfirmButton({
+    type: 'danger',
     label: 'Delete',
+    confirmLabel: 'Confirm delete',
     key: 'deleteRows',
-    classNames: 'is-danger',
     disabled: Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]) ? false : true,
     handleOnClick: handleOnDeleteClick
   });
