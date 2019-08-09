@@ -95,7 +95,10 @@ const authHeader = () => {
 
 //------------------------------------------------
 export default function TableExample3() {
-  const baseUrl = 'http://localhost:5000';
+	const config = { apiUrl: process.env.REACT_APP_API };
+
+	// const baseUrl = 'http://localhost:5000';
+	const baseUrl = config.apiUrl;
 
   const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
   const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
@@ -240,7 +243,7 @@ export default function TableExample3() {
         render: renderDateFormat
       }
     ];
-  }, []);
+  }, [baseUrl]);
 
   // define action buttons
   const actionButtons: ActionButton[] = useMemo(() => {
@@ -354,7 +357,7 @@ export default function TableExample3() {
         render: renderResetButton
       }
     ];
-  }, [columns]);
+  }, [baseUrl, columns]);
 
   // initial table state
   interface ExtendedTableState extends SortableTableState {
