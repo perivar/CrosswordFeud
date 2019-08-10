@@ -106,6 +106,12 @@ div {
     vertical-align: middle;
 }
 
+// only buttons and a links are originally supported in Bulma dropdowns
+.dropdown-item.is-active {
+    background-color: #3273dc;
+    color: #fff;
+}
+
 // Add some helper spacer classes
 // <div class="mt-10">This div has top margin 10px</div>
 $sizes: (0, 10, 15, 20, 25, 30, 50);

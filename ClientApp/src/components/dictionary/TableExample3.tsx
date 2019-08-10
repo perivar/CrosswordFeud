@@ -20,6 +20,7 @@ import { history } from '../../history';
 import { BulmaNotificationType, BulmaNotification } from '../shared/bulma-components/BulmaNotification';
 import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButton';
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
+import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
@@ -455,6 +456,21 @@ export default function TableExample3() {
 
 	return (
 		<>
+		<BulmaAutocomplete
+        // suggestions={[
+        //   "Alligator",
+        //   "Bask",
+        //   "Crocodilian",
+        //   "Death Roll",
+        //   "Eggs",
+        //   "Jaws",
+        //   "Reptile",
+        //   "Solitary",
+        //   "Tail",
+        //   "Wetlands"
+				// ]}
+				baseUrl={baseUrl}
+      />
 			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
 			{bulmaTable}
 		</>
