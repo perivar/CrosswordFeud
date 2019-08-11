@@ -28,31 +28,19 @@ const initialState: BulmaAutocompleteState = {
 interface BulmaAutocompleteArguments {
   suggestions?: any[];
   baseUrl?: string;
+  headers?: any;
+  responseHandler?: (response: any) => any[];
 }
-
-const authHeader = () => {
-  // return authorization header with jwt token
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-
-  if (user && user.token) {
-    return {
-      Authorization: 'Bearer ' + user.token,
-      'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
-    };
-  } else {
-    return {};
-  }
-};
 
 const axiosInstance: AxiosInstance = axios.create({});
 
 const Autocomplete = (props: BulmaAutocompleteArguments) => {
-  const { suggestions = [], baseUrl = '' } = props;
+  const { suggestions = [], baseUrl = '', headers, responseHandler } = props;
 
   const [state, setState] = useState<BulmaAutocompleteState>(initialState);
 
   if (baseUrl) axiosInstance.defaults.baseURL = baseUrl;
-  if (authHeader) axiosInstance.defaults.headers = authHeader();
+  if (headers) axiosInstance.defaults.headers = headers;
   const { response, error, isLoading, setUrl: fetchData } = useDataApi({
     // isError
     axios: axiosInstance
@@ -160,7 +148,12 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     if (response) {
       console.log('useEffect() - handling load success (response)');
 
-      const filteredSuggestions = response.data;
+      let filteredSuggestions: any[] = [];
+      if (responseHandler) {
+        filteredSuggestions = responseHandler(response);
+      } else {
+        filteredSuggestions = response.data;
+      }
 
       // Update the user input and filtered suggestions, reset the active
       // suggestion and make sure the suggestions are shown

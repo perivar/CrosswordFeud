@@ -470,6 +470,12 @@ export default function TableExample3() {
         //   "Wetlands"
 				// ]}
 				baseUrl={baseUrl}
+				headers={authHeader()}
+				responseHandler={ 
+					res => {
+						return res.data
+					}
+				}
       />
 			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
 			{bulmaTable}
