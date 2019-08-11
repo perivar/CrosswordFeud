@@ -253,8 +253,8 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         <button type="button" className="icon is-small is-right is-icon-button" onClick={handleClear}>
           <i className="fas fa-times fa-xs" />
         </button>
+        {isLoading && <div className="is-loading" />}
       </div>
-      {isLoading && <div className="is-loading" />}
       <div className="dropdown-menu" id="dropdown-menu" role="menu">
         {suggestionsListComponent(state)}
       </div>
