@@ -26,16 +26,20 @@ const initialState: BulmaAutocompleteState = {
 };
 
 interface BulmaAutocompleteArguments {
+  placeholder?: string;
   suggestions?: any[];
   baseUrl?: string;
   headers?: any;
+  queryHandler?: (word: string) => string;
   responseHandler?: (response: any) => any[];
 }
 
 const axiosInstance: AxiosInstance = axios.create({});
 
 const Autocomplete = (props: BulmaAutocompleteArguments) => {
-  const { suggestions = [], baseUrl = '', headers, responseHandler } = props;
+  const { placeholder, suggestions = [], baseUrl = '', headers, queryHandler, responseHandler } = props;
+
+  const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   const [state, setState] = useState<BulmaAutocompleteState>(initialState);
 
@@ -106,7 +110,13 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
       let filteredSuggestions: any[] = [];
       if (baseUrl) {
-        const url = 'api/words/' + userInput;
+        // use server side fetching
+        let url = '';
+        if (queryHandler) {
+          url = queryHandler(userInput);
+        } else {
+          url = userInput;
+        }
         fetchData(url);
       } else {
         // Filter our suggestions that don't contain the user's input
@@ -126,11 +136,11 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         })
       );
     },
-    [baseUrl, fetchData, suggestions]
+    [baseUrl, fetchData, queryHandler, suggestions]
   );
 
   // Event fired when the user clicks on a suggestion
-  const handleClick = useCallback((e: any) => {
+  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     e.preventDefault();
     const currentValue = e.currentTarget.innerText;
     // Update the user input and reset the rest of the state
@@ -143,6 +153,24 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
       })
     );
   }, []);
+
+  const handleClear = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.preventDefault();
+      if (inputRef && inputRef.current) inputRef.current.value = '';
+
+      // Update the user input and reset the rest of the state
+      setState(
+        produce((draft: Draft<BulmaAutocompleteState>) => {
+          draft.activeSuggestion = 0;
+          draft.filteredSuggestions = [];
+          draft.showSuggestions = false;
+          draft.userInput = '';
+        })
+      );
+    },
+    [inputRef]
+  );
 
   useEffect(() => {
     if (response) {
@@ -210,16 +238,21 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
   return (
     <div className="dropdown is-active">
-      <div className="dropdown-trigger">
+      <div className="dropdown-trigger control has-icons-right">
         <input
+          ref={inputRef}
           className="input"
           type="text"
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           value={state.userInput}
+          placeholder={placeholder}
           aria-haspopup="true"
           aria-controls="dropdown-menu"
         />
+        <button type="button" className="icon is-small is-right is-icon-button" onClick={handleClear}>
+          <i className="fas fa-times fa-xs" />
+        </button>
       </div>
       {isLoading && <div className="is-loading" />}
       <div className="dropdown-menu" id="dropdown-menu" role="menu">

@@ -469,8 +469,14 @@ export default function TableExample3() {
         //   "Tail",
         //   "Wetlands"
 				// ]}
+				placeholder="Ord"
 				baseUrl={baseUrl}
 				headers={authHeader()}
+				queryHandler={
+					word => {
+						return  'api/words/' + word;
+					}
+				}
 				responseHandler={ 
 					res => {
 						return res.data
