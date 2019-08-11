@@ -10,7 +10,7 @@ export class Layout extends PureComponent<any, any> {
             <NavMenu />
           </div>
           <div className="hero-body">
-            <div className="container has-text-centered">
+            <div className="container">
               <div>{this.props.children}</div>
             </div>
           </div>

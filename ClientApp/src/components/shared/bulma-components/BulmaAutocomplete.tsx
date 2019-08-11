@@ -26,8 +26,11 @@ const initialState: BulmaAutocompleteState = {
 };
 
 interface BulmaAutocompleteArguments {
+  id: string;
+  notFound: string;
   placeholder?: string;
   suggestions?: any[];
+  mandatory?: boolean; // whether a selection is mandatory
   baseUrl?: string;
   headers?: any;
   queryHandler?: (word: string) => string;
@@ -37,7 +40,17 @@ interface BulmaAutocompleteArguments {
 const axiosInstance: AxiosInstance = axios.create({});
 
 const Autocomplete = (props: BulmaAutocompleteArguments) => {
-  const { placeholder, suggestions = [], baseUrl = '', headers, queryHandler, responseHandler } = props;
+  const {
+    id,
+    notFound,
+    placeholder,
+    suggestions = [],
+    mandatory = true,
+    baseUrl = '',
+    headers,
+    queryHandler,
+    responseHandler
+  } = props;
 
   const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
 
@@ -60,7 +73,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
       if (e.keyCode === 13 || e.keyCode === 9) {
         e.preventDefault();
 
-        if (filteredSuggestions.length === 0) return;
+        if (mandatory && filteredSuggestions.length === 0) return;
 
         setState(
           produce((draft: Draft<BulmaAutocompleteState>) => {
@@ -99,7 +112,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         );
       }
     },
-    [state]
+    [mandatory, state]
   );
 
   // Event fired when the input value is changed
@@ -172,6 +185,23 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     [inputRef]
   );
 
+  const handleNonFoundClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.preventDefault();
+
+      if (mandatory) return;
+
+      setState(
+        produce((draft: Draft<BulmaAutocompleteState>) => {
+          draft.activeSuggestion = 0;
+          draft.filteredSuggestions = [];
+          draft.showSuggestions = false;
+        })
+      );
+    },
+    [mandatory]
+  );
+
   useEffect(() => {
     if (response) {
       console.log('useEffect() - handling load success (response)');
@@ -227,19 +257,22 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         } else {
           return (
             <div className="dropdown-content">
-              <div className="dropdown-item">No suggestions, you are on your own!</div>
+              <div className="dropdown-item" role="presentation" onClick={handleNonFoundClick}>
+                {notFound}
+              </div>
             </div>
           );
         }
       }
     },
-    [handleClick]
+    [handleClick, handleNonFoundClick, notFound]
   );
 
   return (
     <div className="dropdown is-active">
       <div className="dropdown-trigger control has-icons-right">
         <input
+          id={id}
           ref={inputRef}
           className="input"
           type="text"

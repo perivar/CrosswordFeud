@@ -456,33 +456,42 @@ export default function TableExample3() {
 
 	return (
 		<>
-		<BulmaAutocomplete
-        // suggestions={[
-        //   "Alligator",
-        //   "Bask",
-        //   "Crocodilian",
-        //   "Death Roll",
-        //   "Eggs",
-        //   "Jaws",
-        //   "Reptile",
-        //   "Solitary",
-        //   "Tail",
-        //   "Wetlands"
-				// ]}
-				placeholder="Ord"
-				baseUrl={baseUrl}
-				headers={authHeader()}
-				queryHandler={
-					word => {
-						return  'api/words/' + word;
-					}
-				}
-				responseHandler={ 
-					res => {
-						return res.data
-					}
-				}
-      />
+      <div className="field">
+        <label className="label" htmlFor="searchWord">
+          Spørreord
+        </label>
+				<BulmaAutocomplete
+						// suggestions={[
+						//   "Alligator",
+						//   "Bask",
+						//   "Crocodilian",
+						//   "Death Roll",
+						//   "Eggs",
+						//   "Jaws",
+						//   "Reptile",
+						//   "Solitary",
+						//   "Tail",
+						//   "Wetlands"
+						// ]}
+						id="searchWord"
+						placeholder="Spørreord"
+						notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
+						mandatory
+						baseUrl={baseUrl}
+						headers={authHeader()}
+						queryHandler={
+							word => {
+								return  'api/words/' + word;
+							}
+						}
+						responseHandler={ 
+							res => {
+								return res.data
+							}
+						}
+					/>
+					 <p className="help">Skriv inn ordet du søker etter her</p>
+				</div>
 			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
 			{bulmaTable}
 		</>
