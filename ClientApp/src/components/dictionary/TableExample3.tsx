@@ -21,6 +21,7 @@ import { BulmaNotificationType, BulmaNotification } from '../shared/bulma-compon
 import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButton';
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
+import LetterBoxes from './LetterBoxes';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
@@ -452,8 +453,8 @@ export default function TableExample3() {
 			setNotificationMessage(getErrorMessage(error));
 			setNotificationDisplaying(true);
 		}
-  });
-
+	});
+		
 	return (
 		<>
       <div className="field">
@@ -489,9 +490,18 @@ export default function TableExample3() {
 								return res.data
 							}
 						}
-					/>
-					 <p className="help">Skriv inn ordet du søker etter her</p>
-				</div>
+				/>
+				<p className="help">Skriv inn ordet du søker etter her</p>
+			</div>
+
+			<LetterBoxes />
+
+			<div className="field">
+				<button type="button" className="button is-primary">Søk</button>
+			</div>
+
+			<div className="pb-20" />
+
 			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
 			{bulmaTable}
 		</>
