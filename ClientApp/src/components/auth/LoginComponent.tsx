@@ -50,7 +50,7 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
     const { username, password, submitted, remember } = this.state;
     return (
       <>
-        <p className="subtitle has-text-grey">Logg inn</p>
+        <p className="subtitle has-text-grey has-text-centered">Logg inn</p>
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-5-tablet is-5-desktop is-4-widescreen">

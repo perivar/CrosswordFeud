@@ -5,7 +5,7 @@ export default class HelpComponent extends PureComponent<any, any> {
   render() {
     return (
       <>
-        <p className="subtitle has-text-grey">Hjelp?</p>
+        <p className="subtitle has-text-grey has-text-centered">Hjelp?</p>
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-5-tablet is-5-desktop is-4-widescreen">

@@ -73,7 +73,7 @@ export default class RegisterComponent extends React.Component<IRegisterProps, I
     const { user, submitted, passwordsNotEqual, emailsNotEqual } = this.state;
     return (
       <>
-        <p className="subtitle has-text-grey">Registrer deg som ny bruker</p>
+        <p className="subtitle has-text-grey has-text-centered">Registrer deg som ny bruker</p>
         <div className="container">
           <div className="columns is-centered">
             <div className="column is-5-tablet is-5-desktop is-4-widescreen">

@@ -448,7 +448,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         <pre className="has-text-left">{JSON.stringify(responseReset || {}, null, 0)}</pre>
       )} */}
 
-      <p className="subtitle has-text-grey">Glemt passord</p>
+      <p className="subtitle has-text-grey has-text-centered">Glemt passord</p>
       <div className="container">
         <div className="columns is-centered">
           <div className="column is-5-tablet is-5-desktop is-4-widescreen">

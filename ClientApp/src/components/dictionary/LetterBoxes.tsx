@@ -1,50 +1,66 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
-interface LetterBox {
-  value: string;
-  id: string;
+interface ILetterBoxProps {
+  // value: string;
+  id: number;
+  letterBoxRefs: React.MutableRefObject<HTMLInputElement[]>;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-interface State {
-  letterBoxes: LetterBox[];
-  selectedId: string;
-}
+const LetterBox = (props: ILetterBoxProps) => {
+  const { id, letterBoxRefs, handleKeyDown } = props;
+
+  return (
+    <p className="control">
+      <input
+        className="input is-uppercase letter-input"
+        type="text"
+        autoComplete="off"
+        id={`${id}`}
+        name={`letter[${id}]`}
+        maxLength={1}
+        ref={el => (letterBoxRefs.current[id] = el!)}
+        onKeyDown={handleKeyDown}
+      />
+    </p>
+  );
+};
 
 // some useful methods
+const range = (n: number) => Array.from({ length: n }, (value, key) => key);
+
 const isNullOrWhitespace = (input: any): boolean => {
   if (typeof input === 'undefined' || input == null) return true;
 
   return input.replace(/\s/g, '').length < 1;
 };
 
-const getPatternString = (itemsRef: React.MutableRefObject<HTMLInputElement[]>): string => {
+const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
   let patternString = '';
-  let isEmptyPattern = true;
+  // let isEmptyPattern = true;
 
-  itemsRef.current.forEach(element => {
+  letterBoxRefs.forEach(element => {
     const value = element.value;
     if (isNullOrWhitespace(value)) {
       patternString += '_';
     } else {
       patternString += value;
-      isEmptyPattern = false;
+      // isEmptyPattern = false;
     }
   });
 
   return patternString.toUpperCase();
 };
 
-// const useLetterBox = () => {};
-
 const LetterBoxes = () => {
   const [letterCount, setLetterCount] = useState<number>(0);
 
   // create array and keep it between renders by useRef
-  // you can access the elements with itemsRef.current[n]
-  const itemsRef = useRef<HTMLInputElement[]>([]);
+  // you can access the elements with letterBoxRefs.current[n]
+  const letterBoxRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
-    itemsRef.current = itemsRef.current.slice(0, letterCount);
+    letterBoxRefs.current = letterBoxRefs.current.slice(0, letterCount);
   }, [letterCount]);
 
   const handleLetterCountChange = useCallback((e: React.FocusEvent<HTMLSelectElement>) => {
@@ -68,42 +84,51 @@ const LetterBoxes = () => {
   // Event fired when the user presses a key down
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const kcode = e.keyCode;
-    const value = e.key;
+    const keyCode = e.keyCode;
+    const keyValue = e.key;
     const id = Number(e.currentTarget.id);
-    if (kcode === 37) {
+    if (keyCode === 37) {
       // left arrow = 37
-      const previous = itemsRef.current[id - 1];
+      const previous = letterBoxRefs.current[id - 1];
       if (previous) previous.focus();
-    } else if (kcode === 9 || kcode === 39) {
+    } else if (keyCode === 9 || keyCode === 39) {
       // right arrow = 39
       // tab = 9
-      const next = itemsRef.current[id + 1];
+      const next = letterBoxRefs.current[id + 1];
       if (next) next.focus();
-    } else if (kcode === 8 || kcode === 46) {
+    } else if (keyCode === 8 || keyCode === 46) {
       // backspace = 8
       // delete = 46
-      const current = itemsRef.current[id];
+      const current = letterBoxRefs.current[id];
       if (current) current.value = '';
-      const previous = itemsRef.current[id - 1];
+      const previous = letterBoxRefs.current[id - 1];
       if (previous) previous.focus();
     } else if (
-      kcode === 32 ||
-      (kcode > 47 && kcode < 58) ||
-      (kcode > 64 && kcode < 91) ||
-      (kcode > 96 && kcode < 123) ||
-      (kcode > 191 && kcode < 223)
+      (keyCode > 47 && keyCode < 58) || // number keys
+      keyCode === 32 || // spacebar
+      keyCode === 13 || // return key(s)
+      (keyCode > 64 && keyCode < 91) || // letter keys
+      (keyCode > 95 && keyCode < 112) || // numpad keys
+      (keyCode > 185 && keyCode < 193) || // ;=,-./` (in order)
+      (keyCode > 218 && keyCode < 223) // [\]' (in order)
     ) {
-      // space = 32
       // alphanumeric
-      const current = itemsRef.current[id];
-      if (current) current.value = value;
-      const next = itemsRef.current[id + 1];
+      const current = letterBoxRefs.current[id];
+      if (current) current.value = keyValue;
+      const next = letterBoxRefs.current[id + 1];
       if (next) next.focus();
     }
 
-    // console.log('pattern: ' + getPatternString(itemsRef));
+    console.log('pattern: ' + getPatternString(letterBoxRefs.current));
   }, []);
+
+  // create letterboxes array
+  const letterBoxes: React.ReactNode[] = [];
+  range(letterCount).forEach(i => {
+    letterBoxes.push(
+      <LetterBox key={`letter[${i}]`} id={i} letterBoxRefs={letterBoxRefs} handleKeyDown={handleKeyDown} />
+    );
+  });
 
   return (
     <>
@@ -160,23 +185,7 @@ const LetterBoxes = () => {
                 <i className="fas fa-chevron-left" />
               </button>
             </p>
-
-            {[...Array(letterCount)].map((e, i) => {
-              return (
-                <p className="control" key={`letter[${i}]`}>
-                  <input
-                    className="input is-uppercase letter-input"
-                    type="text"
-                    autoComplete="off"
-                    id={`${i}`}
-                    name={`letter[${i}]`}
-                    maxLength={1}
-                    ref={el => (itemsRef.current[i] = el!)}
-                    onKeyDown={handleKeyDown}
-                  />
-                </p>
-              );
-            })}
+            {letterBoxes}
             <p className="control">
               <button className="button" type="button" id="letterMore" onClick={handleLetterMore}>
                 <i className="fas fa-chevron-right" />
