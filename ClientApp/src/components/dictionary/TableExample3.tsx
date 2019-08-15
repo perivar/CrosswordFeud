@@ -102,9 +102,16 @@ export default function TableExample3() {
 	// const baseUrl = 'http://localhost:5000';
 	const baseUrl = config.apiUrl;
 
+	// '/odata/Words',
+  // '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
+	const [url, setUrl] = useState<string>('/odata/Words');
   const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
   const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>('');
+
+	// set refs used by the word and word letter form
+	const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
+	const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
@@ -332,7 +339,7 @@ export default function TableExample3() {
           })
         );
 
-        renderProps.setUrl('/odata/Words');
+				renderProps.setUrl('/odata/Words');				
       };
       const resetButton = BulmaButton({
         type: 'primary',
@@ -376,6 +383,23 @@ export default function TableExample3() {
 
   const [data, setData] = useState<WordData[]>(() => []);
   const [tableState, setTableState] = useState<ExtendedTableState>(intialState);
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		let wordValue = '';
+		if (wordRef.current) wordValue = wordRef.current.value;
+
+		let patternValue= '';
+		if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
+
+		let url = '';
+		if (patternValue === '') {
+			url = "/odata/Words/Synonyms(Word='" + wordValue + "')";
+		} else {
+			url = "/odata/Words/Synonyms(Word='" + wordValue + "', Pattern='" + patternValue + "')";
+		}
+		setUrl(url);
+  };
 
   const queryParams = useCallback((params: QueryParams) => {
     return getOdataQueryObject(convertQueryParamsToODataValues(params));
@@ -428,8 +452,7 @@ export default function TableExample3() {
     search: true,
     pageSize: 10,
     baseUrl,
-    url: '/odata/Words',
-    // url: '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
+    url,
     sidePagination: 'server',
     sortOrder: 'desc',
     queryParams: queryParams,
@@ -454,51 +477,54 @@ export default function TableExample3() {
 			setNotificationDisplaying(true);
 		}
 	});
-		
+			
 	return (
 		<>
-      <div className="field">
-        <label className="label" htmlFor="searchWord">
-          Spørreord
-        </label>
-				<BulmaAutocomplete
-						// suggestions={[
-						//   "Alligator",
-						//   "Bask",
-						//   "Crocodilian",
-						//   "Death Roll",
-						//   "Eggs",
-						//   "Jaws",
-						//   "Reptile",
-						//   "Solitary",
-						//   "Tail",
-						//   "Wetlands"
-						// ]}
-						id="searchWord"
-						placeholder="Spørreord"
-						notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
-						mandatory
-						baseUrl={baseUrl}
-						headers={authHeader()}
-						queryHandler={
-							word => {
-								return  'api/words/' + word;
+			<form onSubmit={handleSearchSubmit}>
+				<div className="field">
+					<label className="label" htmlFor="searchWord">
+						Spørreord
+					</label>
+					<BulmaAutocomplete
+							// suggestions={[
+							//   "Alligator",
+							//   "Bask",
+							//   "Crocodilian",
+							//   "Death Roll",
+							//   "Eggs",
+							//   "Jaws",
+							//   "Reptile",
+							//   "Solitary",
+							//   "Tail",
+							//   "Wetlands"
+							// ]}
+							inputRef={wordRef}
+							id="searchWord"
+							placeholder="Spørreord"
+							notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
+							mandatory
+							baseUrl={baseUrl}
+							headers={authHeader()}
+							queryHandler={
+								word => {
+									return  'api/words/' + word;
+								}
 							}
-						}
-						responseHandler={ 
-							res => {
-								return res.data
+							responseHandler={ 
+								res => {
+									return res.data
+								}
 							}
-						}
-				/>
-				<p className="help">Skriv inn ordet du søker etter her</p>
-			</div>
+					/>
+					<p className="help">Skriv inn ordet du søker etter her</p>
+				</div>
 
-			<LetterBoxes />
+				<LetterBoxes inputRef={letterPatternRef}/>
 
-			<div className="field">
-				<button type="button" className="button is-primary">Søk</button>
-			</div>
+				<div className="field">
+					<button type="submit" className="button is-primary">Søk</button>
+				</div>
+			</form>
 
 			<div className="pb-20" />
 

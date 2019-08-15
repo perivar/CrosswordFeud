@@ -28,6 +28,7 @@ const initialState: BulmaAutocompleteState = {
 interface BulmaAutocompleteArguments {
   id: string;
   notFound: string;
+  inputRef: React.RefObject<HTMLInputElement>;
   placeholder?: string;
   suggestions?: any[];
   mandatory?: boolean; // whether a selection is mandatory
@@ -43,6 +44,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
   const {
     id,
     notFound,
+    inputRef,
     placeholder,
     suggestions = [],
     mandatory = true,
@@ -51,8 +53,6 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     queryHandler,
     responseHandler
   } = props;
-
-  const inputRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   const [state, setState] = useState<BulmaAutocompleteState>(initialState);
 
@@ -204,7 +204,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
   useEffect(() => {
     if (response) {
-      console.log('useEffect() - handling load success (response)');
+      // console.log('useEffect() - handling load success (response)');
 
       let filteredSuggestions: any[] = [];
       if (responseHandler) {
@@ -282,6 +282,9 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
           placeholder={placeholder}
           aria-haspopup="true"
           aria-controls="dropdown-menu"
+          autoComplete="off"
+          spellCheck={false}
+          autoCorrect="off"
         />
         <button type="button" className="icon is-small is-right is-icon-button" onClick={handleClear}>
           <i className="fas fa-times fa-xs" />

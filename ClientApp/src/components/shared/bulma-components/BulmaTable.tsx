@@ -749,6 +749,21 @@ const BulmaTable = (props: SortableTableProps) => {
     }
   }, [columns]);
 
+  const prevInitialUrlRef = useRef<string | undefined>();
+  useEffect(() => {
+    // console.log('useEffect() - checking if we need to set url to new initialUrl');
+
+    // check if url has changed
+    const hasInitialUrlChanged = prevInitialUrlRef.current !== initialUrl;
+
+    if (hasInitialUrlChanged) {
+      // console.log('useEffect() - setting url to new initialUrl');
+      setUrl(initialUrl);
+    }
+
+    prevInitialUrlRef.current = initialUrl;
+  }, [initialUrl]);
+
   const prevUrlRef = useRef<string | undefined>();
   useEffect(() => {
     if (url) {

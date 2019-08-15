@@ -37,7 +37,6 @@ const isNullOrWhitespace = (input: any): boolean => {
 
 const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
   let patternString = '';
-  // let isEmptyPattern = true;
 
   letterBoxRefs.forEach(element => {
     const value = element.value;
@@ -45,14 +44,20 @@ const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
       patternString += '_';
     } else {
       patternString += value;
-      // isEmptyPattern = false;
     }
   });
 
   return patternString.toUpperCase();
 };
 
-const LetterBoxes = () => {
+interface LetterBoxesArguments {
+  inputRef: React.RefObject<HTMLInputElement>;
+}
+
+const MAX_LETTERS = 30;
+const LetterBoxes = (props: LetterBoxesArguments) => {
+  const { inputRef } = props;
+
   const [letterCount, setLetterCount] = useState<number>(0);
 
   // create array and keep it between renders by useRef
@@ -63,64 +68,95 @@ const LetterBoxes = () => {
     letterBoxRefs.current = letterBoxRefs.current.slice(0, letterCount);
   }, [letterCount]);
 
-  const handleLetterCountChange = useCallback((e: React.FocusEvent<HTMLSelectElement>) => {
-    let count = Number(e.target.value);
-    if (Number.isNaN(count)) count = 0;
-    setLetterCount(count);
-  }, []);
+  const updateHiddenPatternField = useCallback(
+    (count?: number) => {
+      let pattern = '';
+      if (count === 0) {
+        pattern = '';
+      } else if (count) {
+        pattern = '_'.repeat(count);
+      } else {
+        pattern = getPatternString(letterBoxRefs.current);
+      }
+      if (inputRef && inputRef.current) inputRef.current.value = pattern;
+    },
+    [inputRef]
+  );
+
+  const handleLetterCountChange = useCallback(
+    (e: React.FocusEvent<HTMLSelectElement>) => {
+      let count = Number(e.target.value);
+      if (Number.isNaN(count)) count = 0;
+      setLetterCount(count);
+      updateHiddenPatternField(count);
+    },
+    [updateHiddenPatternField]
+  );
 
   const handleReset = () => {
     setLetterCount(0);
+    updateHiddenPatternField(0);
   };
 
   const handleLetterLess = () => {
-    setLetterCount(letterCount => letterCount - 1);
+    setLetterCount(letterCount => {
+      const count = Math.max(letterCount - 1, 0);
+      updateHiddenPatternField(count);
+      return count;
+    });
   };
 
   const handleLetterMore = () => {
-    setLetterCount(letterCount => letterCount + 1);
+    setLetterCount(letterCount => {
+      const count = Math.min(letterCount + 1, MAX_LETTERS);
+      updateHiddenPatternField(count);
+      return count;
+    });
   };
 
   // Event fired when the user presses a key down
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    const keyCode = e.keyCode;
-    const keyValue = e.key;
-    const id = Number(e.currentTarget.id);
-    if (keyCode === 37) {
-      // left arrow = 37
-      const previous = letterBoxRefs.current[id - 1];
-      if (previous) previous.focus();
-    } else if (keyCode === 9 || keyCode === 39) {
-      // right arrow = 39
-      // tab = 9
-      const next = letterBoxRefs.current[id + 1];
-      if (next) next.focus();
-    } else if (keyCode === 8 || keyCode === 46) {
-      // backspace = 8
-      // delete = 46
-      const current = letterBoxRefs.current[id];
-      if (current) current.value = '';
-      const previous = letterBoxRefs.current[id - 1];
-      if (previous) previous.focus();
-    } else if (
-      (keyCode > 47 && keyCode < 58) || // number keys
-      keyCode === 32 || // spacebar
-      keyCode === 13 || // return key(s)
-      (keyCode > 64 && keyCode < 91) || // letter keys
-      (keyCode > 95 && keyCode < 112) || // numpad keys
-      (keyCode > 185 && keyCode < 193) || // ;=,-./` (in order)
-      (keyCode > 218 && keyCode < 223) // [\]' (in order)
-    ) {
-      // alphanumeric
-      const current = letterBoxRefs.current[id];
-      if (current) current.value = keyValue;
-      const next = letterBoxRefs.current[id + 1];
-      if (next) next.focus();
-    }
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      e.preventDefault();
+      const keyCode = e.keyCode;
+      const keyValue = e.key;
+      const id = Number(e.currentTarget.id);
+      if (keyCode === 37) {
+        // left arrow = 37
+        const previous = letterBoxRefs.current[id - 1];
+        if (previous) previous.focus();
+      } else if (keyCode === 9 || keyCode === 39) {
+        // right arrow = 39
+        // tab = 9
+        const next = letterBoxRefs.current[id + 1];
+        if (next) next.focus();
+      } else if (keyCode === 8 || keyCode === 46) {
+        // backspace = 8
+        // delete = 46
+        const current = letterBoxRefs.current[id];
+        if (current) current.value = '';
+        const previous = letterBoxRefs.current[id - 1];
+        if (previous) previous.focus();
+      } else if (
+        (keyCode > 47 && keyCode < 58) || // number keys
+        keyCode === 32 || // spacebar
+        // keyCode === 13 || // return key(s)
+        (keyCode > 64 && keyCode < 91) || // letter keys
+        (keyCode > 95 && keyCode < 112) || // numpad keys
+        (keyCode > 185 && keyCode < 193) || // ;=,-./` (in order)
+        (keyCode > 218 && keyCode < 223) // [\]' (in order)
+      ) {
+        // alphanumeric
+        const current = letterBoxRefs.current[id];
+        if (current) current.value = keyValue;
+        const next = letterBoxRefs.current[id + 1];
+        if (next) next.focus();
+      }
 
-    console.log('pattern: ' + getPatternString(letterBoxRefs.current));
-  }, []);
+      updateHiddenPatternField();
+    },
+    [updateHiddenPatternField]
+  );
 
   // create letterboxes array
   const letterBoxes: React.ReactNode[] = [];
@@ -132,6 +168,7 @@ const LetterBoxes = () => {
 
   return (
     <>
+      <input type="hidden" ref={inputRef} />
       {letterCount === 0 && (
         <div className="field">
           <label className="label" htmlFor="letter-count">
@@ -140,36 +177,10 @@ const LetterBoxes = () => {
               <div className="select">
                 <select id="letter-count" onBlur={handleLetterCountChange} onChange={handleLetterCountChange}>
                   <option key="0">Vis alle</option>
-                  <option key="1">1</option>
-                  <option key="2">2</option>
-                  <option key="3">3</option>
-                  <option key="4">4</option>
-                  <option key="5">5</option>
-                  <option key="6">6</option>
-                  <option key="7">7</option>
-                  <option key="8">8</option>
-                  <option key="9">9</option>
-                  <option key="10">10</option>
-                  <option key="11">11</option>
-                  <option key="12">12</option>
-                  <option key="13">13</option>
-                  <option key="14">14</option>
-                  <option key="15">15</option>
-                  <option key="16">16</option>
-                  <option key="17">17</option>
-                  <option key="18">18</option>
-                  <option key="19">19</option>
-                  <option key="20">20</option>
-                  <option key="21">21</option>
-                  <option key="22">22</option>
-                  <option key="23">23</option>
-                  <option key="24">24</option>
-                  <option key="25">25</option>
-                  <option key="26">26</option>
-                  <option key="27">27</option>
-                  <option key="28">28</option>
-                  <option key="29">29</option>
-                  <option key="30">30</option>
+                  {Array.from({ length: MAX_LETTERS }, (v, k) => {
+                    const key = k + 1;
+                    return <option key={key}>{key}</option>;
+                  })}
                 </select>
               </div>
             </div>
