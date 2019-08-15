@@ -16,6 +16,8 @@ const LetterBox = (props: ILetterBoxProps) => {
         className="input is-uppercase letter-input"
         type="text"
         autoComplete="off"
+        spellCheck={false}
+        autoCorrect="off"
         id={`${id}`}
         name={`letter[${id}]`}
         maxLength={1}
