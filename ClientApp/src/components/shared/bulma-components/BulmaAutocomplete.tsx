@@ -255,7 +255,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
                   role="presentation"
                   className={`dropdown-item${index === activeSuggestion ? ' is-active' : ''}`}
                   onClick={handleClick}>
-                  {suggestion}
+                  {typeof suggestion === 'string' ? suggestion : ''}
                 </div>
               );
             })}
