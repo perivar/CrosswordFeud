@@ -28,7 +28,8 @@ const initialState: BulmaAutocompleteState = {
 interface BulmaAutocompleteArguments {
   id: string;
   notFound: string;
-  inputRef: React.RefObject<HTMLInputElement>;
+  onChangeValue?: (value: string) => void;
+  inputRef?: React.RefObject<HTMLInputElement>;
   placeholder?: string;
   suggestions?: any[];
   mandatory?: boolean; // whether a selection is mandatory
@@ -45,6 +46,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     id,
     notFound,
     inputRef,
+    onChangeValue,
     placeholder,
     suggestions = [],
     mandatory = true,
@@ -80,6 +82,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
             draft.activeSuggestion = 0;
             draft.showSuggestions = false;
             draft.userInput = filteredSuggestions[activeSuggestion];
+            if (onChangeValue) onChangeValue(filteredSuggestions[activeSuggestion]);
           })
         );
       }
@@ -112,7 +115,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         );
       }
     },
-    [mandatory, state]
+    [mandatory, onChangeValue, state]
   );
 
   // Event fired when the input value is changed
@@ -153,19 +156,23 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
   );
 
   // Event fired when the user clicks on a suggestion
-  const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-    e.preventDefault();
-    const currentValue = e.currentTarget.innerText;
-    // Update the user input and reset the rest of the state
-    setState(
-      produce((draft: Draft<BulmaAutocompleteState>) => {
-        draft.activeSuggestion = 0;
-        draft.filteredSuggestions = [];
-        draft.showSuggestions = false;
-        draft.userInput = currentValue;
-      })
-    );
-  }, []);
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.preventDefault();
+      const currentValue = e.currentTarget.innerText;
+      // Update the user input and reset the rest of the state
+      setState(
+        produce((draft: Draft<BulmaAutocompleteState>) => {
+          draft.activeSuggestion = 0;
+          draft.filteredSuggestions = [];
+          draft.showSuggestions = false;
+          draft.userInput = currentValue;
+          if (onChangeValue) onChangeValue(currentValue);
+        })
+      );
+    },
+    [onChangeValue]
+  );
 
   const handleClear = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -179,10 +186,11 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
           draft.filteredSuggestions = [];
           draft.showSuggestions = false;
           draft.userInput = '';
+          if (onChangeValue) onChangeValue('');
         })
       );
     },
-    [inputRef]
+    [inputRef, onChangeValue]
   );
 
   const handleNonFoundClick = useCallback(
@@ -227,46 +235,43 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
   useEffect(() => {
     if (error) {
-      console.log('useEffect() - handling load error');
-      console.error(error);
+      // console.log('useEffect() - handling load error');
+      // console.error(error);
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // suggestions list component
-  const suggestionsListComponent = useCallback(
-    (props: BulmaAutocompleteState) => {
-      const { activeSuggestion, filteredSuggestions, showSuggestions, userInput } = props;
+  const suggestionsListComponent = useCallback(() => {
+    const { activeSuggestion, filteredSuggestions, showSuggestions, userInput } = state;
 
-      if (showSuggestions && userInput) {
-        if (filteredSuggestions.length) {
-          return (
-            <div className="dropdown-content">
-              {filteredSuggestions.map((suggestion, index) => {
-                return (
-                  <div
-                    key={suggestion}
-                    role="presentation"
-                    className={`dropdown-item${index === activeSuggestion ? ' is-active' : ''}`}
-                    onClick={handleClick}>
-                    {suggestion}
-                  </div>
-                );
-              })}
+    if (showSuggestions && userInput) {
+      if (filteredSuggestions.length) {
+        return (
+          <div className="dropdown-content">
+            {filteredSuggestions.map((suggestion, index) => {
+              return (
+                <div
+                  key={index}
+                  role="presentation"
+                  className={`dropdown-item${index === activeSuggestion ? ' is-active' : ''}`}
+                  onClick={handleClick}>
+                  {suggestion}
+                </div>
+              );
+            })}
+          </div>
+        );
+      } else {
+        return (
+          <div className="dropdown-content">
+            <div className="dropdown-item" role="presentation" onClick={handleNonFoundClick}>
+              {notFound}
             </div>
-          );
-        } else {
-          return (
-            <div className="dropdown-content">
-              <div className="dropdown-item" role="presentation" onClick={handleNonFoundClick}>
-                {notFound}
-              </div>
-            </div>
-          );
-        }
+          </div>
+        );
       }
-    },
-    [handleClick, handleNonFoundClick, notFound]
-  );
+    }
+  }, [handleClick, handleNonFoundClick, notFound, state]);
 
   return (
     <div className="dropdown is-active">
@@ -292,7 +297,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         {isLoading && <div className="is-loading" />}
       </div>
       <div className="dropdown-menu" id="dropdown-menu" role="menu">
-        {suggestionsListComponent(state)}
+        {suggestionsListComponent()}
       </div>
     </div>
   );

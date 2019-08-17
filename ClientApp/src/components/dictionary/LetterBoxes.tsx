@@ -53,12 +53,13 @@ const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
 };
 
 interface LetterBoxesArguments {
-  inputRef: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement>;
+  onChangeValue?: (value: string) => void;
 }
 
 const MAX_LETTERS = 30;
 const LetterBoxes = (props: LetterBoxesArguments) => {
-  const { inputRef } = props;
+  const { inputRef, onChangeValue } = props;
 
   const [letterCount, setLetterCount] = useState<number>(0);
 
@@ -81,8 +82,9 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
         pattern = getPatternString(letterBoxRefs.current);
       }
       if (inputRef && inputRef.current) inputRef.current.value = pattern;
+      if (onChangeValue) onChangeValue(pattern);
     },
-    [inputRef]
+    [inputRef, onChangeValue]
   );
 
   const handleLetterCountChange = useCallback(

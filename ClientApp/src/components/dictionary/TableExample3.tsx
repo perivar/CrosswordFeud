@@ -379,27 +379,62 @@ export default function TableExample3() {
     checkboxes: {},
     filter: '',
     extraInfo: ''
-  };
+	};
+	
+	interface QueryState {
+		word: string;
+		pattern: string
+  }
 
+  const intialQueryState: QueryState = {
+		word: '',
+		pattern: ''
+	};
+	
   const [data, setData] = useState<WordData[]>(() => []);
-  const [tableState, setTableState] = useState<ExtendedTableState>(intialState);
+	const [tableState, setTableState] = useState<ExtendedTableState>(intialState);	
+	const [query, setQuery] = useState<QueryState>(intialQueryState);	
+
+	const handleChangeWordValue = (word: string) => {
+		setQuery(
+			produce((draft: Draft<QueryState>) => {
+				draft.word = word;
+				doSearch(word, draft.pattern);
+			})
+		);
+		// console.log('word: ' + word);		
+	}
+
+	const handleChangePatternValue = (pattern: string) => {
+		setQuery(
+			produce((draft: Draft<QueryState>) => {
+				draft.pattern = pattern;
+				doSearch(draft.word, pattern);
+			})
+		);
+		// console.log('pattern: ' + pattern);
+	}
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		let wordValue = '';
-		if (wordRef.current) wordValue = wordRef.current.value;
+		const wordValue = query.word;
+		// if (wordRef.current) wordValue = wordRef.current.value;
 
-		let patternValue= '';
-		if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
+		const patternValue= query.pattern;
+		// if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
 
+		doSearch(wordValue, patternValue);
+	};
+	
+	const doSearch = useCallback((word: string, pattern: string) => {
 		let url = '';
-		if (patternValue === '') {
-			url = "/odata/Words/Synonyms(Word='" + wordValue + "')";
+		if (pattern === '') {
+			url = "/odata/Words/Synonyms(Word='" + word + "')";
 		} else {
-			url = "/odata/Words/Synonyms(Word='" + wordValue + "', Pattern='" + patternValue + "')";
+			url = "/odata/Words/Synonyms(Word='" + word + "', Pattern='" + pattern + "')";
 		}
 		setUrl(url);
-  };
+	},[]);
 
   const queryParams = useCallback((params: QueryParams) => {
     return getOdataQueryObject(convertQueryParamsToODataValues(params));
@@ -507,7 +542,7 @@ export default function TableExample3() {
 							headers={authHeader()}
 							queryHandler={
 								word => {
-									return  'api/words/' + word;
+									return  'api/words/' + encodeURIComponent(word);
 								}
 							}
 							responseHandler={ 
@@ -515,11 +550,15 @@ export default function TableExample3() {
 									return res.data
 								}
 							}
+							onChangeValue={handleChangeWordValue}
 					/>
 					<p className="help">Skriv inn ordet du søker etter her</p>
 				</div>
 
-				<LetterBoxes inputRef={letterPatternRef}/>
+				<LetterBoxes 
+					inputRef={letterPatternRef}
+					onChangeValue={handleChangePatternValue}
+				/>
 
 				<div className="field">
 					<button type="submit" className="button is-primary">Søk</button>
