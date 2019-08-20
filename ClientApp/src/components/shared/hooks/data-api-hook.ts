@@ -1,5 +1,5 @@
-import { useEffect, useReducer, useState } from 'react';
-import defaultAxios, { AxiosInstance, AxiosStatic } from 'axios';
+import { useEffect, useReducer, useState, useRef } from 'react';
+import defaultAxios, { AxiosInstance, AxiosStatic, Canceler } from 'axios';
 
 interface IAction {
   type: string;
@@ -80,13 +80,14 @@ export const useDataApi = ({
   const [results, dispatch] = useReducer(responseReducer, initialResponse);
   const [url, setUrl] = useState<string>(initialUrl);
 
+  const cancelRef = useRef<Canceler>();
   useEffect(() => {
     if (!url) return;
 
     let unmounted = false;
 
     // Set up a cancellation source
-    const source = CancelToken.source();
+    // const source = CancelToken.source();
 
     const callbackHandler = (error: any, response: any) => {
       if (callback) {
@@ -98,12 +99,19 @@ export const useDataApi = ({
     const fetchData = async () => {
       callbackHandler(null, null);
       dispatch({ type: actions.init });
+
+      // cancell all previous requests
+      cancelRef.current && cancelRef.current('Cancelling all previous requests');
+
       try {
         const response = await axios({
           url,
           method,
           ...options,
-          cancelToken: source.token
+          // cancelToken: source.token
+          cancelToken: new CancelToken(function executor(c) {
+            cancelRef.current = c;
+          })
         });
 
         if (!unmounted) {
@@ -117,7 +125,7 @@ export const useDataApi = ({
           dispatch({ type: actions.fail, payload: error });
 
           if (defaultAxios.isCancel(error)) {
-            console.log(`Axios request cancelled:${error.message}`);
+            console.log(`Axios request cancelled: ${error.message}`);
           } else {
             callbackHandler(error, null);
             dispatch({ type: actions.fail, payload: error });
@@ -125,7 +133,7 @@ export const useDataApi = ({
         }
       } finally {
         unmounted = true;
-        source.cancel('Cancelling in cleanup');
+        // source.cancel('Cancelling in cleanup');
       }
     };
 
