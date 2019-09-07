@@ -118,6 +118,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   searchText?: string;
   elementsText?: string;
   renderNumberOfRows?: (numberOfRows: number, tableState: SortableTableState) => React.ReactNode;
+  notFound?: string;
 }
 
 export interface SortableTableState {
@@ -341,6 +342,7 @@ interface SortableTableBodyProps {
   url?: string;
   setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+  notFound?: string;
 }
 
 // make sure to memoize the rows to avoid re-renders
@@ -349,7 +351,7 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, uniqueIdKey, data, tableState, setTableState, url, setUrl, handleCheckboxChange } = props;
+  const { columns, uniqueIdKey, data, tableState, setTableState, url, setUrl, handleCheckboxChange, notFound } = props;
 
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
@@ -369,7 +371,19 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
     return sortableTableRow;
   });
 
-  return <tbody>{bodies}</tbody>;
+  return (
+    <tbody>
+      {data.length > 0 ? (
+        bodies
+      ) : (
+        <tr>
+          <td colSpan={columns.length + 1} className="has-text-centered">
+            {notFound ? notFound : 'No matching records found'}
+          </td>
+        </tr>
+      )}
+    </tbody>
+  );
 };
 
 // filter
@@ -707,7 +721,8 @@ const BulmaTable = (props: SortableTableProps) => {
     findInText,
     searchText,
     elementsText,
-    renderNumberOfRows
+    renderNumberOfRows,
+    notFound
   } = props;
 
   // unique id column key - default is 'id'
@@ -905,6 +920,10 @@ const BulmaTable = (props: SortableTableProps) => {
           setActivePage(1); // 1 or localNumberOfPages?
         }
       }
+    } else {
+      // no data
+      setNumberOfRows(0);
+      setCurrentData(data);
     }
   }, [activePage, columns, data, rowsPerPage, sidePagination, tableState.sortings, tableState.filter]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -1024,7 +1043,8 @@ const BulmaTable = (props: SortableTableProps) => {
     setTableState,
     url,
     setUrl,
-    handleCheckboxChange
+    handleCheckboxChange,
+    notFound
   });
 
   const sortableTableTopBar = SortableTableTopBar({

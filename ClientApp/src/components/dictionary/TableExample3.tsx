@@ -510,7 +510,8 @@ export default function TableExample3() {
 			setNotificationType('danger');
 			setNotificationMessage(getErrorMessage(error));
 			setNotificationDisplaying(true);
-		}
+		},
+		notFound: "Fant ingen ord som passet. Vennligst prøv på nytt ..."
 	});
 			
 	return (

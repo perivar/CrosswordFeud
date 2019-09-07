@@ -49,13 +49,15 @@ function computeVisiblePieces(activePage: number, config: Config): PaginatorPiec
       visiblePieces.push({
         type: 'previous',
         pageNumber: Math.max(1, activePage - 1),
-        isDisabled: activePage === 1
+        // the button is disabled if the number of pages is zero
+        isDisabled: activePage === 1 || numberOfPages === 0
       });
 
       visiblePieces.push({
         type: 'next',
         pageNumber: Math.min(numberOfPages, activePage + 1),
-        isDisabled: activePage === numberOfPages
+        // the button is disabled if the number of pages is zero
+        isDisabled: activePage === numberOfPages || numberOfPages === 0
       });
     }
 

@@ -62,12 +62,14 @@ export interface DataApiProperties {
  * @param  {boolean} isLoading - The loading status
  * @param  {boolean} isError - The error status
  * @param  {object} error - HTTP error
+ * @param  {object} setUrl - method to set the url
  */
 
 interface DataApiReturn extends IState {
   setUrl: Function;
 }
 
+// Set up a cancellation token
 const CancelToken = defaultAxios.CancelToken;
 
 export const useDataApi = ({
@@ -85,9 +87,6 @@ export const useDataApi = ({
     if (!url) return;
 
     let unmounted = false;
-
-    // Set up a cancellation source
-    // const source = CancelToken.source();
 
     const callbackHandler = (error: any, response: any) => {
       if (callback) {
@@ -108,7 +107,6 @@ export const useDataApi = ({
           url,
           method,
           ...options,
-          // cancelToken: source.token
           cancelToken: new CancelToken(function executor(c) {
             cancelRef.current = c;
           })
@@ -121,9 +119,6 @@ export const useDataApi = ({
       } catch (error) {
         // check that this error is not because we cancelled it ourselves				}
         if (!unmounted) {
-          callbackHandler(error, null);
-          dispatch({ type: actions.fail, payload: error });
-
           if (defaultAxios.isCancel(error)) {
             console.log(`Axios request cancelled: ${error.message}`);
           } else {
@@ -133,7 +128,6 @@ export const useDataApi = ({
         }
       } finally {
         unmounted = true;
-        // source.cancel('Cancelling in cleanup');
       }
     };
 
