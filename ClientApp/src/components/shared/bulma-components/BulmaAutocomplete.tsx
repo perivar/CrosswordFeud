@@ -28,8 +28,9 @@ const initialState: BulmaAutocompleteState = {
 interface BulmaAutocompleteArguments {
   id: string;
   notFound: string;
+  value?: string;
   onChangeValue?: (value: string) => void;
-  inputRef?: React.RefObject<HTMLInputElement>;
+  // inputRef?: React.RefObject<HTMLInputElement>;
   placeholder?: string;
   suggestions?: any[];
   mandatory?: boolean; // whether a selection is mandatory
@@ -45,7 +46,8 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
   const {
     id,
     notFound,
-    inputRef,
+    // inputRef,
+    value,
     onChangeValue,
     placeholder,
     suggestions = [],
@@ -177,7 +179,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
   const handleClear = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.preventDefault();
-      if (inputRef && inputRef.current) inputRef.current.value = '';
+      // if (inputRef && inputRef.current) inputRef.current.value = '';
 
       // Update the user input and reset the rest of the state
       setState(
@@ -190,7 +192,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         })
       );
     },
-    [inputRef, onChangeValue]
+    [onChangeValue]
   );
 
   const handleNonFoundClick = useCallback(
@@ -240,6 +242,16 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     }
   }, [error]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  useEffect(() => {
+    // console.log('useEffect() - autocomplete value has changed: "' + value + '"');
+
+    setState(
+      produce((draft: Draft<BulmaAutocompleteState>) => {
+        draft.userInput = value ? value : '';
+      })
+    );
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // suggestions list component
   const suggestionsListComponent = useCallback(() => {
     const { activeSuggestion, filteredSuggestions, showSuggestions, userInput } = state;
@@ -278,7 +290,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
       <div className="dropdown-trigger control has-icons-right">
         <input
           id={id}
-          ref={inputRef}
+          // ref={inputRef}
           className="input"
           type="text"
           onChange={handleChange}

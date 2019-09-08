@@ -486,39 +486,45 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
   const actionInfo: ActionButtonProps = { tableState, setTableState, url, setUrl };
 
   return (
-    <nav className="level">
-      <div className="level-left">
-        {actionButtons &&
-          actionButtons.map((actionButton: ActionButton) => (
-            <p key={actionButton.key} className="level-item">
-              {actionButton.render && actionButton.render(actionInfo)}
-            </p>
-          ))}
-      </div>
+    <>
+      <nav className="level">
+        <div className="level-left">
+          <div className="level-item">
+            {renderNumberOfRows ? (
+              renderNumberOfRows(numberOfRows, tableState)
+            ) : (
+              <p>
+                <strong>{numberOfRows}</strong> {elementsText}
+              </p>
+            )}
+          </div>
+        </div>
+      </nav>
+      <nav className="level">
+        <div className="level-left">
+          {actionButtons &&
+            actionButtons.map((actionButton: ActionButton) => (
+              <p key={actionButton.key} className="level-item">
+                {actionButton.render && actionButton.render(actionInfo)}
+              </p>
+            ))}
+        </div>
 
-      <div className="level-right">
-        <div className="level-item">
-          {renderNumberOfRows ? (
-            renderNumberOfRows(numberOfRows, tableState)
-          ) : (
-            <p>
-              <strong>{numberOfRows}</strong> {elementsText}
-            </p>
-          )}
+        <div className="level-right">
+          <div className="level-item">
+            {search && (
+              <BulmaSearchField
+                type="addon"
+                label={searchText}
+                value={tableState.filter}
+                placeholder={findInText}
+                handleSubmit={handleSearchSubmit}
+              />
+            )}
+          </div>
         </div>
-        <div className="level-item">
-          {search && (
-            <BulmaSearchField
-              type="addon"
-              label={searchText}
-              value={tableState.filter}
-              placeholder={findInText}
-              handleSubmit={handleSearchSubmit}
-            />
-          )}
-        </div>
-      </div>
-    </nav>
+      </nav>
+    </>
   );
 };
 

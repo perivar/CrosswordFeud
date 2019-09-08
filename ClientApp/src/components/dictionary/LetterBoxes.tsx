@@ -53,13 +53,14 @@ const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
 };
 
 interface LetterBoxesArguments {
-  inputRef?: React.RefObject<HTMLInputElement>;
+  // inputRef?: React.RefObject<HTMLInputElement>;
+  value?: string;
   onChangeValue?: (value: string) => void;
 }
 
 const MAX_LETTERS = 30;
 const LetterBoxes = (props: LetterBoxesArguments) => {
-  const { inputRef, onChangeValue } = props;
+  const { value, onChangeValue } = props;
 
   const [letterCount, setLetterCount] = useState<number>(0);
 
@@ -71,20 +72,38 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
     letterBoxRefs.current = letterBoxRefs.current.slice(0, letterCount);
   }, [letterCount]);
 
+  useEffect(() => {
+    // console.log('useEffect() - letterboxes value has changed: "' + value + '"');
+
+    if (value === '') {
+      // reset
+      handleReset();
+    } else if (value) {
+      // for (var i = 0; i < value.length; i++) {
+      //   const current = letterBoxRefs.current[i];
+      //   if (current && value.charAt(i) !== '_') current.value = value.charAt(i);
+      // }
+    }
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const updateHiddenPatternField = useCallback(
     (count?: number) => {
-      let pattern = '';
+      // let pattern = '';
+      let pattern = getPatternString(letterBoxRefs.current);
       if (count === 0) {
         pattern = '';
       } else if (count) {
-        pattern = '_'.repeat(count);
-      } else {
-        pattern = getPatternString(letterBoxRefs.current);
+        if (pattern.length > count) {
+          // cut to the right length
+          pattern = pattern.substring(0, count);
+        } else {
+          // append underscore
+          pattern = pattern + '_'.repeat(count - pattern.length);
+        }
       }
-      if (inputRef && inputRef.current) inputRef.current.value = pattern;
       if (onChangeValue) onChangeValue(pattern);
     },
-    [inputRef, onChangeValue]
+    [onChangeValue]
   );
 
   const handleLetterCountChange = useCallback(
@@ -172,7 +191,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
 
   return (
     <>
-      <input type="hidden" ref={inputRef} />
+      <input type="hidden" />
       {letterCount === 0 && (
         <div className="field">
           <label className="label" htmlFor="letter-count">

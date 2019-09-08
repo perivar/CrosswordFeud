@@ -110,8 +110,8 @@ export default function TableExample3() {
   const [notificationMessage, setNotificationMessage] = useState<string>('');
 
 	// set refs used by the word and word letter form
-	const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
-	const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
+	// const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
+	// const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
@@ -130,7 +130,9 @@ export default function TableExample3() {
         renderProps.setTableState(
           produce((draft: Draft<ExtendedTableState>) => {
             draft.filter = '';
-            draft.extraInfo = renderProps.row.value;
+						draft.extraInfo = renderProps.row.value;
+						draft.word = renderProps.row.value;
+						draft.pattern = '';
           })
         );
 
@@ -335,9 +337,15 @@ export default function TableExample3() {
           produce((draft: Draft<ExtendedTableState>) => {
             draft.filter = '';
             draft.sortings = getInitialSortings(columns);
-            draft.extraInfo = '';
+						draft.extraInfo = '';
+						draft.word = '';
+						draft.pattern = '';
           })
         );
+				
+				// reset word and pattern refs
+				// if (wordRef && wordRef.current) wordRef.current.value = '';
+				// if (letterPatternRef && letterPatternRef.current) letterPatternRef.current.value = '';
 
 				renderProps.setUrl('/odata/Words');				
       };
@@ -368,9 +376,11 @@ export default function TableExample3() {
     ];
   }, [baseUrl, columns]);
 
-  // initial table state
+  // initial table state extends SortableTableState to add more attributes
   interface ExtendedTableState extends SortableTableState {
-    extraInfo?: string;
+		extraInfo?: string;
+		word?: string;
+		pattern?: string
   }
 
   const intialState: ExtendedTableState = {
@@ -378,52 +388,46 @@ export default function TableExample3() {
     isAllSelected: false,
     checkboxes: {},
     filter: '',
-    extraInfo: ''
-	};
-	
-	interface QueryState {
-		word: string;
-		pattern: string
-  }
-
-  const intialQueryState: QueryState = {
+		extraInfo: '',
 		word: '',
 		pattern: ''
 	};
-	
+		
   const [data, setData] = useState<WordData[]>(() => []);
 	const [tableState, setTableState] = useState<ExtendedTableState>(intialState);	
-	const [query, setQuery] = useState<QueryState>(intialQueryState);	
 
 	const handleChangeWordValue = (word: string) => {
-		setQuery(
-			produce((draft: Draft<QueryState>) => {
+		// console.log('word: ' + word);		
+		setTableState(
+			produce((draft: Draft<ExtendedTableState>) => {
+				draft.filter = '';
+				draft.extraInfo = '';
 				draft.word = word;
-				doSearch(word, draft.pattern);
+				doSearch(word, draft.pattern ? draft.pattern : '');
 			})
 		);
-		// console.log('word: ' + word);		
 	}
 
 	const handleChangePatternValue = (pattern: string) => {
-		setQuery(
-			produce((draft: Draft<QueryState>) => {
+		// console.log('pattern: ' + pattern);
+		setTableState(
+			produce((draft: Draft<ExtendedTableState>) => {
+				draft.filter = '';
+				draft.extraInfo = '';
 				draft.pattern = pattern;
-				doSearch(draft.word, pattern);
+				doSearch(draft.word ? draft.word: '', pattern);
 			})
 		);
-		// console.log('pattern: ' + pattern);
 	}
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		const wordValue = query.word;
-		// if (wordRef.current) wordValue = wordRef.current.value;
 
-		const patternValue= query.pattern;
+		// use refs to get value
+		// if (wordRef.current) wordValue = wordRef.current.value;
 		// if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
 
-		doSearch(wordValue, patternValue);
+		doSearch(tableState.word ? tableState.word : '', tableState.pattern ? tableState.pattern : '');
 	};
 	
 	const doSearch = useCallback((word: string, pattern: string) => {
@@ -432,7 +436,7 @@ export default function TableExample3() {
 			url = "/odata/Words/Synonyms(Word='" + word + "')";
 		} else {
 			url = "/odata/Words/Synonyms(Word='" + word + "', Pattern='" + pattern + "')";
-		}
+		}	
 		setUrl(url);
 	},[]);
 
@@ -462,19 +466,45 @@ export default function TableExample3() {
   }, []);
 
   const renderNumberOfRows = useCallback((numberOfRows: number, tableState: ExtendedTableState) => {
-    return (
-      <>
-        {tableState.extraInfo ? (
-          <p>
-            Fant <strong>{numberOfRows}</strong> synonym til {tableState.extraInfo}
-          </p>
-        ) : (
-          <p>
-            Viser <strong>{numberOfRows}</strong> ord
-          </p>
-        )}
-      </>
-    );
+
+		if (tableState.extraInfo) {
+			return (
+				<p>
+				Fant <strong>{numberOfRows}</strong> synonym til {tableState.extraInfo}
+			</p>
+			);
+		}
+
+		if (tableState.word) {
+			if (tableState.pattern) {				
+				// check if the pattern only contain the same character
+				if (/^(.)\1+$/.test(tableState.pattern)) {				
+					return (
+						<p>
+							Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med {tableState.pattern.length} bokstaver
+						</p>
+					);	
+				} else {
+					return (
+						<p>
+							Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med bokstavene {tableState.pattern}
+						</p>
+					);	
+				}
+			} else {
+				return (
+					<p>
+						Fant <strong>{numberOfRows}</strong> synonym til {tableState.word}
+					</p>
+				);
+			}
+		} else {
+			return (
+				<p>
+					Fant <strong>{numberOfRows}</strong> ord
+				</p>
+			);
+		}
 	}, []);
 	
   const bulmaTable = BulmaTable({
@@ -511,7 +541,7 @@ export default function TableExample3() {
 			setNotificationMessage(getErrorMessage(error));
 			setNotificationDisplaying(true);
 		},
-		notFound: "Fant ingen ord som passet. Vennligst prøv på nytt ..."
+		notFound: 'Fant ingen ord som passet. Vennligst prøv på nytt ...'
 	});
 			
 	return (
@@ -534,8 +564,9 @@ export default function TableExample3() {
 							//   "Tail",
 							//   "Wetlands"
 							// ]}
-							inputRef={wordRef}
+							// inputRef={wordRef}
 							id="searchWord"
+							value={tableState.word}
 							placeholder="Spørreord"
 							notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
 							mandatory
@@ -557,7 +588,8 @@ export default function TableExample3() {
 				</div>
 
 				<LetterBoxes 
-					inputRef={letterPatternRef}
+					// inputRef={letterPatternRef}
+					value={tableState.pattern}
 					onChangeValue={handleChangePatternValue}
 				/>
 
