@@ -26,11 +26,12 @@ class Clue extends Component<IClueProps> {
     this.props.focusFirstCellInClueById(this.props.id);
   }
 
+  // TODO: Find out where the crossword is mounted, instead of hardcoding /crossword/ in the href
   render() {
     return (
       <li>
         <a
-          href={`#${this.props.id}`}
+          href={`/crossword/#${this.props.id}`}
           onClick={this.onClick.bind(this)}
           className={classNames({
             crossword__clue: true,

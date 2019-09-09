@@ -588,7 +588,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       }));
 
       // Side effect
-      window.history.replaceState(undefined, document.title, `#${clue.id} `);
+      // TODO: Find out where the crossword is mounted, instead of hardcoding /crossword/
+      window.history.replaceState(undefined, document.title, `/crossword/#${clue.id} `);
     }
   }
 
