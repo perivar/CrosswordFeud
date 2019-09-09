@@ -778,7 +778,7 @@ const BulmaTable = (props: SortableTableProps) => {
     const hasInitialUrlChanged = prevInitialUrlRef.current !== initialUrl;
 
     if (hasInitialUrlChanged) {
-      // console.log('useEffect() - setting url to new initialUrl');
+      console.log('useEffect() - setting url to new initialUrl: ' + initialUrl);
       setUrl(initialUrl);
     }
 

@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
@@ -22,6 +22,7 @@ import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButto
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
 import LetterBoxes from './LetterBoxes';
+// import { useDependenciesDebugger } from '../shared/hooks/dependency-debugger-hook';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
@@ -35,6 +36,12 @@ interface WordData {
   comment: string | null;
   createdDate: string;
   source: string;
+}
+
+// initial table state extends SortableTableState to add more attributes
+interface ExtendedTableState extends SortableTableState {
+	word?: string;
+	pattern?: string;
 }
 
 // convert QueryParams2ODataValues
@@ -66,20 +73,20 @@ const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
 };
 
 const getErrorMessage = (error: any) => {
-	if (error.response) {
-		// The request was made and the server responded with a status code
-		// that falls out of the range of 2xx
-		if (error.response.status === 401) {
-			return "No access";
-		} else {
-			return JSON.stringify(error.response.data, null, 0);
-		}
-	} else {
-		// The request was made but no response was received or 
-		// something happened in setting up the request that triggered an Error
-		return error.message;
-	}
-}
+  if (error.response) {
+    // The request was made and the server responded with a status code
+    // that falls out of the range of 2xx
+    if (error.response.status === 401) {
+      return 'No access';
+    } else {
+      return JSON.stringify(error.response.data, null, 0);
+    }
+  } else {
+    // The request was made but no response was received or
+    // something happened in setting up the request that triggered an Error
+    return error.message;
+  }
+};
 
 const authHeader = () => {
   // return authorization header with jwt token
@@ -95,23 +102,34 @@ const authHeader = () => {
   }
 };
 
+const getUrlUsingTableState = (tableState: ExtendedTableState) => {
+	let url = '';
+	if (tableState.word) {
+		if (tableState.pattern) {
+			url = "/odata/Words/Synonyms(Word='" + tableState.word + "', Pattern='" + tableState.pattern + "')";
+		} else {
+			url = "/odata/Words/Synonyms(Word='" + tableState.word + "')";
+		}
+	} else {
+		url = '/odata/Words/';
+	}
+	return url;
+}
+
 //------------------------------------------------
 export default function TableExample3() {
-	const config = { apiUrl: process.env.REACT_APP_API };
+  const config = { apiUrl: process.env.REACT_APP_API };
 
-	// const baseUrl = 'http://localhost:5000';
-	const baseUrl = config.apiUrl;
+  // const baseUrl = 'http://localhost:5000';
+  const baseUrl = config.apiUrl;
 
-	// '/odata/Words',
-  // '/odata/Words?%24orderby=WordId%20desc&%24top=50&%24count=true',
-	const [url, setUrl] = useState<string>('/odata/Words');
   const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
   const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>('');
 
-	// set refs used by the word and word letter form
-	// const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
-	// const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
+  // set refs used by the word and word letter form
+  // const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
+  // const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
 
   // use redux store
   const authentication = useSelector((state: IStoreState) => state.authentication);
@@ -130,13 +148,12 @@ export default function TableExample3() {
         renderProps.setTableState(
           produce((draft: Draft<ExtendedTableState>) => {
             draft.filter = '';
-						draft.extraInfo = renderProps.row.value;
-						draft.word = renderProps.row.value;
-						draft.pattern = '';
+            draft.word = renderProps.row.value;
+            draft.pattern = '';
           })
         );
 
-        renderProps.setUrl("/odata/Words/Synonyms(Word='" + renderProps.row.value + "')");
+				// the url is updated automatically using an effect that monitors table state changes
       };
 
       return (
@@ -187,10 +204,10 @@ export default function TableExample3() {
             console.log(response.data);
           })
           .catch(error => {
-						setNotificationType('danger');
-						setNotificationMessage(getErrorMessage(error));
-						setNotificationDisplaying(true);
-					});
+            setNotificationType('danger');
+            setNotificationMessage(getErrorMessage(error));
+            setNotificationDisplaying(true);
+          });
       };
 
       return (
@@ -292,15 +309,15 @@ export default function TableExample3() {
             console.log(response.data);
           })
           .catch(error => {
-						setNotificationType('danger');
-						setNotificationMessage(getErrorMessage(error));
-						setNotificationDisplaying(true);
-					});
+            setNotificationType('danger');
+            setNotificationMessage(getErrorMessage(error));
+            setNotificationDisplaying(true);
+          });
       };
       const deleteButton = BulmaConfirmButton({
         type: 'danger',
-				label: 'Slett',
-				confirmLabel: 'Bekreft sletting',
+        label: 'Slett',
+        confirmLabel: 'Bekreft sletting',
         key: 'deleteRows',
         disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
           ? false
@@ -318,8 +335,8 @@ export default function TableExample3() {
       };
       const disconnectButton = BulmaConfirmButton({
         type: 'warning',
-				label: 'Koble fra',
-				confirmLabel: 'Bekreft koble fra',
+        label: 'Koble fra',
+        confirmLabel: 'Bekreft koble fra',
         key: 'disconnectRows',
         disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
           ? false
@@ -337,17 +354,16 @@ export default function TableExample3() {
           produce((draft: Draft<ExtendedTableState>) => {
             draft.filter = '';
             draft.sortings = getInitialSortings(columns);
-						draft.extraInfo = '';
-						draft.word = '';
-						draft.pattern = '';
+            draft.word = '';
+            draft.pattern = '';
           })
         );
-				
-				// reset word and pattern refs
-				// if (wordRef && wordRef.current) wordRef.current.value = '';
-				// if (letterPatternRef && letterPatternRef.current) letterPatternRef.current.value = '';
 
-				renderProps.setUrl('/odata/Words');				
+        // reset word and pattern refs
+        // if (wordRef && wordRef.current) wordRef.current.value = '';
+        // if (letterPatternRef && letterPatternRef.current) letterPatternRef.current.value = '';
+
+				// the url is updated automatically using an effect that monitors table state changes
       };
       const resetButton = BulmaButton({
         type: 'primary',
@@ -376,69 +392,62 @@ export default function TableExample3() {
     ];
   }, [baseUrl, columns]);
 
-  // initial table state extends SortableTableState to add more attributes
-  interface ExtendedTableState extends SortableTableState {
-		extraInfo?: string;
-		word?: string;
-		pattern?: string
-  }
-
   const intialState: ExtendedTableState = {
     sortings: getInitialSortings(columns),
     isAllSelected: false,
     checkboxes: {},
     filter: '',
-		extraInfo: '',
-		word: '',
-		pattern: ''
-	};
-		
+    word: '',
+    pattern: ''
+  };
+
   const [data, setData] = useState<WordData[]>(() => []);
-	const [tableState, setTableState] = useState<ExtendedTableState>(intialState);	
+  const [tableState, setTableState] = useState<ExtendedTableState>(intialState);
+  const [url, setUrl] = useState<string>(getUrlUsingTableState(tableState));
 
-	const handleChangeWordValue = (word: string) => {
-		// console.log('word: ' + word);		
-		setTableState(
-			produce((draft: Draft<ExtendedTableState>) => {
-				draft.filter = '';
-				draft.extraInfo = '';
-				draft.word = word;
-				doSearch(word, draft.pattern ? draft.pattern : '');
-			})
-		);
-	}
+  const handleChangeWordValue = (word: string) => {
+    // console.log('word: ' + word);
+    setTableState(
+      produce((draft: Draft<ExtendedTableState>) => {
+        draft.filter = '';
+        draft.word = word;
+      })
+    );
+  };
 
-	const handleChangePatternValue = (pattern: string) => {
-		// console.log('pattern: ' + pattern);
-		setTableState(
-			produce((draft: Draft<ExtendedTableState>) => {
-				draft.filter = '';
-				draft.extraInfo = '';
-				draft.pattern = pattern;
-				doSearch(draft.word ? draft.word: '', pattern);
-			})
-		);
-	}
+  const handleChangePatternValue = (pattern: string) => {
+    // console.log('pattern: ' + pattern);
+    setTableState(
+      produce((draft: Draft<ExtendedTableState>) => {
+        draft.filter = '';
+        draft.pattern = pattern;
+      })
+    );
+  };
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
+    e.preventDefault();
 
-		// use refs to get value
-		// if (wordRef.current) wordValue = wordRef.current.value;
-		// if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
+    // use refs to get value
+    // if (wordRef.current) wordValue = wordRef.current.value;
+    // if (letterPatternRef.current) patternValue = letterPatternRef.current.value;
 
-		doSearch(tableState.word ? tableState.word : '', tableState.pattern ? tableState.pattern : '');
-	};
-	
-	const doSearch = useCallback((word: string, pattern: string) => {
-		let url = '';
-		if (pattern === '') {
-			url = "/odata/Words/Synonyms(Word='" + word + "')";
-		} else {
-			url = "/odata/Words/Synonyms(Word='" + word + "', Pattern='" + pattern + "')";
-		}	
-		setUrl(url);
-	},[]);
+    setUrlFromTableState();
+  };
+
+  const setUrlFromTableState = useCallback(() => {
+		const url = getUrlUsingTableState(tableState);
+    setUrl(url);
+	}, [tableState]);
+
+	useEffect(() => {
+      // console.log('useEffect() - tableState has changed');
+			const url = getUrlUsingTableState(tableState);
+			setUrl(url);	
+  }, [tableState]);
+
+  // debug what has changed between renders
+  // useDependenciesDebugger({ tableState });
 
   const queryParams = useCallback((params: QueryParams) => {
     return getOdataQueryObject(convertQueryParamsToODataValues(params));
@@ -466,47 +475,39 @@ export default function TableExample3() {
   }, []);
 
   const renderNumberOfRows = useCallback((numberOfRows: number, tableState: ExtendedTableState) => {
+    if (tableState.word) {
+      if (tableState.pattern) {
+        // check if the pattern only contain the same character
+        if (/^(.)\1+$/.test(tableState.pattern)) {
+          return (
+            <p>
+              Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med {tableState.pattern.length}{' '}
+              bokstaver
+            </p>
+          );
+        } else {
+          return (
+            <p>
+              Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med bokstavene {tableState.pattern}
+            </p>
+          );
+        }
+      } else {
+        return (
+          <p>
+            Fant <strong>{numberOfRows}</strong> synonym til {tableState.word}
+          </p>
+        );
+      }
+    } else {
+      return (
+        <p>
+          Fant <strong>{numberOfRows}</strong> ord
+        </p>
+      );
+    }
+  }, []);
 
-		if (tableState.extraInfo) {
-			return (
-				<p>
-				Fant <strong>{numberOfRows}</strong> synonym til {tableState.extraInfo}
-			</p>
-			);
-		}
-
-		if (tableState.word) {
-			if (tableState.pattern) {				
-				// check if the pattern only contain the same character
-				if (/^(.)\1+$/.test(tableState.pattern)) {				
-					return (
-						<p>
-							Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med {tableState.pattern.length} bokstaver
-						</p>
-					);	
-				} else {
-					return (
-						<p>
-							Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med bokstavene {tableState.pattern}
-						</p>
-					);	
-				}
-			} else {
-				return (
-					<p>
-						Fant <strong>{numberOfRows}</strong> synonym til {tableState.word}
-					</p>
-				);
-			}
-		} else {
-			return (
-				<p>
-					Fant <strong>{numberOfRows}</strong> ord
-				</p>
-			);
-		}
-	}, []);
-	
   const bulmaTable = BulmaTable({
     columns,
     data,
@@ -537,71 +538,74 @@ export default function TableExample3() {
     elementsText: 'treff',
     renderNumberOfRows,
     onLoadError: error => {
-			setNotificationType('danger');
-			setNotificationMessage(getErrorMessage(error));
-			setNotificationDisplaying(true);
-		},
-		notFound: 'Fant ingen ord som passet. Vennligst prøv på nytt ...'
-	});
-			
-	return (
-		<>
-			<form onSubmit={handleSearchSubmit}>
-				<div className="field">
-					<label className="label" htmlFor="searchWord">
-						Spørreord
-					</label>
-					<BulmaAutocomplete
-							// suggestions={[
-							//   "Alligator",
-							//   "Bask",
-							//   "Crocodilian",
-							//   "Death Roll",
-							//   "Eggs",
-							//   "Jaws",
-							//   "Reptile",
-							//   "Solitary",
-							//   "Tail",
-							//   "Wetlands"
-							// ]}
-							// inputRef={wordRef}
-							id="searchWord"
-							value={tableState.word}
-							placeholder="Spørreord"
-							notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
-							mandatory
-							baseUrl={baseUrl}
-							headers={authHeader()}
-							queryHandler={
-								word => {
-									return  'api/words/' + encodeURIComponent(word);
-								}
-							}
-							responseHandler={ 
-								res => {
-									return res.data
-								}
-							}
-							onChangeValue={handleChangeWordValue}
-					/>
-					<p className="help">Skriv inn ordet du søker etter her</p>
-				</div>
+      setNotificationType('danger');
+      setNotificationMessage(getErrorMessage(error));
+      setNotificationDisplaying(true);
+    },
+    notFound: 'Fant ingen ord som passet. Vennligst prøv på nytt ...'
+  });
 
-				<LetterBoxes 
-					// inputRef={letterPatternRef}
-					value={tableState.pattern}
-					onChangeValue={handleChangePatternValue}
-				/>
+  return (
+    <>
+      <form onSubmit={handleSearchSubmit}>
+        <div className="field">
+          <label className="label" htmlFor="searchWord">
+            Spørreord
+          </label>
+          <BulmaAutocomplete
+            // suggestions={[
+            //   "Alligator",
+            //   "Bask",
+            //   "Crocodilian",
+            //   "Death Roll",
+            //   "Eggs",
+            //   "Jaws",
+            //   "Reptile",
+            //   "Solitary",
+            //   "Tail",
+            //   "Wetlands"
+            // ]}
+            // inputRef={wordRef}
+            id="searchWord"
+            value={tableState.word}
+            placeholder="Spørreord"
+            notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
+            mandatory
+            baseUrl={baseUrl}
+            headers={authHeader()}
+            queryHandler={word => {
+              return 'api/words/' + encodeURIComponent(word);
+            }}
+            responseHandler={res => {
+              return res.data;
+            }}
+            onChangeValue={handleChangeWordValue}
+          />
+          <p className="help">Skriv inn ordet du søker etter her</p>
+        </div>
 
-				<div className="field">
-					<button type="submit" className="button is-primary">Søk</button>
-				</div>
-			</form>
+        <LetterBoxes
+          // inputRef={letterPatternRef}
+          value={tableState.pattern}
+          onChangeValue={handleChangePatternValue}
+        />
 
-			<div className="pb-20" />
+        <div className="field">
+          <button type="submit" className="button is-primary">
+            Søk
+          </button>
+        </div>
+      </form>
 
-			<BulmaNotification visible={notificationDisplaying} setVisible={setNotificationDisplaying} type={notificationType} message={notificationMessage} />
-			{bulmaTable}
-		</>
-	);
+      <div className="pb-20" />
+
+      <BulmaNotification
+        visible={notificationDisplaying}
+        setVisible={setNotificationDisplaying}
+        type={notificationType}
+        message={notificationMessage}
+      />
+      {bulmaTable}
+    </>
+  );
 }

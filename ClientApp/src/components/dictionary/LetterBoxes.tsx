@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 interface ILetterBoxProps {
-  // value: string;
   id: number;
   letterBoxRefs: React.MutableRefObject<HTMLInputElement[]>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -53,7 +52,6 @@ const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
 };
 
 interface LetterBoxesArguments {
-  // inputRef?: React.RefObject<HTMLInputElement>;
   value?: string;
   onChangeValue?: (value: string) => void;
 }
@@ -62,33 +60,24 @@ const MAX_LETTERS = 30;
 const LetterBoxes = (props: LetterBoxesArguments) => {
   const { value, onChangeValue } = props;
 
-  const [letterCount, setLetterCount] = useState<number>(0);
+  const [letterCount, setLetterCount] = useState<number>(value ? value.length : 0); // 0 means not showing letter boxes, but a dropdown to select letter count
 
   // create array and keep it between renders by useRef
   // you can access the elements with letterBoxRefs.current[n]
   const letterBoxRefs = useRef<HTMLInputElement[]>([]);
 
   useEffect(() => {
+    // console.log('useEffect() - letterboxes count has changed: "' + letterCount + '"');
     letterBoxRefs.current = letterBoxRefs.current.slice(0, letterCount);
   }, [letterCount]);
 
   useEffect(() => {
     // console.log('useEffect() - letterboxes value has changed: "' + value + '"');
-
-    if (value === '') {
-      // reset
-      handleReset();
-    } else if (value) {
-      // for (var i = 0; i < value.length; i++) {
-      //   const current = letterBoxRefs.current[i];
-      //   if (current && value.charAt(i) !== '_') current.value = value.charAt(i);
-      // }
-    }
+    updateLetterBoxes(value);
   }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateHiddenPatternField = useCallback(
     (count?: number) => {
-      // let pattern = '';
       let pattern = getPatternString(letterBoxRefs.current);
       if (count === 0) {
         pattern = '';
@@ -101,6 +90,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
           pattern = pattern + '_'.repeat(count - pattern.length);
         }
       }
+      // setLetterValue(pattern);
       if (onChangeValue) onChangeValue(pattern);
     },
     [onChangeValue]
@@ -116,10 +106,25 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
     [updateHiddenPatternField]
   );
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setLetterCount(0);
     updateHiddenPatternField(0);
-  };
+  }, [updateHiddenPatternField]);
+
+  const updateLetterBoxes = useCallback(
+    (value?: string) => {
+      if (value === '') {
+        // reset
+        handleReset();
+      } else if (value) {
+        for (var i = 0; i < value.length; i++) {
+          const current = letterBoxRefs.current[i];
+          if (current && value.charAt(i) !== '_') current.value = value.charAt(i);
+        }
+      }
+    },
+    [handleReset]
+  );
 
   const handleLetterLess = () => {
     setLetterCount(letterCount => {
