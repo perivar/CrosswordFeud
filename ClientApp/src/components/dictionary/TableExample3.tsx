@@ -40,8 +40,8 @@ interface WordData {
 
 // initial table state extends SortableTableState to add more attributes
 interface ExtendedTableState extends SortableTableState {
-	word?: string;
-	pattern?: string;
+  word?: string;
+  pattern?: string;
 }
 
 // convert QueryParams2ODataValues
@@ -103,18 +103,18 @@ const authHeader = () => {
 };
 
 const getUrlUsingTableState = (tableState: ExtendedTableState) => {
-	let url = '';
-	if (tableState.word) {
-		if (tableState.pattern) {
-			url = "/odata/Words/Synonyms(Word='" + tableState.word + "', Pattern='" + tableState.pattern + "')";
-		} else {
-			url = "/odata/Words/Synonyms(Word='" + tableState.word + "')";
-		}
-	} else {
-		url = '/odata/Words/';
-	}
-	return url;
-}
+  let url = '';
+  if (tableState.word) {
+    if (tableState.pattern) {
+      url = "/odata/Words/Synonyms(Word='" + tableState.word + "', Pattern='" + tableState.pattern + "')";
+    } else {
+      url = "/odata/Words/Synonyms(Word='" + tableState.word + "')";
+    }
+  } else {
+    url = '/odata/Words/';
+  }
+  return url;
+};
 
 //------------------------------------------------
 export default function TableExample3() {
@@ -153,7 +153,7 @@ export default function TableExample3() {
           })
         );
 
-				// the url is updated automatically using an effect that monitors table state changes
+        // the url is updated automatically using an effect that monitors table state changes
       };
 
       return (
@@ -363,7 +363,7 @@ export default function TableExample3() {
         // if (wordRef && wordRef.current) wordRef.current.value = '';
         // if (letterPatternRef && letterPatternRef.current) letterPatternRef.current.value = '';
 
-				// the url is updated automatically using an effect that monitors table state changes
+        // the url is updated automatically using an effect that monitors table state changes
       };
       const resetButton = BulmaButton({
         type: 'primary',
@@ -436,14 +436,14 @@ export default function TableExample3() {
   };
 
   const setUrlFromTableState = useCallback(() => {
-		const url = getUrlUsingTableState(tableState);
+    const url = getUrlUsingTableState(tableState);
     setUrl(url);
-	}, [tableState]);
+  }, [tableState]);
 
-	useEffect(() => {
-      // console.log('useEffect() - tableState has changed');
-			const url = getUrlUsingTableState(tableState);
-			setUrl(url);	
+  useEffect(() => {
+    // console.log('useEffect() - tableState has changed');
+    const url = getUrlUsingTableState(tableState);
+    setUrl(url);
   }, [tableState]);
 
   // debug what has changed between renders
