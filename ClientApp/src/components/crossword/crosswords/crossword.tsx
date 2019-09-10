@@ -130,6 +130,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const delayedHandleScrollCallback = debounce(this.handleScroll.bind(this), 200);
     addMyEventListener(window, 'scroll', delayedHandleScrollCallback);
 
+    // read the hash from current location (i.e. current url) i.e. /current_pathname/#clue_id
+    // and remove the # to keep only the clue id
     const entryId = window.location.hash.replace('#', '');
     this.focusFirstCellInClueById(entryId);
   }
@@ -587,9 +589,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         directionOfEntry: direction
       }));
 
-      // Side effect
-      // TODO: Find out where the crossword is mounted, instead of hardcoding /crossword/
-      window.history.replaceState(undefined, document.title, `/crossword/#${clue.id} `);
+      // update the history (i.e. current url) to /current_pathname/#clue_id
+      window.history.replaceState(undefined, document.title, `${window.location.pathname}#${clue.id} `);
     }
   }
 

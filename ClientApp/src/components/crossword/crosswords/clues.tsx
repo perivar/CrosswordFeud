@@ -26,12 +26,13 @@ class Clue extends Component<IClueProps> {
     this.props.focusFirstCellInClueById(this.props.id);
   }
 
-  // TODO: Find out where the crossword is mounted, instead of hardcoding /crossword/ in the href
+  // even if the href is not normally used (overrided by the onClick)
+  // add a proper url /current_pathname/#clue_id
   render() {
     return (
       <li>
         <a
-          href={`/crossword/#${this.props.id}`}
+          href={`${window.location.pathname}#${this.props.id}`}
           onClick={this.onClick.bind(this)}
           className={classNames({
             crossword__clue: true,
