@@ -67,7 +67,7 @@ class App extends Component<any, any> {
           <Layout>
             {/* <Route exact={true} path="/" component={Home} /> */}
             <PrivateRoute exact path="/" component={HomeContainer} />
-            <Route exact path="/dictionary" component={DictionaryContainer} />
+            <Route path="/dictionary" component={DictionaryContainer} />
             <Route exact path="/counter" component={Counter} />
             <Route exact path="/forecast" component={ForecastContainer} />
             <Route exact path="/login" component={LoginContainer} />

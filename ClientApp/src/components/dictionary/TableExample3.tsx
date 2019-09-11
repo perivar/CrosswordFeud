@@ -4,6 +4,8 @@ import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
 import { useSelector } from 'react-redux';
+import queryString from 'query-string';
+import useReactRouter from '../shared/hooks/use-react-router';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
@@ -54,7 +56,7 @@ const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
           {
             name: 'Value',
             operation: 'contains',
-            value: params.search,
+            value: params.search.toUpperCase(),
             dataType: 'string'
           }
         ]
@@ -392,13 +394,17 @@ export default function TableExample3() {
     ];
   }, [baseUrl, columns]);
 
+	// parse the query parameters
+	const { history: routerHistory, location } = useReactRouter();
+	const query = queryString.parse(location.search);
+
   const intialState: ExtendedTableState = {
     sortings: getInitialSortings(columns),
     isAllSelected: false,
     checkboxes: {},
     filter: '',
-    word: '',
-    pattern: ''
+    word: query.word as string,
+    pattern: query.pattern as string
   };
 
   const [data, setData] = useState<WordData[]>(() => []);
@@ -443,8 +449,11 @@ export default function TableExample3() {
   useEffect(() => {
     // console.log('useEffect() - tableState has changed');
     const url = getUrlUsingTableState(tableState);
-    setUrl(url);
-  }, [tableState]);
+		setUrl(url);
+
+		// update the url
+		routerHistory.push(`/dictionary?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
+  }, [routerHistory, tableState]);
 
   // debug what has changed between renders
   // useDependenciesDebugger({ tableState });
@@ -547,6 +556,7 @@ export default function TableExample3() {
 
   return (
     <>
+		{/* <pre className="has-text-left">{JSON.stringify(parsed, null, 2)}</pre> */}
       <form onSubmit={handleSearchSubmit}>
         <div className="field">
           <label className="label" htmlFor="searchWord">
