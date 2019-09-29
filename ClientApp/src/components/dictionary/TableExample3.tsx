@@ -3,9 +3,9 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import queryString from 'query-string';
-import useReactRouter from '../shared/hooks/use-react-router';
+// import useReactRouter from '../shared/hooks/use-react-router';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
@@ -17,13 +17,14 @@ import BulmaTable, {
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
-import { IStoreState } from '../../state/store';
-import { history } from '../../history';
+// import { IStoreState } from '../../state/store';
+// import { history } from '../../history';
 import { BulmaNotificationType, BulmaNotification } from '../shared/bulma-components/BulmaNotification';
 import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButton';
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
 import LetterBoxes from './LetterBoxes';
+import { DictionaryProps, DictionaryDispatchProps } from './DictionaryContainer';
 // import { useDependenciesDebugger } from '../shared/hooks/dependency-debugger-hook';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
@@ -119,7 +120,7 @@ const getUrlUsingTableState = (tableState: ExtendedTableState) => {
 };
 
 //------------------------------------------------
-export default function TableExample3() {
+export default function TableExample3(props: DictionaryProps & DictionaryDispatchProps) {
   const config = { apiUrl: process.env.REACT_APP_API };
 
   // const baseUrl = 'http://localhost:5000';
@@ -132,15 +133,6 @@ export default function TableExample3() {
   // set refs used by the word and word letter form
   // const wordRef: React.RefObject<HTMLInputElement> = React.createRef();
   // const letterPatternRef: React.RefObject<HTMLInputElement> = React.createRef();
-
-  // use redux store
-  const authentication = useSelector((state: IStoreState) => state.authentication);
-
-  // redirect to login if we don't have the auth-token
-  if (!authentication.logon.token) {
-    // http://localhost:3000/login
-    history.push('/login');
-  }
 
   // define columns
   const columns: SortableTableColumn[] = useMemo(() => {
@@ -394,9 +386,22 @@ export default function TableExample3() {
     ];
   }, [baseUrl, columns]);
 
+  // read the passed properties
+  const { authentication, history, location } = props;
+
 	// parse the query parameters
-	const { history: routerHistory, location } = useReactRouter();
+	// const { history: routerHistory, location } = useReactRouter();
 	const query = queryString.parse(location.search);
+
+  // use redux store
+	// const authentication = useSelector((state: IStoreState) => state.authentication);
+	
+  // redirect to login if we don't have the auth-token
+  if (!authentication.logon.token) {
+		// http://localhost:3000/login
+		history.push('/login');
+    // routerHistory.push('/login');
+  }
 
   const intialState: ExtendedTableState = {
     sortings: getInitialSortings(columns),
@@ -451,9 +456,10 @@ export default function TableExample3() {
     const url = getUrlUsingTableState(tableState);
 		setUrl(url);
 
-		// update the url
-		routerHistory.push(`/dictionary?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
-  }, [routerHistory, tableState]);
+		// update the url		
+		// routerHistory.push(`${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
+		history.push(`${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
+  }, [tableState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // debug what has changed between renders
   // useDependenciesDebugger({ tableState });

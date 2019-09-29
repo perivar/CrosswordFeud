@@ -1,12 +1,9 @@
 import React, { PureComponent } from 'react';
+import { DictionaryProps, DictionaryDispatchProps } from './DictionaryContainer';
 // import TableExample1 from './TableExample1';
 // import TableExample2 from './TableExample2';
 import TableExample3 from './TableExample3';
 // import BulmaTableExample from '../shared/bulma-components/BulmaTableExample';
-
-interface DictionaryComponentProps {
-  empty: any;
-}
 
 interface DictionaryComponentState {
   data: any[];
@@ -14,9 +11,12 @@ interface DictionaryComponentState {
   selectAll: boolean;
 }
 
-export default class DictionaryComponent extends PureComponent<DictionaryComponentProps, DictionaryComponentState> {
+export default class DictionaryComponent extends PureComponent<
+  DictionaryProps & DictionaryDispatchProps,
+  DictionaryComponentState
+> {
   render() {
-    return <TableExample3 />;
+    return <TableExample3 {...this.props} />;
     // return <BulmaTableExample />;
   }
 }

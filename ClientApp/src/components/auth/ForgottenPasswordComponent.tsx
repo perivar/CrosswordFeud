@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, FormEvent, ChangeEvent } from 'react';
+import React, { useCallback, useEffect, FormEvent, ChangeEvent, useReducer } from 'react';
 import { Link } from 'react-router-dom';
 import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaInputField } from '../shared/bulma-components/BulmaInputField';
@@ -6,7 +6,7 @@ import { BulmaSubmitButton } from '../shared/bulma-components/BulmaSubmitButton'
 import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './ForgottenPasswordContainer';
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
-import { useReducerWithLogger } from '../shared/hooks/reducer-logger-hook';
+// import { useReducerWithLogger } from '../shared/hooks/reducer-logger-hook';
 
 export enum ActionTypes {
   USERNAME_CHANGE = 'USERNAME_CHANGE',
@@ -243,8 +243,8 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   };
 
   // use the useReducer instead of useState due to the complexity of the state handling
-  // const [state, dispatch] = useReducer(stateReducer, initialState);
-  const [state, dispatch] = useReducerWithLogger(stateReducer, initialState);
+  const [state, dispatch] = useReducer(stateReducer, initialState);
+  // const [state, dispatch] = useReducerWithLogger(stateReducer, initialState);
 
   // set query parameters from the match props if  they change
   useEffect(() => {
