@@ -11,10 +11,9 @@ function authHeader(): Headers {
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   if (user && user.token) {
-    return { Authorization: 'Bearer ' + user.token } as any;
-  } else {
-    return {} as any;
+    return { Authorization: `Bearer ${user.token}` } as any;
   }
+  return {} as any;
 }
 
 function logout() {

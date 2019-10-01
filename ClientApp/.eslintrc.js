@@ -17,8 +17,8 @@ module.exports = {
     // ecmaFeatures: {
     //   jsx: true,
     // },
-    project: 'tsconfig.json',
-    tsconfigRootDir: 'ClientApp'
+    // project: 'tsconfig.json',
+    // tsconfigRootDir: '.'
   },
   'env': {
     'es6': true,
@@ -44,7 +44,9 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': 'off', // ok with implicit public
     '@typescript-eslint/no-non-null-assertion': 'off',
 		'@typescript-eslint/no-use-before-define': 'off',
+		'@typescript-eslint/ban-ts-ignore': 'off',
 		'@typescript-eslint/no-empty-interface': 'warn',
+		'@typescript-eslint/no-empty-function': 'warn',
 
     // note you must disable the base rule as it can report incorrect errors
     camelcase: 'off',
@@ -60,14 +62,28 @@ module.exports = {
         extensions: ['.jsx', '.tsx']
       }
     ],
+    'react/jsx-no-bind': 'warn',
+		'react/jsx-no-duplicate-props': 'warn',
+		// 'react/jsx-one-expression-per-line': 'warn',
+		'react/jsx-pascal-case': 'warn',
+		// 'react/jsx-props-no-multi-spaces': 'warn',
+		'react/jsx-props-no-spreading': 'off',
+		'react/jsx-sort-default-props': 'warn',
+		// 'react/jsx-tag-spacing': ['error', { 'beforeSelfClosing': 'always' }],
     'react/prop-types': 'off', // Is this incompatible with TS props type?
     'react/no-find-dom-node': 'warn',
-    'react/no-string-refs': 'warn',
-    'react/jsx-no-bind': 'warn',
-    'react/destructuring-assignment': 'off',
+		'react/no-string-refs': 'warn',
+		'react/no-unused-state': 'warn',
+		'react/no-access-state-in-setstate': 'warn',
+		// 'react/no-multi-comp': 'warn',
+		'react/no-typos': 'error',
+		'react/no-unsafe': 'warn',
+		'react/no-unused-prop-types': 'warn',		
+		'react/destructuring-assignment': 'off',
     'react/no-access-state-in-setstate': 'warn',
 		'react/no-array-index-key': 'warn',
-		'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],
+		'react/static-property-placement': 'warn',
+		'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],		
 
     /**
      * @description rules of eslint-plugin-react-hooks
@@ -80,8 +96,31 @@ module.exports = {
      */
     'no-underscore-dangle': 'off',
 		'no-console': 'off',
+		'no-nested-ternary': 'off',
+		'no-return-assign': 'off',
+		'no-shadow': 'off',
+		'lines-between-class-members': 'off',
 		'prefer-const': 'warn',
+		'prefer-destructuring': 'warn',
 		'no-dupe-class-members': 'warn',
+		'no-else-return': 'warn',
+		'no-unneeded-ternary': 'warn',
+		'no-restricted-syntax': 'warn',
+		'vars-on-top': 'warn',
+		'prefer-template': 'warn',
+		'prefer-object-spread': 'warn',
+		'no-param-reassign': ['off', { props: true, ignorePropertyModificationsFor: ['draft'] }], // if using warn we support immer, currently off
+		'no-plusplus': ["warn", { "allowForLoopAfterthoughts": true }],
+		'no-unused-expressions': 'warn',
+		'object-shorthand': 'warn',
+		'consistent-return': 'warn',
+		'max-classes-per-file': 'warn',
+		'class-methods-use-this': 'warn',
+		'guard-for-in': 'warn',
+		'default-case': 'warn',
+		'spaced-comment': ['error', 'always', {
+			'markers': ['/'],
+		}],
 
 		/**
      * @description rules of eslint-import-resolver-typescript
@@ -122,7 +161,7 @@ module.exports = {
 	},
   settings: {
     react: {
-      version: '16.8.6' // Tells eslint-plugin-react to automatically detect the version of React to use
+      version: '16.10.1' // Tells eslint-plugin-react to automatically detect the version of React to use
 		},
 	},
 };

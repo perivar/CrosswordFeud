@@ -378,7 +378,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
       ) : (
         <tr>
           <td colSpan={columns.length + 1} className="has-text-centered">
-            {notFound ? notFound : 'No matching records found'}
+            {notFound || 'No matching records found'}
           </td>
         </tr>
       )}
@@ -429,12 +429,10 @@ const filterData = (
             // If it does, it will be added to newList. Using lowercase eliminates
             // issues with capitalization in search terms and search content
             return lowercasedValue.includes(lowercasedFilter);
-          } else {
-            return null;
           }
-        } else {
           return null;
         }
+        return null;
       });
     });
   } else {
@@ -530,9 +528,7 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
 
 // sort methods
 const parseFloatable = (value: any): boolean => {
-  return typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, '')))
-    ? true
-    : false;
+  return !!(typeof value === 'string' && (/^\d+$/.test(value) || /^\d+$/.test(value.replace(/[,.%$]/g, ''))));
 };
 
 const parseIfFloat = (value: any): number => {
@@ -547,9 +543,11 @@ const ascSortData = (data: SortableTableData, key: string): SortableTableData =>
     }
     if (a >= b) {
       return 1;
-    } else if (a < b) {
+    }
+    if (a < b) {
       return -1;
     }
+    return 0;
   });
 };
 
@@ -561,28 +559,30 @@ const descSortData = (data: SortableTableData, key: string): SortableTableData =
     }
     if (a <= b) {
       return 1;
-    } else if (a > b) {
+    }
+    if (a > b) {
       return -1;
     }
+    return 0;
   });
 };
 
 const sortData = (data: SortableTableData, columns: SortableTableColumn[], sortings: string[]): SortableTableData => {
   let sortedData = data;
-  for (var i in sortings) {
+  for (const i in sortings) {
     const sorting = sortings[i];
     const column = columns[i];
-    const key = columns[i].key;
+    const { key } = columns[i];
     switch (sorting) {
       case 'desc':
-        if (column.descSortFunction && typeof column.descSortFunction == 'function') {
+        if (column.descSortFunction && typeof column.descSortFunction === 'function') {
           sortedData = column.descSortFunction(sortedData, key);
         } else {
           sortedData = descSortData(sortedData, key);
         }
         break;
       case 'asc':
-        if (column.ascSortFunction && typeof column.ascSortFunction == 'function') {
+        if (column.ascSortFunction && typeof column.ascSortFunction === 'function') {
           sortedData = column.ascSortFunction(sortedData, key);
         } else {
           sortedData = ascSortData(sortedData, key);
@@ -778,7 +778,7 @@ const BulmaTable = (props: SortableTableProps) => {
     const hasInitialUrlChanged = prevInitialUrlRef.current !== initialUrl;
 
     if (hasInitialUrlChanged) {
-      console.log('useEffect() - setting url to new initialUrl: ' + initialUrl);
+      console.log(`useEffect() - setting url to new initialUrl: ${initialUrl}`);
       setUrl(initialUrl);
     }
 
@@ -801,8 +801,8 @@ const BulmaTable = (props: SortableTableProps) => {
             limit: rowsPerPage,
             offset: (activePage - 1) * rowsPerPage,
             search: tableState.filter,
-            sort: sort,
-            order: order
+            sort,
+            order
           };
 
           const queryObject = queryParams ? queryParams(params) : params;
@@ -813,7 +813,7 @@ const BulmaTable = (props: SortableTableProps) => {
               (result, pair) => {
                 const [key, value] = pair;
                 if (value !== undefined && value !== null) {
-                  result.push(key + '=' + value);
+                  result.push(`${key}=${value}`);
                 }
                 return result;
               },
@@ -821,9 +821,8 @@ const BulmaTable = (props: SortableTableProps) => {
             )
             .join('&');
           return `${url}?${queryString}`;
-        } else {
-          return `${url}`;
         }
+        return `${url}`;
       };
 
       // check if url has changed
@@ -833,10 +832,9 @@ const BulmaTable = (props: SortableTableProps) => {
       if (sidePagination === 'client') {
         if (!hasUrlChanged) {
           return;
-        } else {
-          // url has changed
-          fullUrl = getFullUrl();
         }
+        // url has changed
+        fullUrl = getFullUrl();
       } else {
         // server pagination
         fullUrl = getFullUrl();
@@ -858,7 +856,7 @@ const BulmaTable = (props: SortableTableProps) => {
       if (responseHandler) {
         const { total, rows } = responseHandler(response.data);
         localData = rows;
-        localTotalCount = total ? total : rows.length;
+        localTotalCount = total || rows.length;
       } else {
         localData = response.data.value;
         localTotalCount = response.data.value.length;

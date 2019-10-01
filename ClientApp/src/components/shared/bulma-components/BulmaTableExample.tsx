@@ -16,7 +16,7 @@ import { BulmaConfirmButton } from './BulmaConfirmButton';
 
 // render methods must have displayName
 const renderIdUrl = (id: string) => {
-  return <a href={'user/' + id}>{id}</a>;
+  return <a href={`user/${id}`}>{id}</a>;
 };
 renderIdUrl.displayName = 'RenderIdUrl';
 
@@ -91,7 +91,7 @@ export default function BulmaTableExample() {
   // create action buttons
   const handleOnDeleteClick = () => {
     const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
-    console.log('delete: ' + ids);
+    console.log(`delete: ${ids}`);
     setData(
       produce((draft: Draft<Data[]>) => {
         return draft.filter(element => !ids.includes(element.id!.toString()));
@@ -104,7 +104,7 @@ export default function BulmaTableExample() {
     label: 'Delete',
     confirmLabel: 'Confirm delete',
     key: 'deleteRows',
-    disabled: Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]) ? false : true,
+    disabled: !Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]),
     handleOnClick: handleOnDeleteClick
   });
 
@@ -134,18 +134,18 @@ export default function BulmaTableExample() {
     useGotoField,
     alwaysUsePreviousNextButtons,
     iconStyle,
-    actionButtons: actionButtons,
+    actionButtons,
     onAll: (type: string, param: any) => {
-      console.log('onAll: ' + type + ' - ' + param);
+      console.log(`onAll: ${type} - ${param}`);
     },
     onSort: (sortings: any) => {
-      console.log('onSort: ' + sortings);
+      console.log(`onSort: ${sortings}`);
     },
     onCheck: (id: string) => {
-      console.log('onCheck: ' + id);
+      console.log(`onCheck: ${id}`);
     },
     onUncheck: (id: string) => {
-      console.log('onUncheck: ' + id);
+      console.log(`onUncheck: ${id}`);
     },
     onCheckAll: () => {
       console.log('onCheckAll');
@@ -154,16 +154,16 @@ export default function BulmaTableExample() {
       console.log('onUncheckAll');
     },
     onLoadSuccess: (data: any, totalCount: number) => {
-      console.log('onLoadSuccess: ' + totalCount);
+      console.log(`onLoadSuccess: ${totalCount}`);
     },
     onLoadError: (error: any) => {
-      console.log('onLoadError: ' + error);
+      console.log(`onLoadError: ${error}`);
     },
     onPageChange: (pageNumber: number) => {
-      console.log('onPageChange: ' + pageNumber);
+      console.log(`onPageChange: ${pageNumber}`);
     },
     onSearch: (query: string) => {
-      console.log('onSearch: ' + query);
+      console.log(`onSearch: ${query}`);
     }
   });
 

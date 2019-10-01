@@ -70,7 +70,7 @@ interface DataApiReturn extends IState {
 }
 
 // Set up a cancellation token
-const CancelToken = defaultAxios.CancelToken;
+const { CancelToken } = defaultAxios;
 
 export const useDataApi = ({
   axios = defaultAxios,
@@ -99,8 +99,10 @@ export const useDataApi = ({
       callbackHandler(null, null);
       dispatch({ type: actions.init });
 
-      // cancell all previous requests
-      cancelRef.current && cancelRef.current('Cancelling all previous requests');
+      // cancel all previous requests
+      if (cancelRef.current) {
+        cancelRef.current('Cancelling all previous requests');
+      }
 
       try {
         const response = await axios({

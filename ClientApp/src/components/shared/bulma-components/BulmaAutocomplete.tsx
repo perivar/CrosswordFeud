@@ -98,7 +98,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
         setState(
           produce((draft: Draft<BulmaAutocompleteState>) => {
-            draft.activeSuggestion = draft.activeSuggestion - 1;
+            draft.activeSuggestion -= 1;
           })
         );
       }
@@ -112,7 +112,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
         setState(
           produce((draft: Draft<BulmaAutocompleteState>) => {
-            draft.activeSuggestion = draft.activeSuggestion + 1;
+            draft.activeSuggestion += 1;
           })
         );
       }
@@ -247,7 +247,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
 
     setState(
       produce((draft: Draft<BulmaAutocompleteState>) => {
-        draft.userInput = value ? value : '';
+        draft.userInput = value || '';
       })
     );
   }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -273,15 +273,14 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
             })}
           </div>
         );
-      } else {
-        return (
-          <div className="dropdown-content">
-            <div className="dropdown-item" role="presentation" onClick={handleNonFoundClick}>
-              {notFound}
-            </div>
-          </div>
-        );
       }
+      return (
+        <div className="dropdown-content">
+          <div className="dropdown-item" role="presentation" onClick={handleNonFoundClick}>
+            {notFound}
+          </div>
+        </div>
+      );
     }
   }, [handleClick, handleNonFoundClick, notFound, state]);
 

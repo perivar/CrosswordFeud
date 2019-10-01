@@ -99,21 +99,21 @@ export function stateReducer(state: IState, action: Actions): IState {
         confirmPassword: action.value
       };
     case ActionTypes.QUERY_PARAMETERS_CHANGE: {
-      const hasTokenParameter = action.token ? true : false;
-      const hasUsernameParameter = action.username ? true : false;
+      const hasTokenParameter = !!action.token;
+      const hasUsernameParameter = !!action.username;
 
-      let username = state.username;
+      let { username } = state;
       if (hasUsernameParameter) username = decodeURIComponent(action.username);
 
-      let token = state.token;
+      let { token } = state;
       if (hasTokenParameter) token = decodeURIComponent(action.token);
 
       return {
         ...state,
-        username: username,
-        token: token,
-        hasUsernameParameter: hasUsernameParameter,
-        hasTokenParameter: hasTokenParameter
+        username,
+        token,
+        hasUsernameParameter,
+        hasTokenParameter
       };
     }
     case ActionTypes.RECEIVED_TOKEN:
@@ -228,8 +228,8 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
   const initialState: IState = {
     username: initialUsername,
     apiUrl: config.apiUrl,
-    getResetToken: getResetToken,
-    doResetPassword: doResetPassword,
+    getResetToken,
+    doResetPassword,
     // initial empty values
     password: '',
     confirmPassword: '',
@@ -248,16 +248,16 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
 
   // set query parameters from the match props if  they change
   useEffect(() => {
-    const username = props.match.params.username;
-    const token = props.match.params.token;
+    const { username } = props.match.params;
+    const { token } = props.match.params;
     if (username && token) {
       dispatch({
         type: ActionTypes.QUERY_PARAMETERS_CHANGE,
-        username: username,
-        token: token
+        username,
+        token
       });
     }
-  }, [dispatch, props.match.params.token, props.match.params.username]);
+  }, [dispatch, props.match.params, props.match.params.token, props.match.params.username]);
 
   // callback for receiving a token from an api
   // note these callbacks mush be called with an useCallback to avoid endless loop
@@ -265,7 +265,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
     (error: any, response: any) => {
       if (response && response.data) {
         const token = response.data;
-        dispatch({ type: ActionTypes.RECEIVED_TOKEN, token: token });
+        dispatch({ type: ActionTypes.RECEIVED_TOKEN, token });
 
         const encodedToken = encodeURIComponent(state.token);
         const encodedUsername = encodeURIComponent(state.username);
@@ -273,8 +273,8 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         // instead of sending the token on email, we include it as a url parameter
         history.push(`/forgotten-password/${encodedUsername}/${encodedToken}`);
 
-        console.log('encoded username: ' + encodedUsername);
-        console.log('encoded token: ' + encodedToken);
+        console.log(`encoded username: ${encodedUsername}`);
+        console.log(`encoded token: ${encodedToken}`);
       }
     },
     [dispatch, state.token, state.username]
@@ -413,7 +413,7 @@ export default function ForgottenPasswordComponent(props: ForgottenPasswordProps
         </article>
       )}
 
-      {/*isErrorReset && (
+      {/* isErrorReset && (
         <div>
           Noe gikk galt!
           <pre className="has-text-left">{JSON.stringify(errorMessageReset || {}, null, 0)}</pre>

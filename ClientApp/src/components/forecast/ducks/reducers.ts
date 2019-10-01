@@ -24,7 +24,7 @@ const forecastReducer = (state = initialForecastState, action: any) => {
       };
     }
     case types.GET_FORECAST_FAILURE: {
-      const error = action.error;
+      const { error } = action;
       return {
         ...state,
         forecasts: [],

@@ -154,17 +154,16 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
         </div>
       </form>
     );
-  } else {
-    return (
-      // <button type="button" className="btn btn-link editable-click" onClick={onEditBegin}>
-      //   {value}
-      // </button>
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <a href="#" className="editable-click" onClick={handleClick}>
-        {value ? value : <i>Empty</i>}
-      </a>
-    );
   }
+  return (
+    // <button type="button" className="btn btn-link editable-click" onClick={onEditBegin}>
+    //   {value}
+    // </button>
+    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+    <a href="#" className="editable-click" onClick={handleClick}>
+      {value || <i>Empty</i>}
+    </a>
+  );
 };
 
 interface TableExample1Props {}
@@ -320,9 +319,8 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
         // }
         className: rowInfo && selection.includes(`select-${rowInfo.original.id}`) ? 'has-background-grey-lighter' : ''
       };
-    } else {
-      return {};
     }
+    return {};
   };
 
   render() {

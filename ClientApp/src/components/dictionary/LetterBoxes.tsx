@@ -40,7 +40,7 @@ const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
   let patternString = '';
 
   letterBoxRefs.forEach(element => {
-    const value = element.value;
+    const { value } = element;
     if (isNullOrWhitespace(value)) {
       patternString += '_';
     } else {
@@ -87,7 +87,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
           pattern = pattern.substring(0, count);
         } else {
           // append underscore
-          pattern = pattern + '_'.repeat(count - pattern.length);
+          pattern += '_'.repeat(count - pattern.length);
         }
       }
       // setLetterValue(pattern);
@@ -117,7 +117,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
         // reset
         handleReset();
       } else if (value) {
-        for (var i = 0; i < value.length; i++) {
+        for (let i = 0; i < value.length; i++) {
           const current = letterBoxRefs.current[i];
           if (current && value.charAt(i) !== '_') current.value = value.charAt(i);
         }
@@ -146,7 +146,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
       e.preventDefault();
-      const keyCode = e.keyCode;
+      const { keyCode } = e;
       const keyValue = e.key;
       const id = Number(e.currentTarget.id);
       if (keyCode === 37) {

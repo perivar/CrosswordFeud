@@ -79,7 +79,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   constructor(props: ICrosswordProps) {
     super(props);
-    const dimensions = this.props.data.dimensions;
+    const { dimensions } = this.props.data;
 
     this.columns = dimensions.cols;
     this.rows = dimensions.rows;
@@ -175,7 +175,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   // called when cell is selected (by click or programtically focused)
   onSelect(x: number, y: number): void {
-    const cellInFocus = this.state.cellInFocus;
+    const { cellInFocus } = this.state;
     const clue = cluesFor(this.clueMap, x, y);
     const focusedClue = this.clueInFocus();
     let newDirection: Direction;
@@ -396,7 +396,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     // const gridOffsetTop = $grid.offsetTop;
     // const gridOffsetHeight = $grid.offsetHeight;
 
-    const scrollY = window.scrollY;
+    const { scrollY } = window;
 
     fastdom.mutate(() => {
       // Clear previous state
@@ -463,7 +463,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   focusPreviousClue(): void {
     const i = this.indexOfClueInFocus();
-    const entries = this.props.data.entries;
+    const { entries } = this.props.data;
 
     if (i !== -1) {
       const newClue = entries[i === 0 ? entries.length - 1 : i - 1];
@@ -473,7 +473,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   focusNextClue(): void {
     const i = this.indexOfClueInFocus();
-    const entries = this.props.data.entries;
+    const { entries } = this.props.data;
 
     if (i !== -1) {
       const newClue = entries[i === entries.length - 1 ? 0 : i + 1];
@@ -721,9 +721,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   hasSolutions(): boolean {
     if (!!this.props.data.entries && this.props.data.entries.length > 0) {
       return 'solution' in this.props.data.entries[0];
-    } else {
-      return false;
     }
+    return false;
   }
 
   isHighlighted(x: number, y: number): boolean {

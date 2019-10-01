@@ -144,6 +144,6 @@ export const useOdata = ({ top = 20, skip = 0, filters, orderBy, count = false }
 	};
 	*/
 
-  //return { queryString, queryObject, state, setState, setTop, setSkip, setFilters, setOrderBy };
+  // return { queryString, queryObject, state, setState, setTop, setSkip, setFilters, setOrderBy };
   return { queryString, queryObject, state, setState };
 };

@@ -59,5 +59,5 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
 
     // Finally update previousProps with current props for next hook call
     latestProps.current = props;
-  }); //, [name, props]);
+  }); // , [name, props]);
 }

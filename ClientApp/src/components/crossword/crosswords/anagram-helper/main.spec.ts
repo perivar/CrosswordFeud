@@ -5,7 +5,8 @@ import { AnagramHelper } from './main';
 jest.mock('../../svgs/close.svg', () => 'Close');
 
 jest.mock('react', () => ({
-  Component: function Component() {}
+  Component: function Component() {},
+  PureComponent: function PureComponent() {}
 }));
 
 jest.mock('react-dom', () => ({

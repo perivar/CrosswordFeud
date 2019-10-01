@@ -403,7 +403,7 @@ const initialCrosswordState: ICrosswordContainerState = {
 
 export default function configureStore() {
   // : Store<IStoreState>
-  const rootReducer = combineReducers(reducers); //<IStoreState>
+  const rootReducer = combineReducers(reducers); // <IStoreState>
   return createStore<IStoreState, any, any, any>(
     rootReducer,
     { crossword: initialCrosswordState },

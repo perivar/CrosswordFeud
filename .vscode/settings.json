@@ -38,6 +38,9 @@
       "autoFix": true
     }
   ],
+  "eslint.workingDirectories": [
+    { "directory": "ClientApp", "changeProcessCWD": true }
+  ],
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,
@@ -51,7 +54,5 @@
   "backtix.placeholders": {
     "active": true,
     "text": "Add placeholder."
-  },
-  "prettier.eslintIntegration": true,
-  "prettier.stylelintIntegration": true
+  }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
@@ -81,14 +80,12 @@ const getErrorMessage = (error: any) => {
     // that falls out of the range of 2xx
     if (error.response.status === 401) {
       return 'No access';
-    } else {
-      return JSON.stringify(error.response.data, null, 0);
     }
-  } else {
-    // The request was made but no response was received or
-    // something happened in setting up the request that triggered an Error
-    return error.message;
+    return JSON.stringify(error.response.data, null, 0);
   }
+  // The request was made but no response was received or
+  // something happened in setting up the request that triggered an Error
+  return error.message;
 };
 
 const authHeader = () => {
@@ -97,21 +94,20 @@ const authHeader = () => {
 
   if (user && user.token) {
     return {
-      Authorization: 'Bearer ' + user.token,
+      Authorization: `Bearer ${user.token}`,
       'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
     };
-  } else {
-    return {};
   }
+  return {};
 };
 
 const getUrlUsingTableState = (tableState: ExtendedTableState) => {
   let url = '';
   if (tableState.word) {
     if (tableState.pattern) {
-      url = "/odata/Words/Synonyms(Word='" + tableState.word + "', Pattern='" + tableState.pattern + "')";
+      url = `/odata/Words/Synonyms(Word='${tableState.word}', Pattern='${tableState.pattern}')`;
     } else {
-      url = "/odata/Words/Synonyms(Word='" + tableState.word + "')";
+      url = `/odata/Words/Synonyms(Word='${tableState.word}')`;
     }
   } else {
     url = '/odata/Words/';
@@ -119,7 +115,7 @@ const getUrlUsingTableState = (tableState: ExtendedTableState) => {
   return url;
 };
 
-//------------------------------------------------
+// ------------------------------------------------
 export default function TableExample3(props: DictionaryProps & DictionaryDispatchProps) {
   const config = { apiUrl: process.env.REACT_APP_API };
 
@@ -170,7 +166,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         clonedRow.value = newValue;
 
         const editParams: AxiosRequestConfig = {
-          url: baseUrl + '/api/words/' + renderProps.uniqueRowId,
+          url: `${baseUrl}/api/words/${renderProps.uniqueRowId}`,
           method: 'PUT',
           data: JSON.stringify(clonedRow),
           responseType: 'json', // this is for parsing received data
@@ -220,15 +216,15 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
 
       let dayString = day.toString();
       if (day < 10) {
-        dayString = '0' + day;
+        dayString = `0${day}`;
       }
 
       let monthString = month.toString();
       if (month < 10) {
-        monthString = '0' + month;
+        monthString = `0${month}`;
       }
-      var date = dayString + '/' + monthString + '/' + year;
 
+      const date = `${dayString}/${monthString}/${year}`;
       return <>{date}</>;
     };
     // renderDateFormat.displayName = 'DateFormat';
@@ -272,10 +268,10 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
     const renderDeleteButton = (renderProps: ActionButtonProps) => {
       const handleOnDeleteClick = () => {
         const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
-        console.log('delete: ' + ids);
+        console.log(`delete: ${ids}`);
 
         const deleteParams: AxiosRequestConfig = {
-          url: baseUrl + '/api/words/delete',
+          url: `${baseUrl}/api/words/delete`,
           method: 'DELETE',
           data: JSON.stringify(ids),
           responseType: 'json', // this is for parsing received data
@@ -313,9 +309,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         label: 'Slett',
         confirmLabel: 'Bekreft sletting',
         key: 'deleteRows',
-        disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
-          ? false
-          : true,
+        disabled: !Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id]),
         handleOnClick: handleOnDeleteClick
       });
 
@@ -325,16 +319,14 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
     const renderDisconnectButton = (renderProps: ActionButtonProps) => {
       const handleOnDisconnectClick = () => {
         const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
-        console.log('disconnect: ' + ids);
+        console.log(`disconnect: ${ids}`);
       };
       const disconnectButton = BulmaConfirmButton({
         type: 'warning',
         label: 'Koble fra',
         confirmLabel: 'Bekreft koble fra',
         key: 'disconnectRows',
-        disabled: Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id])
-          ? false
-          : true,
+        disabled: !Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id]),
         handleOnClick: handleOnDisconnectClick
       });
 
@@ -389,17 +381,17 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
   // read the passed properties
   const { authentication, history, location } = props;
 
-	// parse the query parameters
-	// const { history: routerHistory, location } = useReactRouter();
-	const query = queryString.parse(location.search);
+  // parse the query parameters
+  // const { history: routerHistory, location } = useReactRouter();
+  const query = queryString.parse(location.search);
 
   // use redux store
-	// const authentication = useSelector((state: IStoreState) => state.authentication);
-	
+  // const authentication = useSelector((state: IStoreState) => state.authentication);
+
   // redirect to login if we don't have the auth-token
   if (!authentication.logon.token) {
-		// http://localhost:3000/login
-		history.push('/login');
+    // http://localhost:3000/login
+    history.push('/login');
     // routerHistory.push('/login');
   }
 
@@ -454,11 +446,15 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
   useEffect(() => {
     // console.log('useEffect() - tableState has changed');
     const url = getUrlUsingTableState(tableState);
-		setUrl(url);
+    setUrl(url);
 
-		// update the url		
-		// routerHistory.push(`${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
-		history.push(`${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
+    // update the url
+    // routerHistory.push(`${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${tableState.pattern ? tableState.pattern : ''}`)
+    history.push(
+      `${location.pathname}?word=${tableState.word ? tableState.word : ''}&pattern=${
+        tableState.pattern ? tableState.pattern : ''
+      }`
+    );
   }, [tableState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // debug what has changed between renders
@@ -500,27 +496,24 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
               bokstaver
             </p>
           );
-        } else {
-          return (
-            <p>
-              Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med bokstavene {tableState.pattern}
-            </p>
-          );
         }
-      } else {
         return (
           <p>
-            Fant <strong>{numberOfRows}</strong> synonym til {tableState.word}
+            Fant <strong>{numberOfRows}</strong> synonym til {tableState.word} med bokstavene {tableState.pattern}
           </p>
         );
       }
-    } else {
       return (
         <p>
-          Fant <strong>{numberOfRows}</strong> ord
+          Fant <strong>{numberOfRows}</strong> synonym til {tableState.word}
         </p>
       );
     }
+    return (
+      <p>
+        Fant <strong>{numberOfRows}</strong> ord
+      </p>
+    );
   }, []);
 
   const bulmaTable = BulmaTable({
@@ -536,18 +529,18 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
     url,
     sidePagination: 'server',
     sortOrder: 'desc',
-    queryParams: queryParams,
+    queryParams,
     responseHandler: res => {
       return {
         total: res['@odata.count'],
         rows: res.value
       };
     },
-    actionButtons: actionButtons,
+    actionButtons,
     previousText: 'Forrige',
     nextText: 'Neste',
     rowsPerPageText: 'rader på hver side',
-    renderShowing: renderShowing,
+    renderShowing,
     findInText: 'Finn',
     searchText: 'Søk',
     elementsText: 'treff',
@@ -562,7 +555,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
 
   return (
     <>
-		{/* <pre className="has-text-left">{JSON.stringify(parsed, null, 2)}</pre> */}
+      {/* <pre className="has-text-left">{JSON.stringify(parsed, null, 2)}</pre> */}
       <form onSubmit={handleSearchSubmit}>
         <div className="field">
           <label className="label" htmlFor="searchWord">
@@ -590,7 +583,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
             baseUrl={baseUrl}
             headers={authHeader()}
             queryHandler={word => {
-              return 'api/words/' + encodeURIComponent(word);
+              return `api/words/${encodeURIComponent(word)}`;
             }}
             responseHandler={res => {
               return res.data;

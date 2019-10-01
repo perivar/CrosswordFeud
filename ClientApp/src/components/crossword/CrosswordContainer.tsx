@@ -41,9 +41,9 @@ class CrosswordContainer extends Component<any, ICrosswordContainerState> {
 
 const mapStateToProps = (state: IStoreState): ICrosswordContainerState => {
   const { crossword } = state;
-  const data = crossword.data;
-  const loading = crossword.loading;
-  const error = crossword.error;
+  const { data } = crossword;
+  const { loading } = crossword;
+  const { error } = crossword;
   return {
     data,
     loading,

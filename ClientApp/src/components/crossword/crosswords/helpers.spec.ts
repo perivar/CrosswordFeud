@@ -27,7 +27,7 @@ const stubCellWithValue = (value: string): ICell => ({
   isEditable: false,
   isError: false,
   isAnimating: false,
-  value: value
+  value
 });
 
 const stubClue = (options: any): IClue => ({

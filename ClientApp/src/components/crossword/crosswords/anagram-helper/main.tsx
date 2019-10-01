@@ -118,12 +118,11 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
   entries(): ICluePreview[] {
     const cells = cellsForClue(this.props.entries, this.props.focusedEntry);
 
-    return cells.map((coords: IPosition) =>
-      Object.assign({}, this.props.grid[coords.x][coords.y], {
-        key: `${coords.x},${coords.y}`,
-        solved: false
-      })
-    );
+    return cells.map((coords: IPosition) => ({
+      ...this.props.grid[coords.x][coords.y],
+      key: `${coords.x},${coords.y}`,
+      solved: false
+    }));
   }
 
   render() {

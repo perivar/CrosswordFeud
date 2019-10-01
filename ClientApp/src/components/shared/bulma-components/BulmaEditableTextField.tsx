@@ -99,17 +99,16 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
         </div>
       </form>
     );
-  } else {
-    return (
-      // <button type="button" className="button is-text is-editable" onClick={onEditBegin}>
-      //   {value}
-      // </button>
-      // eslint-disable-next-line jsx-a11y/anchor-is-valid
-      <a href="#" className="is-editable is-vcentered" onClick={handleClick}>
-        {value ? value : <i>Empty</i>}
-      </a>
-    );
   }
+  return (
+    // <button type="button" className="button is-text is-editable" onClick={onEditBegin}>
+    //   {value}
+    // </button>
+    // eslint-disable-next-line jsx-a11y/anchor-is-valid
+    <a href="#" className="is-editable is-vcentered" onClick={handleClick}>
+      {value || <i>Empty</i>}
+    </a>
+  );
 };
 
 export const BulmaEditableTextField = EditableTextField;

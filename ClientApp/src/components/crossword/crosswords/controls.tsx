@@ -15,8 +15,8 @@ export interface IControlProps {
 
 class Controls extends PureComponent<IControlProps> {
   render(): React.ReactNode {
-    const hasSolutions = this.props.hasSolutions;
-    const clueInFocus = this.props.clueInFocus;
+    const { hasSolutions } = this.props;
+    const { clueInFocus } = this.props;
 
     const controls = {
       clue: [] as React.ReactNode[],

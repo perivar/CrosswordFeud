@@ -10,7 +10,7 @@ export interface IGridProps {
   rows: number;
   columns: number;
   cells: IGrid;
-  separators: ISeparatorMap; //Record<string, ISeparatorDescription>,
+  separators: ISeparatorMap; // Record<string, ISeparatorDescription>,
   crossword: Crossword;
   focusedCell?: IPosition;
   ref: React.RefObject<ICell>;

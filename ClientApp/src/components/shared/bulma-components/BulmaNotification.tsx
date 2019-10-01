@@ -27,9 +27,8 @@ const Notification = (props: NotificationProps) => {
         {message}
       </div>
     );
-  } else {
-    return <div />;
   }
+  return <div />;
 };
 
 export const BulmaNotification = React.memo(Notification);
