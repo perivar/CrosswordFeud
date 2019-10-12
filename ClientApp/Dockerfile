@@ -18,8 +18,10 @@ FROM nginx:1.17.4-alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
+# Nginx config
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx/default.conf /etc/nginx/conf.d
+COPY nginx/gzip.conf /etc/nginx/conf.d
 
 # EXPOSE 3000 # Remember, I like to expose ports in docker-compose
 
