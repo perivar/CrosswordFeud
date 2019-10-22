@@ -44,6 +44,8 @@ const mapToOdataFilter = ({ name, operation: operand, value, dataType }: OdataFi
     case 'lessThan': {
       return `${name} lt ${dataType !== 'string' ? value : `'${value}'`}`;
     }
+
+    // no default
   }
   throw Error(`unknown operand '${operand}'`);
 };

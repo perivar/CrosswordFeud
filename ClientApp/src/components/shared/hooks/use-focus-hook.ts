@@ -4,7 +4,7 @@ export const useFocus = () => {
   const htmlElRef = useRef<HTMLElement>();
   const setFocus = () => {
     const currentEl = htmlElRef.current;
-    currentEl && currentEl.focus();
+    if (currentEl) currentEl.focus();
   };
   return [setFocus, htmlElRef] as const;
 };

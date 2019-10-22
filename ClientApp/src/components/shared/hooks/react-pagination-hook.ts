@@ -76,13 +76,13 @@ function computeVisiblePieces(activePage: number, config: Config): PaginatorPiec
   // From https://gist.github.com/keon/5380f81393ad98ec19e6
   for (let i = 1; i < maxButtons && i < numberOfPages; ) {
     if (lowerLimit > 1) {
-      lowerLimit--;
-      i++;
+      lowerLimit -= 1;
+      i += 1;
     }
 
     if (i < maxButtons && upperLimit < numberOfPages) {
-      upperLimit++;
-      i++;
+      upperLimit += 1;
+      i += 1;
     }
   }
 

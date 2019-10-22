@@ -82,7 +82,7 @@ module.exports = {
 		'react/destructuring-assignment': 'off',
     'react/no-access-state-in-setstate': 'warn',
 		'react/no-array-index-key': 'warn',
-		'react/static-property-placement': 'warn',
+		'react/static-property-placement': ['warn', 'static public field'],
 		'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],		
 
     /**

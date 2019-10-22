@@ -569,7 +569,7 @@ const descSortData = (data: SortableTableData, key: string): SortableTableData =
 
 const sortData = (data: SortableTableData, columns: SortableTableColumn[], sortings: string[]): SortableTableData => {
   let sortedData = data;
-  for (const i in sortings) {
+  for (let i = 0; i < sortings.length; i++) {
     const sorting = sortings[i];
     const column = columns[i];
     const { key } = columns[i];
@@ -588,6 +588,8 @@ const sortData = (data: SortableTableData, columns: SortableTableColumn[], sorti
           sortedData = ascSortData(sortedData, key);
         }
         break;
+
+      // no default
     }
   }
   return sortedData;
@@ -612,6 +614,7 @@ const nextSortingState = (state: SortingType): SortingType => {
     case 'desc':
       next = 'asc';
       break;
+    default:
     case 'asc':
       next = 'both';
       break;

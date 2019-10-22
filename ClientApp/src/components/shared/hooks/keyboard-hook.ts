@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 export function useKeyboardEvent(key: string, callback: Function) {
   useEffect(() => {
-    const downHandler = function(event: KeyboardEvent) {
+    const downHandler = (event: KeyboardEvent) => {
       if (event.key === key) {
         callback();
       }

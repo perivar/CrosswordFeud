@@ -184,11 +184,11 @@ export function stateReducer(state: IState, action: Actions): IState {
 
 const isValidASPCoreIdentityPassword = (password: string): boolean => {
   // https://stackoverflow.com/questions/48635152/regex-for-default-asp-net-core-identity-password
-  // if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$/.test(password)) {
-  //   return true;
-  // }
-  // return false;
-  return true;
+  if (/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$^+=!*()@%&]).{8,}$/.test(password)) {
+    return true;
+  }
+  return false;
+  // return true;
 };
 
 export default function ForgottenPasswordComponent(props: ForgottenPasswordProps & ForgottenPasswordDispatchProps) {

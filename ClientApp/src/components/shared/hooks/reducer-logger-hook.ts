@@ -4,7 +4,7 @@ import { useEffect, useReducer, useRef, useMemo } from 'react';
 
 // We are going to borrow a concept from functional programming called higher order functions and replace our dispatch function with a custom one.
 function withLogger(dispatch: any): any {
-  return function(action: any) {
+  return (action: any) => {
     console.groupCollapsed('Action Type:', action.type);
     return dispatch(action);
   };

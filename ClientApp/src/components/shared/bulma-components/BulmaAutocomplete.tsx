@@ -282,6 +282,8 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
         </div>
       );
     }
+
+    return <></>;
   }, [handleClick, handleNonFoundClick, notFound, state]);
 
   return (
