@@ -293,6 +293,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
                 if (nonDeletedRows.length > 0) {
                   return nonDeletedRows;
                 }
+                return [];
               })
             );
             console.log('successfully deleted row(s): ');
