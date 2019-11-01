@@ -2,6 +2,7 @@ import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import thunk from 'redux-thunk';
 import { logger } from './logger';
+import { jwt } from '../components/auth/middleware';
 
 import forecastReducer from '../components/forecast/ducks/reducers';
 import alertReducer from '../components/alert/ducks/reducers';
@@ -401,15 +402,30 @@ const initialCrosswordState: ICrosswordContainerState = {
   error: ''
 };
 
-export default function configureStore() {
+const configureStore = () => {
   // : Store<IStoreState>
   const rootReducer = combineReducers(reducers); // <IStoreState>
-  return createStore<IStoreState, any, any, any>(
+
+  // https://stackoverflow.com/questions/35305661/where-to-write-to-localstorage-in-a-redux-app
+  const persistedState = localStorage.getItem('reduxState') ? JSON.parse(localStorage.getItem('reduxState')!) : {};
+
+  const store = createStore<IStoreState, any, any, any>(
     rootReducer,
-    { crossword: initialCrosswordState },
-    composeWithDevTools(applyMiddleware(thunk, logger))
+    {
+      ...persistedState,
+      crossword: initialCrosswordState // always overwrite the crossword elements with the initial state
+    },
+    composeWithDevTools(applyMiddleware(jwt, thunk, logger))
   );
-}
+
+  store.subscribe(() => {
+    localStorage.setItem('reduxState', JSON.stringify(store.getState()));
+  });
+
+  return store;
+};
+
+export default configureStore;
 
 export interface IStoreState {
   alert: IAlertState;

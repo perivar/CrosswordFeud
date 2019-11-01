@@ -17,6 +17,11 @@ export enum UserActionTypes {
 
   LOGOUT = 'USERS_LOGOUT',
 
+  INVALID_TOKEN = 'INVALID_TOKEN',
+  REFRESHING_TOKEN = 'REFRESHING_TOKEN',
+  TOKEN_REFRESHED = 'TOKEN_REFRESHED',
+  SAVE_TOKENS = 'SAVE_TOKENS',
+
   GETALL_REQUEST = 'USERS_GETALL_REQUEST',
   GETALL_SUCCESS = 'USERS_GETALL_SUCCESS',
   GETALL_FAILURE = 'USERS_GETALL_FAILURE',
@@ -45,6 +50,25 @@ interface LoginFailureAction extends Action {
 // logout()
 interface LogoutAction extends Action {
   type: typeof UserActionTypes.LOGOUT;
+}
+
+// token
+interface InvalidTokenAction extends Action {
+  type: typeof UserActionTypes.INVALID_TOKEN;
+}
+
+interface RefreshingTokenAction extends Action {
+  type: typeof UserActionTypes.REFRESHING_TOKEN;
+}
+
+interface TokenRefreshedAction extends Action {
+  type: typeof UserActionTypes.TOKEN_REFRESHED;
+}
+
+interface SaveTokensAction extends Action {
+  type: typeof UserActionTypes.SAVE_TOKENS;
+  token: string;
+  refreshToken: string;
 }
 
 // register(user: IUser)
@@ -103,6 +127,10 @@ export type UserActions =
   | LoginSuccessAction
   | LoginFailureAction
   | LogoutAction
+  | InvalidTokenAction
+  | RefreshingTokenAction
+  | TokenRefreshedAction
+  | SaveTokensAction
   | RegisterRequestAction
   | RegisterSuccessAction
   | RegisterFailureAction

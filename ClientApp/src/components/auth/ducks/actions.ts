@@ -126,10 +126,44 @@ function _delete(username: string) {
   };
 }
 
+const saveTokens = (token: string, refreshToken: string) => {
+  return {
+    type: 'SAVE_TOKENS',
+    token,
+    refreshToken
+  };
+};
+
+const refreshToken = (token: string, refreshToken: string) => (dispatch: any) => {
+  return userService
+    .refreshToken(token, refreshToken)
+    .then(tokens => {
+      dispatch(saveTokens(tokens.token, tokens.refreshToken));
+    })
+    .catch(error => {
+      dispatch(alertActions.error(error.toString()));
+    });
+};
+
+// function refreshToken(token: string, refreshToken: string) {
+//   return (dispatch: any) => {
+//     userService.refreshToken(token, refreshToken);
+//     // .then(
+//     //   (user: ILogon) => {
+//     //     dispatch(alertActions.success('Refreshed succesfully'));
+//     //   },
+//     //   (error: any) => {
+//     //     dispatch(alertActions.error(error.toString()));
+//     //   }
+//     // );
+//   };
+// }
+
 export const userActions = {
   login,
   logout,
   register,
   getAll,
-  delete: _delete
+  delete: _delete,
+  refreshToken
 };

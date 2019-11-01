@@ -51,6 +51,10 @@ export interface IAuthState {
   loggedIn: boolean;
   logon: ILogon;
   logonUserName: string;
+  token: string;
+  refreshToken: string;
+  tokenIsValid: boolean;
+  pendingRefreshingToken: boolean | null;
 }
 
 export interface IUser {
@@ -80,6 +84,7 @@ export interface ILogon {
   user: IUser;
   claims: IClaim[];
   token: string;
+  refreshToken: string;
 }
 
 export interface ASPCoreIdentityErrors {

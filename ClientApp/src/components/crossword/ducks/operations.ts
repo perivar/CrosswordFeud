@@ -1,3 +1,5 @@
+import { ILogon } from '../../auth/types';
+
 // ducks/operations.ts
 // Here, we define any logic surrounding our actions and side effects, including async logic.
 // If an action has no surrounding logic, then we simply forward them as is
@@ -6,13 +8,12 @@ const config = { apiUrl: process.env.REACT_APP_API };
 
 function authHeader(): Headers {
   // return authorization header with jwt token
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
   if (user && user.token) {
-    return { Authorization: 'Bearer ' + user.token } as any;
-  } else {
-    return {} as any;
+    return { Authorization: `Bearer ${user.token}` } as any;
   }
+  return {} as any;
 }
 
 function handleResponse(response: any) {

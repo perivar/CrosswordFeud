@@ -106,6 +106,7 @@ module.exports = {
 		'no-else-return': 'warn',
 		'no-unneeded-ternary': 'warn',
 		'no-restricted-syntax': 'warn',
+		'no-cond-assign': 'warn',
 		'vars-on-top': 'warn',
 		'prefer-template': 'warn',
 		'prefer-object-spread': 'warn',

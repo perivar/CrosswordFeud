@@ -61,8 +61,6 @@ export interface ICrosswordState {
 }
 
 class Crossword extends Component<ICrosswordProps, ICrosswordState> {
-  static defaultProps: ICrosswordProps;
-
   // ref variables
   private game: React.RefObject<HTMLDivElement>;
   private stickyClueWrapper: React.RefObject<HTMLDivElement>;
@@ -76,6 +74,8 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   private clueMap: IClueMap;
   private returnPosition: number;
   private gridHeightIsSet: boolean;
+
+  static defaultProps: ICrosswordProps;
 
   constructor(props: ICrosswordProps) {
     super(props);
@@ -806,9 +806,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 }
 
 Crossword.defaultProps = {
-  onMove: () => {}, // move: IMove
-  loadGrid: (id: string) => loadGridState(id),
-  saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid),
   data: {
     id: '',
     number: 0,
@@ -822,7 +819,10 @@ Crossword.defaultProps = {
     crosswordType: 'quick',
     pdf: '',
     instructions: ''
-  }
+  }, // move: IMove
+  loadGrid: (id: string) => loadGridState(id),
+  onMove: () => {},
+  saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid)
 };
 
 export default Crossword;

@@ -7,8 +7,26 @@ import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from '../types'
 const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
 const initialAuthState: IAuthState = user
-  ? { loggingIn: false, loggedIn: true, logon: user, logonUserName: '' }
-  : { loggingIn: false, loggedIn: false, logon: user, logonUserName: '' };
+  ? {
+      loggingIn: false,
+      loggedIn: true,
+      logon: user,
+      logonUserName: user.user ? user.user.username : '',
+      token: user.token,
+      refreshToken: '',
+      tokenIsValid: false,
+      pendingRefreshingToken: null
+    }
+  : {
+      loggingIn: false,
+      loggedIn: false,
+      logon: user,
+      logonUserName: '',
+      token: '',
+      refreshToken: '',
+      tokenIsValid: false,
+      pendingRefreshingToken: null
+    };
 
 const authenticationReducer = function authentication(state = initialAuthState, action: UserActions): IAuthState {
   switch (action.type) {
@@ -21,6 +39,8 @@ const authenticationReducer = function authentication(state = initialAuthState, 
     case UserActionTypes.LOGIN_SUCCESS:
       return {
         ...state,
+        loggingIn: false,
+        logonUserName: action.user.user.username,
         loggedIn: true,
         logon: action.user
       };
@@ -34,6 +54,31 @@ const authenticationReducer = function authentication(state = initialAuthState, 
         ...state,
         loggingIn: false
       };
+
+    case UserActionTypes.INVALID_TOKEN:
+      return {
+        ...state,
+        tokenIsValid: false
+      };
+    case UserActionTypes.REFRESHING_TOKEN:
+      return {
+        ...state,
+        pendingRefreshingToken: true,
+        tokenIsValid: false
+      };
+    case UserActionTypes.TOKEN_REFRESHED:
+      return {
+        ...state,
+        pendingRefreshingToken: null,
+        tokenIsValid: true
+      };
+    case UserActionTypes.SAVE_TOKENS:
+      return {
+        ...state,
+        token: action.token,
+        refreshToken: action.refreshToken
+      };
+
     default:
       return state;
   }

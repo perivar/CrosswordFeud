@@ -12,7 +12,7 @@ import configureStore from './state/store';
 const baseUrl = document.getElementsByTagName('base')[0].getAttribute('href') as string;
 const rootElement = document.getElementById('root');
 
-const store = configureStore();
+export const store = configureStore();
 
 ReactDOM.render(
   <Provider store={store}>
