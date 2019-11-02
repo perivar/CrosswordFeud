@@ -147,7 +147,7 @@ function refreshToken(token: string, refreshToken: string) {
 
   // note the refresh is a POST call but with query parameters
   return fetch(
-    `${config.apiUrl}/api/Account/Refresh?token=${encodedToken}&refreshToken=${encodedRefreshToken}`,
+    `${config.apiUrl}/api/Account/RefreshAccessToken?token=${encodedToken}&refreshToken=${encodedRefreshToken}`,
     requestOptions
   ).then(handleResponse);
 }

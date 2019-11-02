@@ -135,13 +135,15 @@ const usersReducer = function users(state = initialUserState, action: UserAction
     case UserActionTypes.GETALL_REQUEST:
       return {
         ...state,
-        loading: true
+        loading: true,
+        error: ''
       };
     case UserActionTypes.GETALL_SUCCESS:
       return {
         ...state,
         loading: false,
-        items: action.users
+        items: action.users,
+        error: ''
       };
     case UserActionTypes.GETALL_FAILURE:
       return {
@@ -154,13 +156,15 @@ const usersReducer = function users(state = initialUserState, action: UserAction
       // add 'deleting:true' property to user being deleted
       return {
         ...state,
-        items: state.items.map((user: IUser) => (user.id === action.id ? { ...user, deleting: true } : user))
+        items: state.items.map((user: IUser) => (user.id === action.id ? { ...user, deleting: true } : user)),
+        error: ''
       };
     case UserActionTypes.DELETE_SUCCESS:
       // remove deleted user from state
       return {
         ...state,
-        items: state.items.filter((user: IUser) => user.id !== action.id)
+        items: state.items.filter((user: IUser) => user.id !== action.id),
+        error: ''
       };
     case UserActionTypes.DELETE_FAILURE:
       // remove 'deleting:true' property and add 'deleteError:[error]' property to user
