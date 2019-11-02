@@ -1,12 +1,13 @@
 import { userActions } from './ducks/actions';
 import { UserActionTypes } from './ducks/types';
+import { IStoreState } from '../../state/store';
 
 let buffer: any[] = [];
 
 export const jwt = (store: any) => (next: any) => (action: any) => {
   buffer.push(action);
   if (action.type === 'INVALID_TOKEN') {
-    const theStore = store.getState();
+    const theStore: IStoreState = store.getState();
     if (
       theStore.authentication &&
       theStore.authentication.logon &&

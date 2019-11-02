@@ -38,7 +38,7 @@ function login(username: string, password: string) {
 }
 
 function logout(): UserActions {
-  userService.logout();
+  // userService.logout();
   return { type: UserActionTypes.LOGOUT };
 }
 
@@ -92,7 +92,7 @@ function getAll() {
       },
       (error: any) => {
         dispatch(failure(error.toString()));
-        dispatch(alertActions.error(error.toString()));
+        // dispatch(alertActions.error(error.toString()));
       }
     );
   };
@@ -126,38 +126,24 @@ function _delete(username: string) {
   };
 }
 
-const saveTokens = (token: string, refreshToken: string) => {
-  return {
-    type: 'SAVE_TOKENS',
-    token,
-    refreshToken
-  };
-};
-
 const refreshToken = (token: string, refreshToken: string) => (dispatch: any) => {
+  const success = (token: string, refreshToken: string) => {
+    return {
+      type: UserActionTypes.SAVE_TOKENS,
+      token,
+      refreshToken
+    };
+  };
+
   return userService
     .refreshToken(token, refreshToken)
     .then(tokens => {
-      dispatch(saveTokens(tokens.token, tokens.refreshToken));
+      dispatch(success(tokens.token, tokens.refreshToken));
     })
     .catch(error => {
       dispatch(alertActions.error(error.toString()));
     });
 };
-
-// function refreshToken(token: string, refreshToken: string) {
-//   return (dispatch: any) => {
-//     userService.refreshToken(token, refreshToken);
-//     // .then(
-//     //   (user: ILogon) => {
-//     //     dispatch(alertActions.success('Refreshed succesfully'));
-//     //   },
-//     //   (error: any) => {
-//     //     dispatch(alertActions.error(error.toString()));
-//     //   }
-//     // );
-//   };
-// }
 
 export const userActions = {
   login,

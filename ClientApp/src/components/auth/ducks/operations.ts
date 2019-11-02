@@ -2,25 +2,29 @@
 // Here, we define any logic surrounding our actions and side effects, including async logic.
 // If an action has no surrounding logic, then we simply forward them as is
 
-import { IUser, ILogon } from '../types';
+import { IUser } from '../types';
 import { store } from '../../../index';
+import { IStoreState } from '../../../state/store';
 
 const config = { apiUrl: process.env.REACT_APP_API };
 
+// return authorization header with jwt token
 function authHeader(): Headers {
-  // return authorization header with jwt token
-  const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
+  // const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-  if (user && user.token) {
-    return { Authorization: `Bearer ${user.token}` } as any;
+  // get redux store
+  const theStore: IStoreState = store.getState();
+
+  if (theStore.authentication && theStore.authentication.logon && theStore.authentication.logon.token) {
+    return { Authorization: `Bearer ${theStore.authentication.logon.token}` } as any;
   }
   return {} as any;
 }
 
-function logout() {
-  // remove user from local storage to log user out
-  localStorage.removeItem('user');
-}
+// function logout() {
+//   // remove user from local storage to log user out
+//   // localStorage.removeItem('authentication.logon');
+// }
 
 function handleResponse(response: any) {
   return response.text().then((text: any) => {
@@ -30,14 +34,14 @@ function handleResponse(response: any) {
       console.log(authenticate);
 
       // parse the error and error descrition
-      const regex = /(error|error_description)="(.+?)"/g;
-      let matches;
-      while ((matches = regex.exec(authenticate)) !== null) {
-        matches.forEach((match, groupIndex) => {
-          if (groupIndex === 1) console.log(`Param: ${match}`);
-          if (groupIndex === 2) console.log(`Value: ${match}`);
-        });
-      }
+      // const regex = /(error|error_description)="(.+?)"/g;
+      // let matches;
+      // while ((matches = regex.exec(authenticate)) !== null) {
+      //   matches.forEach((match, groupIndex) => {
+      //     if (groupIndex === 1) console.log(`Param: ${match}`);
+      //     if (groupIndex === 2) console.log(`Value: ${match}`);
+      //   });
+      // }
 
       const tokenExpired = response.headers.get('Token-Expired');
       const refreshExpired = response.headers.get('Refresh-Token-Expired');
@@ -51,19 +55,15 @@ function handleResponse(response: any) {
         (invalidRefreshToken && invalidRefreshToken === 'true')
       ) {
         store.dispatch({ type: 'REFRESH_EXPIRED' });
-        // } else if (response.status === 401) {
-        // auto logout if 401 response returned from api
-        // logout();
-        // window.location.reload(true);
-      } else {
-        // extract error message and convert to string
-        const error =
-          (data && data.errors && data.errors.map((a: any) => a.description).join(' ')) ||
-          (data && data.title) ||
-          data ||
-          response.statusText;
-        return Promise.reject(error);
       }
+
+      // extract error message and convert to string
+      const error =
+        (data && data.errors && data.errors.map((a: any) => a.description).join(' ')) ||
+        (data && data.title) ||
+        data ||
+        response.statusText;
+      return Promise.reject(error);
     }
 
     return data;
@@ -81,7 +81,8 @@ function login(username: string, password: string) {
     .then(handleResponse)
     .then(user => {
       // store user details and jwt token in local storage to keep user logged in between page refreshes
-      localStorage.setItem('user', JSON.stringify(user));
+      // localStorage.setItem('user', JSON.stringify(user));
+      // update - don't use localStorage directly - rather use redux with localStorage
       return user;
     });
 }
@@ -148,20 +149,11 @@ function refreshToken(token: string, refreshToken: string) {
   return fetch(
     `${config.apiUrl}/api/Account/Refresh?token=${encodedToken}&refreshToken=${encodedRefreshToken}`,
     requestOptions
-  )
-    .then(handleResponse)
-    .then(tokens => {
-      const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
-      user.token = tokens.token;
-      user.refreshToken = tokens.refreshToken;
-      localStorage.setItem('user', JSON.stringify(user));
-      return tokens;
-    });
+  ).then(handleResponse);
 }
 
 export const userService = {
   login,
-  logout,
   register,
   getAll,
   getByName,

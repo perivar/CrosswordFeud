@@ -1,4 +1,6 @@
-import { ILogon } from '../../auth/types';
+// import { ILogon } from '../../auth/types';
+import { store } from '../../../index';
+import { IStoreState } from '../../../state/store';
 
 // ducks/operations.ts
 // Here, we define any logic surrounding our actions and side effects, including async logic.
@@ -6,12 +8,15 @@ import { ILogon } from '../../auth/types';
 
 const config = { apiUrl: process.env.REACT_APP_API };
 
+// return authorization header with jwt token
 function authHeader(): Headers {
-  // return authorization header with jwt token
-  const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
+  // const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-  if (user && user.token) {
-    return { Authorization: `Bearer ${user.token}` } as any;
+  // get redux store
+  const theStore: IStoreState = store.getState();
+
+  if (theStore.authentication && theStore.authentication.logon && theStore.authentication.logon.token) {
+    return { Authorization: `Bearer ${theStore.authentication.logon.token}` } as any;
   }
   return {} as any;
 }

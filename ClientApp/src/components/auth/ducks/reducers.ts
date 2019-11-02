@@ -3,30 +3,35 @@
 
 import { UserActionTypes, UserActions } from './types';
 import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from '../types';
+// import { IStoreState } from '../../../state/store';
+// import { store } from '../../..';
 
-const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
+// const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-const initialAuthState: IAuthState = user
-  ? {
-      loggingIn: false,
-      loggedIn: true,
-      logon: user,
-      logonUserName: user.user ? user.user.username : '',
-      token: user.token,
-      refreshToken: '',
-      tokenIsValid: false,
-      pendingRefreshingToken: null
-    }
-  : {
-      loggingIn: false,
-      loggedIn: false,
-      logon: user,
-      logonUserName: '',
-      token: '',
-      refreshToken: '',
-      tokenIsValid: false,
-      pendingRefreshingToken: null
-    };
+// get redux store
+// const theStore: IStoreState = store.getState();
+
+const initialAuthState: IAuthState =
+  // Object.keys(theStore.authentication.logon).length !== 0
+  //   ? {
+  //       loggingIn: false,
+  //       loggedIn: true,
+  //       logon: theStore.authentication.logon,
+  //       logonUserName: theStore.authentication.logon.user ? theStore.authentication.logon.user.username : '',
+  //       token: theStore.authentication.logon.token,
+  //       refreshToken: theStore.authentication.logon.refreshToken,
+  //       tokenIsValid: false,
+  //       pendingRefreshingToken: null
+  //     }
+  //   :
+  {
+    loggingIn: false,
+    loggedIn: false,
+    logon: {} as ILogon,
+    logonUserName: '',
+    tokenIsValid: false,
+    pendingRefreshingToken: null
+  };
 
 const authenticationReducer = function authentication(state = initialAuthState, action: UserActions): IAuthState {
   switch (action.type) {
@@ -40,19 +45,31 @@ const authenticationReducer = function authentication(state = initialAuthState, 
       return {
         ...state,
         loggingIn: false,
-        logonUserName: action.user.user.username,
         loggedIn: true,
-        logon: action.user
+        logon: action.user,
+        logonUserName: action.user.user.username,
+        tokenIsValid: true,
+        pendingRefreshingToken: null
       };
     case UserActionTypes.LOGIN_FAILURE:
       return {
         ...state,
-        loggingIn: false
+        loggingIn: false,
+        loggedIn: false,
+        logon: {} as ILogon,
+        logonUserName: '',
+        tokenIsValid: false,
+        pendingRefreshingToken: null
       };
     case UserActionTypes.LOGOUT:
       return {
         ...state,
-        loggingIn: false
+        loggingIn: false,
+        loggedIn: false,
+        logon: {} as ILogon,
+        logonUserName: '',
+        tokenIsValid: false,
+        pendingRefreshingToken: null
       };
 
     case UserActionTypes.INVALID_TOKEN:
@@ -75,8 +92,7 @@ const authenticationReducer = function authentication(state = initialAuthState, 
     case UserActionTypes.SAVE_TOKENS:
       return {
         ...state,
-        token: action.token,
-        refreshToken: action.refreshToken
+        logon: { ...state.logon, token: action.token, refreshToken: action.refreshToken }
       };
 
     default:
@@ -84,7 +100,11 @@ const authenticationReducer = function authentication(state = initialAuthState, 
   }
 };
 
-const initialRegisterState: IRegisterState = { user: user.user, submitted: false };
+const initialRegisterState: IRegisterState = {
+  // user: Object.keys(theStore.authentication.logon).length !== 0 ? theStore.authentication.logon.user : ({} as IUser),
+  user: {} as IUser,
+  submitted: false
+};
 
 const registrationReducer = function registration(state = initialRegisterState, action: UserActions): IRegisterState {
   switch (action.type) {

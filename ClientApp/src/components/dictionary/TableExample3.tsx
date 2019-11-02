@@ -24,7 +24,9 @@ import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
 import LetterBoxes from './LetterBoxes';
 import { DictionaryProps, DictionaryDispatchProps } from './DictionaryContainer';
-import { ILogon } from '../auth/types';
+// import { ILogon } from '../auth/types';
+import { IStoreState } from '../../state/store';
+import { store } from '../..';
 // import { useDependenciesDebugger } from '../shared/hooks/dependency-debugger-hook';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
@@ -90,16 +92,18 @@ const getErrorMessage = (error: any) => {
 };
 
 const authHeader = () => {
-  // return authorization header with jwt token
-  const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
+  // const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
 
-  if (user && user.token) {
+  // get redux store
+  const theStore: IStoreState = store.getState();
+
+  if (theStore.authentication && theStore.authentication.logon && theStore.authentication.logon.token) {
     return {
-      Authorization: `Bearer ${user.token}`,
+      Authorization: `Bearer ${theStore.authentication.logon.token}`,
       'Content-Type': 'application/json;charset=UTF-8' // this is for sending data
-    };
+    } as any;
   }
-  return {};
+  return {} as any;
 };
 
 const getUrlUsingTableState = (tableState: ExtendedTableState) => {

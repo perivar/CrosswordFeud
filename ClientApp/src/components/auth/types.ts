@@ -51,8 +51,6 @@ export interface IAuthState {
   loggedIn: boolean;
   logon: ILogon;
   logonUserName: string;
-  token: string;
-  refreshToken: string;
   tokenIsValid: boolean;
   pendingRefreshingToken: boolean | null;
 }
