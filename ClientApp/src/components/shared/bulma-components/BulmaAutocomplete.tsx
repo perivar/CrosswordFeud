@@ -1,5 +1,5 @@
 import React, { useState, memo, useCallback, useEffect } from 'react';
-import axios, { AxiosInstance } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import produce, { Draft } from 'immer';
 import { useDataApi } from '../hooks/data-api-hook';
 
@@ -38,8 +38,13 @@ interface BulmaAutocompleteArguments {
   headers?: any;
   queryHandler?: (word: string) => string;
   responseHandler?: (response: any) => any[];
+  requestInterceptor?: (request: any) => {};
+  requestInterceptorErrorHandler?: (error: any) => {};
+  responseInterceptor?: (response: AxiosResponse<any>) => AxiosResponse<any> | Promise<AxiosResponse<any>>;
+  responseInterceptorErrorHandler?: (error: any) => {};
 }
 
+// make a new axios instance, so that we don’t pollute the global axios object
 const axiosInstance: AxiosInstance = axios.create({});
 
 const Autocomplete = (props: BulmaAutocompleteArguments) => {
@@ -55,13 +60,24 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     baseUrl = '',
     headers,
     queryHandler,
-    responseHandler
+    responseHandler,
+    requestInterceptor,
+    requestInterceptorErrorHandler,
+    responseInterceptor,
+    responseInterceptorErrorHandler
   } = props;
 
   const [state, setState] = useState<BulmaAutocompleteState>(initialState);
 
   if (baseUrl) axiosInstance.defaults.baseURL = baseUrl;
   if (headers) axiosInstance.defaults.headers = headers;
+
+  // add interceptors if they were passed
+  if (requestInterceptor && requestInterceptorErrorHandler)
+    axiosInstance.interceptors.request.use(requestInterceptor, requestInterceptorErrorHandler);
+  if (responseInterceptor && responseInterceptorErrorHandler)
+    axiosInstance.interceptors.response.use(responseInterceptor, responseInterceptorErrorHandler);
+
   const { response, error, isLoading, setUrl: fetchData } = useDataApi({
     // isError
     axios: axiosInstance

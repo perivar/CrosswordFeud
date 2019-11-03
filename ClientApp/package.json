@@ -47,6 +47,7 @@
     "@types/react-router-dom": "^5.1.0",
     "@types/react-table": "^6.8.5",
     "@types/reactstrap": "^8.0.6",
+    "@types/jwt-decode": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^2.6.0",
     "@typescript-eslint/parser": "^2.6.0",
     "@welldone-software/why-did-you-render": "^3.3.8",

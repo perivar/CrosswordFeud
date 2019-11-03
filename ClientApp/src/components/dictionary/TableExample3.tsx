@@ -5,6 +5,7 @@ import '../shared/bulma-components/bulma-table.scss';
 // import { useSelector } from 'react-redux';
 import queryString from 'query-string';
 // import useReactRouter from '../shared/hooks/use-react-router';
+import jwtDecode from 'jwt-decode';
 import BulmaTable, {
   SortableTableState,
   SortableTableColumn,
@@ -27,6 +28,7 @@ import { DictionaryProps, DictionaryDispatchProps } from './DictionaryContainer'
 // import { ILogon } from '../auth/types';
 import { IStoreState } from '../../state/store';
 import { store } from '../..';
+import { UserActionTypes } from '../auth/ducks/types';
 // import { useDependenciesDebugger } from '../shared/hooks/dependency-debugger-hook';
 // import { useDataApi } from '../shared/hooks/data-api-hook';
 
@@ -48,6 +50,11 @@ interface ExtendedTableState extends SortableTableState {
   word?: string;
   pattern?: string;
 }
+
+const config = { apiUrl: process.env.REACT_APP_API };
+
+// const baseUrl = 'http://localhost:5000';
+const baseUrl = config.apiUrl;
 
 // convert QueryParams2ODataValues
 const convertQueryParamsToODataValues = (params: QueryParams): OdataValues => {
@@ -120,13 +127,94 @@ const getUrlUsingTableState = (tableState: ExtendedTableState) => {
   return url;
 };
 
+const headerType = 'Bearer';
+const refreshEndpoint = `${config.apiUrl}/api/Account/RefreshAccessToken`;
+
+const getTokens = () => {
+  // get redux store
+  const theStore: IStoreState = store.getState();
+
+  // read the tokens
+  const access = theStore.authentication.logon.token;
+  const refresh = theStore.authentication.logon.refreshToken;
+  return { access, refresh };
+};
+
+const onRefreshedToken = (response: any) => {
+  // save the tokens
+  store.dispatch({
+    type: UserActionTypes.SAVE_TOKENS,
+    token: response.data.token,
+    refreshToken: response.data.refreshToken
+  });
+};
+
+const onUnauthorized = (error: any) => {
+  console.log(error);
+};
+
+const isExpired = (access: string) => {
+  interface TokenDto {
+    foo: string;
+    exp: number;
+    iat: number;
+  }
+
+  try {
+    const expiration = jwtDecode<TokenDto>(access).exp;
+    const now = Date.now().valueOf() / 1000;
+    return now > expiration;
+  } catch {
+    return true;
+  }
+};
+
+const requestInterceptor = (request: any) => {
+  const { access, refresh } = getTokens();
+  const expired = isExpired(access);
+  if (expired) {
+    store.dispatch({ type: UserActionTypes.REFRESHING_TOKEN });
+    return axios
+      .post(refreshEndpoint, {
+        token: access,
+        refreshToken: refresh
+      })
+      .then(response => {
+        store.dispatch({ type: UserActionTypes.TOKEN_REFRESHED });
+        const access = response.data.token;
+        request.headers.Authorization = `${headerType} ${access}`;
+        onRefreshedToken(response);
+        return Promise.resolve(request);
+      });
+  }
+  if (!access || !refresh) {
+    return Promise.reject(request);
+  }
+  request.headers.Authorization = `${headerType} ${access}`;
+  return request;
+};
+
+const requestInterceptorErrorHandler = (error: any) => {
+  const { status } = error.request;
+  if (status === 401) {
+    onUnauthorized(error);
+  }
+  return Promise.reject(error);
+};
+
+const responseInterceptor = (response: any) => {
+  return response;
+};
+
+const responseInterceptorErrorHandler = (error: any) => {
+  if (error.status === 401) {
+    onUnauthorized(error);
+  }
+  return Promise.reject(error);
+};
+
 // ------------------------------------------------
 export default function TableExample3(props: DictionaryProps & DictionaryDispatchProps) {
-  const config = { apiUrl: process.env.REACT_APP_API };
-
-  // const baseUrl = 'http://localhost:5000';
-  const baseUrl = config.apiUrl;
-
   const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
   const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>('');
@@ -266,7 +354,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         render: renderDateFormat
       }
     ];
-  }, [baseUrl]);
+  }, []);
 
   // define action buttons
   const actionButtons: ActionButton[] = useMemo(() => {
@@ -382,7 +470,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         render: renderResetButton
       }
     ];
-  }, [baseUrl, columns]);
+  }, [columns]);
 
   // read the passed properties
   const { authentication, history, location } = props;
@@ -587,7 +675,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
             notFound="Fant ingen ord som passet. Vennligst prøv på nytt ..."
             mandatory
             baseUrl={baseUrl}
-            headers={authHeader()}
+            // headers={authHeader()}
             queryHandler={word => {
               return `api/words/${encodeURIComponent(word)}`;
             }}
@@ -595,6 +683,10 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
               return res.data;
             }}
             onChangeValue={handleChangeWordValue}
+            requestInterceptor={requestInterceptor}
+            requestInterceptorErrorHandler={requestInterceptorErrorHandler}
+            responseInterceptor={responseInterceptor}
+            responseInterceptorErrorHandler={responseInterceptorErrorHandler}
           />
           <p className="help">Skriv inn ordet du søker etter her</p>
         </div>

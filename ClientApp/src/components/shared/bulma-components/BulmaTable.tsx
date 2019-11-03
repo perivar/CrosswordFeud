@@ -674,6 +674,7 @@ const getCurrentDataSlice = (data: SortableTableData, activePage: number, rowsPe
 //   };
 // };
 
+// make a new axios instance, so that we don’t pollute the global axios object
 const axiosInstance: AxiosInstance = axios.create({});
 
 // https://stackoverflow.com/questions/53446020/how-to-compare-oldvalues-and-newvalues-on-react-hooks-useeffect
