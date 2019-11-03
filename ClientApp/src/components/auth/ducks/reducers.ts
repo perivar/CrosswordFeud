@@ -92,7 +92,8 @@ const authenticationReducer = function authentication(state = initialAuthState, 
     case UserActionTypes.SAVE_TOKENS:
       return {
         ...state,
-        logon: { ...state.logon, token: action.token, refreshToken: action.refreshToken }
+        logon: { ...state.logon, token: action.token, refreshToken: action.refreshToken },
+        pendingRefreshingToken: null
       };
 
     default:

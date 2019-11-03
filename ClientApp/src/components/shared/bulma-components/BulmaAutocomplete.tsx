@@ -40,7 +40,7 @@ interface BulmaAutocompleteArguments {
   responseHandler?: (response: any) => any[];
   requestInterceptor?: (request: any) => {};
   requestInterceptorErrorHandler?: (error: any) => {};
-  responseInterceptor?: (response: AxiosResponse<any>) => AxiosResponse<any> | Promise<AxiosResponse<any>>;
+  responseInterceptor?: (response: any) => AxiosResponse<any> | Promise<AxiosResponse<any>>;
   responseInterceptorErrorHandler?: (error: any) => {};
 }
 
@@ -57,7 +57,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     placeholder,
     suggestions = [],
     mandatory = true,
-    baseUrl = '',
+    baseUrl,
     headers,
     queryHandler,
     responseHandler,
@@ -73,10 +73,12 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
   if (headers) axiosInstance.defaults.headers = headers;
 
   // add interceptors if they were passed
-  if (requestInterceptor && requestInterceptorErrorHandler)
+  if (requestInterceptor && requestInterceptorErrorHandler) {
     axiosInstance.interceptors.request.use(requestInterceptor, requestInterceptorErrorHandler);
-  if (responseInterceptor && responseInterceptorErrorHandler)
+  }
+  if (responseInterceptor && responseInterceptorErrorHandler) {
     axiosInstance.interceptors.response.use(responseInterceptor, responseInterceptorErrorHandler);
+  }
 
   const { response, error, isLoading, setUrl: fetchData } = useDataApi({
     // isError
