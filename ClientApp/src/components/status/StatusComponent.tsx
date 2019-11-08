@@ -64,19 +64,19 @@ export default class StatusComponent extends PureComponent<any, ILocalState> {
     ));
     return (
       <>
-        {/* <div className="box"> */}
-        <div className="table-container">
-          <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth table-container">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Message</th>
-              </tr>
-            </thead>
-            <tbody>{messages}</tbody>
-          </table>
+        <div className="box">
+          <div className="table-container">
+            <table className="table is-bordered is-striped is-narrow is-hoverable is-fullwidth table-container">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody>{messages}</tbody>
+            </table>
+          </div>
         </div>
-        {/* </div> */}
         <BulmaButton
           type="primary"
           label="Send Status"
