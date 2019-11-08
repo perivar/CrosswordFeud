@@ -1,5 +1,5 @@
 # build environment
-FROM node:12.11.1-alpine as build
+FROM node:13.1.0-alpine as build
 
 WORKDIR /app
 
@@ -9,12 +9,12 @@ ENV PATH /app/node_modules/.bin:$PATH
 # install and cache app dependencies
 COPY package.json /app/package.json
 RUN npm install --silent
-RUN npm install react-scripts@3.1.2 -g --silent
+RUN npm install react-scripts@3.2.0 -g --silent
 COPY . /app
 RUN npm run build
 
 # production environment
-FROM nginx:1.17.4-alpine
+FROM nginx:1.17.5-alpine
 
 COPY --from=build /app/build /usr/share/nginx/html
 
