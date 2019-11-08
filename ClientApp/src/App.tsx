@@ -24,6 +24,7 @@ import { history } from './history';
 
 import './components/shared/bulma.scss';
 import { IStoreState } from './state/store';
+import StatusContainer from './components/status/StatusContainer';
 
 // Add a tool that will notify us when components update
 // if (process.env.NODE_ENV !== 'production') {
@@ -69,6 +70,7 @@ class App extends Component<any, any> {
             <PrivateRoute exact path="/" component={HomeContainer} />
             <Route path="/dictionary" component={DictionaryContainer} />
             <Route exact path="/counter" component={Counter} />
+            <Route exact path="/status" component={StatusContainer} />
             <Route exact path="/forecast" component={ForecastContainer} />
             <Route exact path="/login" component={LoginContainer} />
             <Route exact path="/register" component={RegisterContainer} />

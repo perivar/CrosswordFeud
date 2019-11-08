@@ -448,7 +448,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       const resetButton = BulmaButton({
         type: 'primary',
         label: 'Tilbakestill',
-        key: 'resetRows',
+        id: 'resetRows',
         disabled: false,
         handleOnClick: handleResetClick
       });

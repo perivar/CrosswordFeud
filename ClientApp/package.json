@@ -31,7 +31,8 @@
     "rimraf": "^3.0.0",
     "thunk": "^0.0.1",
     "use-immer": "^0.3.4",
-    "jwt-decode": "^2.2.0"
+    "jwt-decode": "^2.2.0",
+    "@aspnet/signalr": "^1.1.4"
   },
   "devDependencies": {
     "@types/chance": "^1.0.7",

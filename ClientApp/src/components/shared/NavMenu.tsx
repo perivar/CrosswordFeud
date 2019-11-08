@@ -2,77 +2,89 @@ import React, { Component } from 'react';
 import { NavLink } from 'react-router-dom';
 
 interface ILocalState {
-  collapsed: boolean;
+  active: boolean;
 }
 
 export class NavMenu extends Component<{}, ILocalState> {
   // ref variables
-  private menu: React.RefObject<HTMLDivElement>;
-  private hamburger: React.RefObject<HTMLButtonElement>;
+  // private menu: React.RefObject<HTMLDivElement>;
+  // private hamburger: React.RefObject<HTMLButtonElement>;
 
   constructor(props: any) {
     super(props);
 
-    this.menu = React.createRef();
-    this.hamburger = React.createRef();
+    // this.menu = React.createRef();
+    // this.hamburger = React.createRef();
+
+    this.state = { active: false };
   }
 
   handleNavBurgerToggle = () => {
-    if (this.hamburger.current) {
-      if (this.hamburger.current.classList.contains('is-active')) {
-        this.hamburger.current.classList.remove('is-active');
-      } else {
-        this.hamburger.current.classList.add('is-active');
-      }
-    }
+    // if (this.hamburger.current) {
+    //   if (this.hamburger.current.classList.contains('is-active')) {
+    //     this.hamburger.current.classList.remove('is-active');
+    //   } else {
+    //     this.hamburger.current.classList.add('is-active');
+    //   }
+    // }
+    // if (this.menu.current) {
+    //   if (this.menu.current.classList.contains('is-active')) {
+    //     this.menu.current.classList.remove('is-active');
+    //   } else {
+    //     this.menu.current.classList.add('is-active');
+    //   }
+    // }
 
-    if (this.menu.current) {
-      if (this.menu.current.classList.contains('is-active')) {
-        this.menu.current.classList.remove('is-active');
-      } else {
-        this.menu.current.classList.add('is-active');
-      }
-    }
+    this.setState(prevState => ({
+      active: !prevState.active
+    }));
   };
 
   handleNavBurgerClose = () => {
-    if (this.hamburger.current) {
-      if (this.hamburger.current.classList.contains('is-active')) {
-        this.hamburger.current.classList.remove('is-active');
-      }
-    }
+    // if (this.hamburger.current) {
+    //   if (this.hamburger.current.classList.contains('is-active')) {
+    //     this.hamburger.current.classList.remove('is-active');
+    //   }
+    // }
+    // if (this.menu.current) {
+    //   if (this.menu.current.classList.contains('is-active')) {
+    //     this.menu.current.classList.remove('is-active');
+    //   }
+    // }
 
-    if (this.menu.current) {
-      if (this.menu.current.classList.contains('is-active')) {
-        this.menu.current.classList.remove('is-active');
-      }
-    }
+    this.setState({ active: false });
   };
 
   public render() {
+    const { active } = this.state;
     return (
       <>
         <nav className="navbar has-shadow">
           <div className="container">
             <div className="navbar-brand">
-              <NavLink className="navbar-item" to="/">
+              <NavLink className="navbar-item" to="/" onClick={this.handleNavBurgerClose}>
                 <h4 className="title is-4">CrosswordFeud.Web</h4>
               </NavLink>
               <button
                 type="button"
-                className="navbar-burger button is-white"
+                className={`navbar-burger button is-white ${active && 'is-active'}`}
                 aria-label="menu"
                 aria-expanded="false"
                 data-target="navbarBasic"
                 onClick={this.handleNavBurgerToggle}
-                ref={this.hamburger}>
+                // ref={this.hamburger}
+              >
                 <span aria-hidden="true" />
                 <span aria-hidden="true" />
                 <span aria-hidden="true" />
               </button>
             </div>
 
-            <div id="navbarBasic" className="navbar-menu" ref={this.menu}>
+            <div
+              id="navbarBasic"
+              className={`navbar-menu ${active && 'is-active'}`}
+              // ref={this.menu}
+            >
               <div className="navbar-start">
                 <NavLink
                   className="navbar-item is-tab"
@@ -81,13 +93,13 @@ export class NavMenu extends Component<{}, ILocalState> {
                   onClick={this.handleNavBurgerClose}>
                   Dictionary
                 </NavLink>
-                <NavLink
+                {/* <NavLink
                   className="navbar-item is-tab"
                   to="/counter"
                   activeClassName="is-active"
                   onClick={this.handleNavBurgerClose}>
                   Counter
-                </NavLink>
+                </NavLink> */}
                 <NavLink
                   className="navbar-item is-tab"
                   to="/crossword"
@@ -97,11 +109,18 @@ export class NavMenu extends Component<{}, ILocalState> {
                 </NavLink>
                 <NavLink
                   className="navbar-item is-tab"
+                  to="/status"
+                  activeClassName="is-active"
+                  onClick={this.handleNavBurgerClose}>
+                  Status
+                </NavLink>
+                {/* <NavLink
+                  className="navbar-item is-tab"
                   to="/forecast"
                   activeClassName="is-active"
                   onClick={this.handleNavBurgerClose}>
                   Forecast
-                </NavLink>
+                </NavLink> */}
               </div>
               <div className="navbar-end">
                 <div className="navbar-item">
