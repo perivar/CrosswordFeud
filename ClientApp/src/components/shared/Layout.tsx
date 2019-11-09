@@ -10,12 +10,7 @@ export class Layout extends PureComponent<any, any> {
             <NavMenu />
           </div>
           <div className="hero-body">
-            <div className="container">
-              <div>{this.props.children}</div>
-            </div>
-          </div>
-          <div className="hero-foot">
-            <div className="container" />
+            <div className="container">{this.props.children}</div>
           </div>
         </section>
       </>

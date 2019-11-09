@@ -16,88 +16,90 @@ export default class HomeComponent extends React.Component<IHomeProps> {
   render() {
     const { logon, users } = this.props;
     return (
-      <div>
-        <h3 className="is-size-3">Hi {logon.user.username}!</h3>
-        <section className="section">
-          <h4 className="is-size-4">Claims</h4>
-          <div className="columns is-centered">
-            <div className="column is-narrow">
-              <table className="table is-bordered">
-                <tbody>
-                  {logon.claims.map((claim: IClaim, index: number) => (
-                    <tr key={index}>
-                      <td>{claim.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </section>
+      <>
+        <p className="title is-size-4">Hi {logon.user.username}!</p>
 
-        <section className="section">
-          <h4 className="is-size-4">All registered users</h4>
-          <div className="columns is-centered">
-            <div className="column is-narrow">
-              <table className="table is-bordered">
-                <tbody>
-                  {users.loading && (
-                    <>
-                      <tr>
-                        <td>
-                          <h3 className="title is-3 has-text-success">Loading users</h3>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td>
-                          <progress className="progress progress is-medium is-dark" max="100" />
-                        </td>
-                      </tr>
-                    </>
-                  )}
-                  {users.items && (
-                    <>
-                      <tr>
-                        <th>Id</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Phone Number</th>
-                        <th>Delete</th>
-                      </tr>
-                      {users.items.map((user: IUser, index: number) => (
-                        <tr key={index}>
-                          <td>{user.id}</td>
-                          <td>{user.username}</td>
-                          <td>{user.email}</td>
-                          <td>{user.phonenumber}</td>
-                          <td>
-                            {user.deleting ? (
-                              <span className="is-info">Deleting...</span>
-                            ) : user.deleteError ? (
-                              <span className="is-warning">{user.deleteError}</span>
-                            ) : (
-                              <button
-                                type="button"
-                                className="button is-danger"
-                                onClick={event => this.handleDeleteUser(user.username, event)}>
-                                Delete
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </>
-                  )}
-                </tbody>
-              </table>
+        <div className="panel">
+          <p className="panel-heading">Claims</p>
+          {logon.claims.map((claim: IClaim, index: number) => (
+            <div className="panel-block" key={index}>
+              <span className="panel-icon">
+                <i className="fas fa-key" aria-hidden="true" />
+              </span>
+              {claim.value}
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
 
-        <Link className="button is-info is-medium" to="/login">
-          Logout
-        </Link>
-      </div>
+        <p className="title is-size-4 has-text-dark">Users</p>
+        {users.loading && (
+          <>
+            <p className="title is-5 has-text-success">Loading users...</p>
+            <progress className="progress progress is-small is-dark" max="100" />
+          </>
+        )}
+
+        {users.items && (
+          <>
+            {users.items.map((user: IUser, index: number) => (
+              <article className="box" key={index}>
+                <p className="title is-5">{user.username}</p>
+                <div className="media">
+                  <div className="media-left">
+                    <span className="icon is-medium">
+                      <i className="fas fa-user fa-2x" />
+                    </span>
+                  </div>
+                  <div className="media-content">
+                    <div className="content">
+                      <div className="level">
+                        <div className="level-left">
+                          {user.email && (
+                            <div className="level-item">
+                              <span className="icon has-text-info">
+                                <i className="fas fa-envelope" />
+                              </span>
+                              <p>{user.email}</p>
+                            </div>
+                          )}
+                          {user.phonenumber && (
+                            <div className="level-item">
+                              <span className="icon has-text-info">
+                                <i className="fa fa-phone" />
+                              </span>
+                              <p>{user.phonenumber}</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="media-right">
+                    {user.deleting ? (
+                      <p className="has-text-info is-size-6">Deleting...</p>
+                    ) : user.deleteError ? (
+                      <p className="has-text-danger is-size-6">{user.deleteError}</p>
+                    ) : (
+                      <button
+                        type="button"
+                        className="button is-danger is-small"
+                        onClick={event => this.handleDeleteUser(user.username, event)}>
+                        Delete
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </>
+        )}
+
+        <div className="content has-text-centered">
+          <Link className="button is-info" to="/login">
+            Logout
+          </Link>
+        </div>
+      </>
     );
   }
 }

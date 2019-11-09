@@ -172,7 +172,7 @@ const usersReducer = function users(state = initialUserState, action: UserAction
       return {
         ...state,
         items: state.items.map((user: IUser) => {
-          if (user.id === action.id) {
+          if (user.username === action.username) {
             // make copy of user without 'deleting:true' property
             const { ...userCopy } = user;
             // return copy of user with 'deleteError:[error]' property
