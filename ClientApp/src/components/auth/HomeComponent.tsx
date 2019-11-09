@@ -17,13 +17,13 @@ export default class HomeComponent extends React.Component<IHomeProps> {
     const { logon, users } = this.props;
     return (
       <>
-        <p className="title is-size-4">Hi {logon.user.username}!</p>
+        <h4 className="title is-size-4 has-text-dark">Hi {logon.user.username}!</h4>
 
-        <div className="panel">
-          <p className="panel-heading">Claims</p>
+        <h4 className="title is-size-4 has-text-dark">Claims</h4>
+        <div className="list">
           {logon.claims.map((claim: IClaim, index: number) => (
-            <div className="panel-block" key={index}>
-              <span className="panel-icon">
+            <div className="list-item" key={index}>
+              <span className="icon">
                 <i className="fas fa-key" aria-hidden="true" />
               </span>
               {claim.value}
@@ -31,7 +31,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
           ))}
         </div>
 
-        <p className="title is-size-4 has-text-dark">Users</p>
+        <h4 className="title is-size-4 has-text-dark">Users</h4>
         {users.loading && (
           <>
             <p className="title is-5 has-text-success">Loading users...</p>
@@ -41,56 +41,61 @@ export default class HomeComponent extends React.Component<IHomeProps> {
 
         {users.items && (
           <>
-            {users.items.map((user: IUser, index: number) => (
-              <article className="box" key={index}>
-                <p className="title is-5">{user.username}</p>
-                <div className="media">
-                  <div className="media-left">
-                    <span className="icon is-medium">
-                      <i className="fas fa-user fa-2x" />
-                    </span>
-                  </div>
-                  <div className="media-content">
-                    <div className="content">
-                      <div className="level">
-                        <div className="level-left">
+            <div className="columns is-multiline">
+              {users.items.map((user: IUser, index: number) => (
+                <div className="column is-5-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile" key={index}>
+                  <article className="media box">
+                    <figure className="media-left">
+                      <span className="icon is-medium">
+                        <i className="fas fa-user fa-2x" />
+                      </span>
+                    </figure>
+                    <div className="media-content">
+                      <div className="content">
+                        <h5 className="title is-5">{user.username}</h5>
+                        <div className="level">
                           {user.email && (
-                            <div className="level-item">
-                              <span className="icon has-text-info">
-                                <i className="fas fa-envelope" />
-                              </span>
-                              <p>{user.email}</p>
+                            <div className="level-left">
+                              <div className="level-item">
+                                <span className="icon has-text-info">
+                                  <i className="fas fa-envelope" />
+                                </span>
+                                <p>{user.email}</p>
+                              </div>
                             </div>
                           )}
                           {user.phonenumber && (
-                            <div className="level-item">
-                              <span className="icon has-text-info">
-                                <i className="fa fa-phone" />
-                              </span>
-                              <p>{user.phonenumber}</p>
+                            <div className="level-right">
+                              <div className="level-item">
+                                <span className="icon has-text-info">
+                                  <i className="fa fa-phone" />
+                                </span>
+                                <p>{user.phonenumber}</p>
+                              </div>
                             </div>
                           )}
                         </div>
+                        {user.deleting ? (
+                          <h6 className="has-text-info is-size-6">Deleting...</h6>
+                        ) : user.deleteError ? (
+                          <h6 className="has-text-danger is-size-6">{user.deleteError}</h6>
+                        ) : (
+                          <button
+                            type="button"
+                            className="button is-danger is-outlined"
+                            onClick={event => this.handleDeleteUser(user.username, event)}>
+                            <span>Delete</span>
+                            <span className="icon is-small">
+                              <i className="fas fa-times" />
+                            </span>
+                          </button>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  <div className="media-right">
-                    {user.deleting ? (
-                      <p className="has-text-info is-size-6">Deleting...</p>
-                    ) : user.deleteError ? (
-                      <p className="has-text-danger is-size-6">{user.deleteError}</p>
-                    ) : (
-                      <button
-                        type="button"
-                        className="button is-danger is-small"
-                        onClick={event => this.handleDeleteUser(user.username, event)}>
-                        Delete
-                      </button>
-                    )}
-                  </div>
+                  </article>
                 </div>
-              </article>
-            ))}
+              ))}
+            </div>
           </>
         )}
 
