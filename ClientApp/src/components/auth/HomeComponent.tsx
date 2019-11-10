@@ -41,40 +41,52 @@ export default class HomeComponent extends React.Component<IHomeProps> {
 
         {users.items && (
           <>
-            <div className="columns is-multiline">
-              {users.items.map((user: IUser, index: number) => (
-                <div className="column is-5-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile" key={index}>
-                  <article className="media box">
-                    <figure className="media-left">
-                      <span className="icon is-medium">
-                        <i className="fas fa-user fa-2x" />
-                      </span>
-                    </figure>
-                    <div className="media-content">
-                      <div className="content">
-                        <h5 className="title is-5">{user.username}</h5>
-                        <div className="level">
-                          {user.email && (
-                            <div className="level-left">
-                              <div className="level-item">
-                                <span className="icon has-text-info">
-                                  <i className="fas fa-envelope" />
-                                </span>
-                                <p>{user.email}</p>
+            <div className="list">
+              <div className="columns is-multiline">
+                {users.items.map((user: IUser, index: number) => (
+                  <div
+                    className={
+                      index % 2
+                        ? 'list-item column is-5-tablet is-10-mobile is-offset-1-mobile'
+                        : 'list-item column is-5-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile'
+                    }
+                    key={index}>
+                    <article className="media">
+                      <figure className="media-left">
+                        <span className="icon is-medium">
+                          <i className="fas fa-user fa-2x" />
+                        </span>
+                      </figure>
+                      <div className="media-content">
+                        <div className="content">
+                          <h5 className="title is-5">{user.username}</h5>
+                          <div className="level">
+                            {user.email && (
+                              <div className="level-left">
+                                <div className="level-item">
+                                  <span className="icon has-text-info">
+                                    <i className="fas fa-envelope" />
+                                  </span>
+                                  <p>{user.email}</p>
+                                </div>
                               </div>
-                            </div>
-                          )}
-                          {user.phonenumber && (
-                            <div className="level-right">
-                              <div className="level-item">
-                                <span className="icon has-text-info">
-                                  <i className="fa fa-phone" />
-                                </span>
-                                <p>{user.phonenumber}</p>
+                            )}
+                            {user.phonenumber && (
+                              <div className="level-right">
+                                <div className="level-item">
+                                  <span className="icon has-text-info">
+                                    <i className="fa fa-phone" />
+                                  </span>
+                                  <p>{user.phonenumber}</p>
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
+                      </div>
+                    </article>
+                    <div className="columns is-centered mt-10">
+                      <div className="column has-text-centered">
                         {user.deleting ? (
                           <h6 className="has-text-info is-size-6">Deleting...</h6>
                         ) : user.deleteError ? (
@@ -92,14 +104,14 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                         )}
                       </div>
                     </div>
-                  </article>
-                </div>
-              ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </>
         )}
 
-        <div className="content has-text-centered">
+        <div className="list-item content has-text-centered">
           <Link className="button is-info" to="/login">
             Logout
           </Link>
