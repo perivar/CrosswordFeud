@@ -488,6 +488,14 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
       <nav className="level">
         <div className="level-left">
           <div className="level-item">
+            <div className="buttons is-centered">
+              {actionButtons &&
+                actionButtons.map((actionButton: ActionButton) => (
+                  <div key={actionButton.key}>{actionButton.render && actionButton.render(actionInfo)}</div>
+                ))}
+            </div>
+          </div>
+          <div className="level-item">
             {renderNumberOfRows ? (
               renderNumberOfRows(numberOfRows, tableState)
             ) : (
@@ -497,17 +505,6 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
             )}
           </div>
         </div>
-      </nav>
-      <nav className="level">
-        <div className="level-left">
-          {actionButtons &&
-            actionButtons.map((actionButton: ActionButton) => (
-              <p key={actionButton.key} className="level-item">
-                {actionButton.render && actionButton.render(actionInfo)}
-              </p>
-            ))}
-        </div>
-
         <div className="level-right">
           <div className="level-item">
             {search && (

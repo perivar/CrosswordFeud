@@ -86,22 +86,30 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                       </div>
                     </article>
                     <div className="columns is-centered mt-10">
-                      <div className="column has-text-centered">
-                        {user.deleting ? (
-                          <h6 className="has-text-info is-size-6">Deleting...</h6>
-                        ) : user.deleteError ? (
-                          <h6 className="has-text-danger is-size-6">{user.deleteError}</h6>
-                        ) : (
-                          <button
-                            type="button"
-                            className="button is-danger is-outlined"
-                            onClick={event => this.handleDeleteUser(user.username, event)}>
-                            <span>Delete</span>
+                      <div className="column">
+                        <div className="buttons is-centered">
+                          {user.deleting ? (
+                            <h6 className="has-text-info is-size-6">Deleting...</h6>
+                          ) : user.deleteError ? (
+                            <h6 className="has-text-danger is-size-6">{user.deleteError}</h6>
+                          ) : (
+                            <button
+                              type="button"
+                              className="button is-danger is-outlined"
+                              onClick={event => this.handleDeleteUser(user.username, event)}>
+                              <span className="icon is-small">
+                                <i className="fas fa-times" />
+                              </span>
+                              <span>Delete</span>
+                            </button>
+                          )}
+                          <button type="button" className="button is-outlined">
                             <span className="icon is-small">
-                              <i className="fas fa-times" />
+                              <i className="fas fa-user-circle" />
                             </span>
+                            <span>View Profile</span>
                           </button>
-                        )}
+                        </div>
                       </div>
                     </div>
                   </div>

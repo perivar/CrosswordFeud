@@ -243,7 +243,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         <>
           <button
             type="button"
-            className="button is-link is-outlined is-fullwidth"
+            className="button is-link is-outlined is-fullwidth is-small"
             value={renderProps.value}
             onClick={() => handleSynonymSearch(renderProps)}>
             {renderProps.value}
@@ -333,20 +333,25 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         header: 'Synonym',
         key: 'value',
         render: renderEditable
-        // dataProps: { className: 'align-right' }
         // dataStyle: { verticalAlign: 'middle' }
       },
       {
         header: 'Ant. Ord',
-        key: 'numberOfWords'
+        key: 'numberOfWords',
+        dataProps: { className: 'is-hidden-mobile' },
+        headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Lengde',
-        key: 'numberOfLetters'
+        key: 'numberOfLetters',
+        dataProps: { className: 'is-hidden-mobile' },
+        headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Bruker',
-        key: 'comment'
+        key: 'comment',
+        dataProps: { className: 'is-hidden-mobile' },
+        headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Dato',

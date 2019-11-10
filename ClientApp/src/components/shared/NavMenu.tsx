@@ -63,7 +63,7 @@ export class NavMenu extends Component<{}, ILocalState> {
           <div className="container">
             <div className="navbar-brand">
               <NavLink className="navbar-item" to="/" onClick={this.handleNavBurgerClose}>
-                <h4 className="title is-4">CrosswordFeud.Web</h4>
+                <h4 className="title is-4">CrosswordFeud</h4>
               </NavLink>
               <button
                 type="button"

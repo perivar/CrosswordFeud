@@ -171,7 +171,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
                 const goToFieldWidth = Math.max(4.5, pageNumber.toString().length + 2);
                 return (
                   <li key={key}>
-                    <form onSubmit={handleGotoSubmit}>
+                    <form onSubmit={handleGotoSubmit} style={{ width: `${goToFieldWidth}rem` }}>
                       <div className="field">
                         <p className="control has-icons-right">
                           <input
@@ -179,7 +179,6 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
                             className="input is-focused"
                             type="text"
                             placeholder={`${pageNumber}`}
-                            style={{ width: `${goToFieldWidth}rem` }}
                             onKeyPress={handleGotoKeyPress}
                           />
                           <button type="submit" className="icon is-small is-right is-icon-button">
