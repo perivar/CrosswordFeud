@@ -98,6 +98,7 @@ export interface SortableTableProps extends SortableTableIconInfo {
   maxButtons?: number;
   paginationPlacement?: PaginationPlacement;
   useGotoField?: boolean;
+  isSelectable?: boolean;
   alwaysUsePreviousNextButtons?: boolean;
   actionButtons?: ActionButton[];
   onAll?: (type: string, param?: any) => void;
@@ -133,6 +134,7 @@ interface SortableTableHeaderProps extends SortableTableIconInfo {
   tableState: SortableTableState;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+  isSelectable: boolean;
 }
 
 interface SortableTableHeaderItemProps extends SortableTableIconInfo {
@@ -219,7 +221,17 @@ const MemoizedSortableTableHeaderItem = React.memo(SortableTableHeaderItem);
 // SortableTableHeader
 const SortableTableHeader = (props: SortableTableHeaderProps) => {
   // useWhyDidYouUpdate('SortableTableHeader', props);
-  const { columns, tableState, setTableState, iconStyle, iconDesc, iconAsc, iconBoth, handleCheckboxChange } = props;
+  const {
+    columns,
+    tableState,
+    setTableState,
+    iconStyle,
+    iconDesc,
+    iconAsc,
+    iconBoth,
+    handleCheckboxChange,
+    isSelectable
+  } = props;
   const headers = columns.map((column: SortableTableColumn, index: number) => {
     const sorting = tableState.sortings[index];
 
@@ -257,7 +269,7 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
   return (
     <thead>
       <tr key="header-row">
-        {checkbox}
+        {isSelectable && checkbox}
         {headers}
       </tr>
     </thead>
@@ -283,12 +295,23 @@ interface SortableTableRowProps {
   setUrl: Function;
   setTableState: Dispatch<SetStateAction<SortableTableState>>;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
+  isSelectable: boolean;
 }
 
 // SortableTableRow
 const SortableTableRow = (props: SortableTableRowProps) => {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const { data, columns, uniqueIdKey, isSelected, url, setUrl, setTableState, handleCheckboxChange } = props;
+  const {
+    data,
+    columns,
+    uniqueIdKey,
+    isSelected,
+    url,
+    setUrl,
+    setTableState,
+    handleCheckboxChange,
+    isSelectable
+  } = props;
 
   // console.log(`render row :: ${data[uniqueIdKey]}`);
 
@@ -327,7 +350,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
 
   return (
     <tr key={`row-${data[uniqueIdKey]}`} className={isSelected ? 'is-selected' : ''}>
-      {checkbox}
+      {isSelectable && checkbox}
       {tds}
     </tr>
   );
@@ -343,6 +366,7 @@ interface SortableTableBodyProps {
   setUrl: Function;
   handleCheckboxChange: (changeEvent: ChangeEvent<HTMLInputElement>) => void;
   notFound?: string;
+  isSelectable: boolean;
 }
 
 // make sure to memoize the rows to avoid re-renders
@@ -351,7 +375,18 @@ const MemoizedSortableTableRow = React.memo(SortableTableRow);
 // SortableTableBody
 const SortableTableBody = (props: SortableTableBodyProps) => {
   // useWhyDidYouUpdate('SortableTableBody', props);
-  const { columns, uniqueIdKey, data, tableState, setTableState, url, setUrl, handleCheckboxChange, notFound } = props;
+  const {
+    columns,
+    uniqueIdKey,
+    data,
+    tableState,
+    setTableState,
+    url,
+    setUrl,
+    handleCheckboxChange,
+    notFound,
+    isSelectable
+  } = props;
 
   const bodies = data.map((row: any) => {
     const sortableTableRow = (
@@ -365,6 +400,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
         url={url}
         setUrl={setUrl}
         setTableState={setTableState}
+        isSelectable={isSelectable}
       />
     );
 
@@ -705,6 +741,7 @@ const BulmaTable = (props: SortableTableProps) => {
     maxButtons,
     paginationPlacement,
     useGotoField = true,
+    isSelectable = true,
     alwaysUsePreviousNextButtons = true,
     actionButtons,
     onAll,
@@ -1037,7 +1074,8 @@ const BulmaTable = (props: SortableTableProps) => {
     iconDesc,
     iconAsc,
     iconBoth,
-    handleCheckboxChange
+    handleCheckboxChange,
+    isSelectable
   });
 
   const sortableTableBody = SortableTableBody({
@@ -1049,7 +1087,8 @@ const BulmaTable = (props: SortableTableProps) => {
     url,
     setUrl,
     handleCheckboxChange,
-    notFound
+    notFound,
+    isSelectable
   });
 
   const sortableTableTopBar = SortableTableTopBar({

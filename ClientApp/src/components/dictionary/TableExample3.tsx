@@ -356,7 +356,9 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       {
         header: 'Dato',
         key: 'createdDate',
-        render: renderDateFormat
+        render: renderDateFormat,
+        dataProps: { className: 'is-hidden-mobile' },
+        headerProps: { className: 'is-hidden-mobile' }
       }
     ];
   }, []);

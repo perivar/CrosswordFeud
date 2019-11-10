@@ -73,6 +73,7 @@ const intialState: SortableTableState = {
 export default function BulmaTableExample() {
   const [maxButtons, setMaxButtons] = useState(5);
   const [useGotoField, setUseGotoField] = useState<boolean>(false);
+  const [isSelectable, setIsSelectable] = useState<boolean>(true);
   const [alwaysUsePreviousNextButtons, setAlwaysUsePreviousNextButtons] = useState<boolean>(false);
   const [pagination, setPagination] = useState<boolean>(true);
   const [search, setSearch] = useState<boolean>(true);
@@ -132,6 +133,7 @@ export default function BulmaTableExample() {
     maxButtons,
     paginationPlacement,
     useGotoField,
+    isSelectable,
     alwaysUsePreviousNextButtons,
     iconStyle,
     actionButtons,
@@ -198,6 +200,12 @@ export default function BulmaTableExample() {
           <div>
             <input type="checkbox" checked={useGotoField} onChange={() => setUseGotoField(!useGotoField)} />
             Use goto-field?
+          </div>
+        </div>
+        <div>
+          <div>
+            <input type="checkbox" checked={isSelectable} onChange={() => setIsSelectable(!isSelectable)} />
+            Is selectable?
           </div>
         </div>
         <div>
