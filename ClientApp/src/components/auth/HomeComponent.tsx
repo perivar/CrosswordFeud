@@ -20,10 +20,10 @@ export default class HomeComponent extends React.Component<IHomeProps> {
         <h4 className="title is-size-4 has-text-dark">Hi {logon.user.username}!</h4>
 
         <h4 className="title is-size-4 has-text-dark">Claims</h4>
-        <div className="list">
+        <div className="panel">
           {logon.claims.map((claim: IClaim) => (
-            <div className="list-item" key={claim.value}>
-              <span className="icon">
+            <div className="panel-block" key={claim.value}>
+              <span className="panel-icon">
                 <i className="fas fa-key" aria-hidden="true" />
               </span>
               {claim.value}
