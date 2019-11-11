@@ -294,7 +294,8 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
     return this.state.selection.includes(`select-${key}`);
   };
 
-  rowFn = (state: TableExample1State, rowInfo: RowInfo | undefined, column: Column | undefined, instance: any) => {
+  // rowFn = (state: TableExample1State, rowInfo: RowInfo | undefined, column: Column | undefined, instance: any) => {
+  rowFn = (state: TableExample1State, rowInfo: RowInfo | undefined) => {
     const { selection } = this.state;
 
     if (rowInfo && rowInfo !== undefined && rowInfo.row) {

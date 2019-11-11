@@ -21,8 +21,8 @@ export default class HomeComponent extends React.Component<IHomeProps> {
 
         <h4 className="title is-size-4 has-text-dark">Claims</h4>
         <div className="list">
-          {logon.claims.map((claim: IClaim, index: number) => (
-            <div className="list-item" key={index}>
+          {logon.claims.map((claim: IClaim) => (
+            <div className="list-item" key={claim.value}>
               <span className="icon">
                 <i className="fas fa-key" aria-hidden="true" />
               </span>
@@ -42,14 +42,8 @@ export default class HomeComponent extends React.Component<IHomeProps> {
         {users.items && (
           <>
             <div className="columns is-multiline">
-              {users.items.map((user: IUser, index: number) => (
-                <div
-                  className={
-                    index % 2
-                      ? '_list-item column is-5-tablet is-10-mobile is-offset-1-mobile'
-                      : '_list-item column is-5-tablet is-offset-1-tablet is-10-mobile is-offset-1-mobile'
-                  }
-                  key={index}>
+              {users.items.map((user: IUser) => (
+                <div className="column is-6-tablet is-12-mobile" key={user.id}>
                   <div className="card">
                     <div className="card-header">
                       <p className="card-header-title is-centered">
@@ -83,40 +77,32 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                             </div>
                           )}
                         </div>
+
+                        <div className="buttons is-centered">
+                          <button type="button" className="button is-outlined">
+                            <span className="icon is-small">
+                              <i className="fas fa-user-circle" />
+                            </span>
+                            <span>View Profile</span>
+                          </button>
+                          {user.deleting ? (
+                            <h6 className="has-text-info is-size-6">Deleting...</h6>
+                          ) : user.deleteError ? (
+                            <h6 className="has-text-danger is-size-6">{user.deleteError}</h6>
+                          ) : (
+                            <button
+                              type="button"
+                              className="button is-danger is-outlined"
+                              onClick={event => this.handleDeleteUser(user.username, event)}>
+                              <span className="icon is-small">
+                                <i className="fas fa-times" />
+                              </span>
+                              <span>Delete</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
-
-                    <footer className="card-footer">
-                      {user.deleting ? (
-                        <p className="card-footer-item">
-                          <h6 className="has-text-info is-size-6">Deleting...</h6>
-                        </p>
-                      ) : user.deleteError ? (
-                        <p className="card-footer-item">
-                          <h6 className="has-text-danger is-size-6">{user.deleteError}</h6>
-                        </p>
-                      ) : (
-                        <p className="card-footer-item">
-                          <button
-                            type="button"
-                            className="button is-danger is-outlined"
-                            onClick={event => this.handleDeleteUser(user.username, event)}>
-                            <span className="icon is-small">
-                              <i className="fas fa-times" />
-                            </span>
-                            <span>Delete</span>
-                          </button>
-                        </p>
-                      )}
-                      <p className="card-footer-item">
-                        <button type="button" className="button is-outlined">
-                          <span className="icon is-small">
-                            <i className="fas fa-user-circle" />
-                          </span>
-                          <span>View Profile</span>
-                        </button>
-                      </p>
-                    </footer>
                   </div>
                 </div>
               ))}

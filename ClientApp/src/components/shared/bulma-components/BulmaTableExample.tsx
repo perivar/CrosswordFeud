@@ -3,13 +3,7 @@ import produce, { Draft } from 'immer';
 // import useRadioButtons from '../hooks/radio-buttons-hook';
 import { getUniqueData, Data } from '../../dictionary/TableExampleData';
 import './bulma-table.scss';
-import BulmaTable, {
-  SortableTableState,
-  SortableTableColumn,
-  ActionButton,
-  ActionButtonProps,
-  getInitialSortings
-} from './BulmaTable';
+import BulmaTable, { SortableTableState, SortableTableColumn, ActionButton, getInitialSortings } from './BulmaTable';
 import { PaginationPlacement } from './BulmaPagination';
 import useRadioButtons from '../hooks/radio-buttons-hook';
 import { BulmaConfirmButton } from './BulmaConfirmButton';
@@ -110,7 +104,7 @@ export default function BulmaTableExample() {
   });
 
   // create action buttons renders
-  const renderDeleteButton = (renderProps: ActionButtonProps): React.ReactNode => {
+  const renderDeleteButton = (): React.ReactNode => {
     return deleteButton;
   };
 
