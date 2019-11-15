@@ -330,7 +330,11 @@ const SortableTableRow = (props: SortableTableRowProps) => {
       value = column.render(renderInfo);
     }
     return (
-      <td key={`row-${data[uniqueIdKey]}-${column.key}`} style={column.dataStyle} {...(column.dataProps || {})}>
+      <td
+        key={`row-${data[uniqueIdKey]}-${column.key}`}
+        data-label={column.header}
+        style={column.dataStyle}
+        {...(column.dataProps || {})}>
         {value}
       </td>
     );
@@ -349,7 +353,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
   );
 
   return (
-    <tr key={`row-${data[uniqueIdKey]}`} className={isSelected ? 'is-selected' : ''}>
+    <tr key={`row-${data[uniqueIdKey]}`} className={isSelected ? 'is-selected' : undefined}>
       {isSelectable && checkbox}
       {tds}
     </tr>
@@ -1125,7 +1129,7 @@ const BulmaTable = (props: SortableTableProps) => {
     <>
       {sortableTableTopBar}
       <div className="table-container">
-        <table className="table is-bordered is-striped is-hoverable is-fullwidth" style={style}>
+        <table className="table has-mobile-cards is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}
           {sortableTableBody}
         </table>

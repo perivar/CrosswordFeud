@@ -243,7 +243,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         <>
           <button
             type="button"
-            className="button is-link is-outlined is-fullwidth is-small"
+            className="button is-link is-outlined is-small"
             value={renderProps.value}
             onClick={() => handleSynonymSearch(renderProps)}>
             {renderProps.value}
@@ -337,28 +337,28 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       },
       {
         header: 'Ant. Ord',
-        key: 'numberOfWords',
-        dataProps: { className: 'is-hidden-mobile' },
-        headerProps: { className: 'is-hidden-mobile' }
+        key: 'numberOfWords'
+        // dataProps: { className: 'is-hidden-mobile' },
+        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Lengde',
-        key: 'numberOfLetters',
-        dataProps: { className: 'is-hidden-mobile' },
-        headerProps: { className: 'is-hidden-mobile' }
+        key: 'numberOfLetters'
+        // dataProps: { className: 'is-hidden-mobile' },
+        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Bruker',
-        key: 'comment',
-        dataProps: { className: 'is-hidden-mobile' },
-        headerProps: { className: 'is-hidden-mobile' }
+        key: 'comment'
+        // dataProps: { className: 'is-hidden-mobile' },
+        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Dato',
         key: 'createdDate',
-        render: renderDateFormat,
-        dataProps: { className: 'is-hidden-mobile' },
-        headerProps: { className: 'is-hidden-mobile' }
+        render: renderDateFormat
+        // dataProps: { className: 'is-hidden-mobile' },
+        // headerProps: { className: 'is-hidden-mobile' }
       }
     ];
   }, []);
