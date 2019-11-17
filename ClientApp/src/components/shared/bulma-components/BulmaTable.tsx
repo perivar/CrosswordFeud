@@ -1125,10 +1125,84 @@ const BulmaTable = (props: SortableTableProps) => {
     renderShowing
   });
 
+  const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
+  const index = indexFound !== -1 ? indexFound : 0; // default to first column
+  const sort = columns[index].key;
+  const order = indexFound !== -1 ? tableState.sortings[index] : sortOrder; // default to sortOrder
+
+  const handleMobileSortFieldChange = useCallback(
+    (e: React.FocusEvent<HTMLSelectElement>) => {
+      const index = e.target.selectedIndex;
+      setTableState(
+        produce((draft: Draft<SortableTableState>) => {
+          draft.sortings = draft.sortings.map((sorting: SortingType, i: number) => {
+            // set next sorting type for the selected sorting
+            // the others need to be reset back to both
+            if (i === index) {
+              // sorting = nextSortingState(sorting);
+              sorting = sorting === 'asc' ? 'desc' : 'asc';
+            } else {
+              sorting = 'both';
+            }
+            return sorting;
+          });
+        })
+      );
+    },
+    [setTableState]
+  );
+
+  const handleMobileSortOrderClick = useCallback(() => {
+    setTableState(
+      produce((draft: Draft<SortableTableState>) => {
+        const indexFound = draft.sortings.findIndex(a => a && a !== 'both');
+        const index = indexFound !== -1 ? indexFound : 0; // default to first column
+
+        draft.sortings = draft.sortings.map((sorting: SortingType, i: number) => {
+          // set next sorting type for the selected sorting
+          // the others need to be reset back to both
+          if (i === index) {
+            // sorting = nextSortingState(sorting);
+            sorting = sorting === 'asc' ? 'desc' : 'asc';
+          } else {
+            sorting = 'both';
+          }
+          return sorting;
+        });
+      })
+    );
+  }, [setTableState]);
+
   return (
     <>
       {sortableTableTopBar}
       <div className="table-container">
+        <div className="field table-mobile-sort">
+          <div className="field has-addons">
+            <div className="control is-expanded">
+              <span className="select is-fullwidth">
+                <select value={sort} onBlur={handleMobileSortFieldChange} onChange={handleMobileSortFieldChange}>
+                  {columns.map((column: SortableTableColumn) =>
+                    column.sortable || column.sortable === undefined ? (
+                      <option key={column.key} value={column.key}>
+                        {column.header}
+                      </option>
+                    ) : (
+                      ''
+                    )
+                  )}
+                </select>
+              </span>
+            </div>
+            <div className="control">
+              <button type="button" className="button is-primary" onClick={handleMobileSortOrderClick}>
+                <span className={`icon is-small ${order === 'desc' ? 'is-desc' : ''}`}>
+                  <i className="fas fa-arrow-up" />
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
         <table className="table has-mobile-cards is-bordered is-striped is-hoverable is-fullwidth" style={style}>
           {sortableTableHeader}
           {sortableTableBody}
