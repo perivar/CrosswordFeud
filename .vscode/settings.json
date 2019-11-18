@@ -41,8 +41,6 @@
   "eslint.workingDirectories": [
     { "directory": "ClientApp", "changeProcessCWD": true }
   ],
-  "prettier.eslintIntegration": true,
-  "prettier.stylelintIntegration": true,
   "css.validate": false,
   "less.validate": false,
   "scss.validate": false,

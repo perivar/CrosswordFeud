@@ -1139,8 +1139,8 @@ const BulmaTable = (props: SortableTableProps) => {
             // set next sorting type for the selected sorting
             // the others need to be reset back to both
             if (i === index) {
-              // sorting = nextSortingState(sorting);
-              sorting = sorting === 'asc' ? 'desc' : 'asc';
+              // default to sortOrder
+              sorting = sortOrder;
             } else {
               sorting = 'both';
             }
@@ -1149,14 +1149,14 @@ const BulmaTable = (props: SortableTableProps) => {
         })
       );
     },
-    [setTableState]
+    [setTableState, sortOrder]
   );
 
   const handleMobileSortOrderClick = useCallback(() => {
     setTableState(
       produce((draft: Draft<SortableTableState>) => {
-        const indexFound = draft.sortings.findIndex(a => a && a !== 'both');
-        const index = indexFound !== -1 ? indexFound : 0; // default to first column
+        // const indexFound = draft.sortings.findIndex(a => a && a !== 'both');
+        // const index = indexFound !== -1 ? indexFound : 0; // default to first column
 
         draft.sortings = draft.sortings.map((sorting: SortingType, i: number) => {
           // set next sorting type for the selected sorting
@@ -1171,7 +1171,7 @@ const BulmaTable = (props: SortableTableProps) => {
         });
       })
     );
-  }, [setTableState]);
+  }, [index, setTableState]);
 
   return (
     <>

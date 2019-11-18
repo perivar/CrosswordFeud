@@ -134,17 +134,17 @@ module.exports = {
     /**
      * @description rules of eslint-plugin-prettier
      */
-    'prettier/prettier': [
-      'error',
-      {
-        semi: true,
-        jsxBracketSameLine: true,
-        trailingComma: 'none',
-        singleQuote: true,
-        printWidth: 120,
-        tabWidth: 2
-      }
-    ],
+    // 'prettier/prettier': [
+    //   'error',
+    //   {
+    //     semi: true,
+    //     jsxBracketSameLine: true,
+    //     trailingComma: 'none',
+    //     singleQuote: true,
+    //     printWidth: 120,
+    //     tabWidth: 2
+    //   }
+    // ],
 
     /**
      * @description rules of eslint-plugin-jsx-a11y
