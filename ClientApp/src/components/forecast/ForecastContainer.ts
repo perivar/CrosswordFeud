@@ -18,9 +18,6 @@ const mapDispatchToProps = (dispatch: any) => {
   };
 };
 
-const ForecastContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ForecastComponent);
+const ForecastContainer = connect(mapStateToProps, mapDispatchToProps)(ForecastComponent);
 
 export default ForecastContainer;

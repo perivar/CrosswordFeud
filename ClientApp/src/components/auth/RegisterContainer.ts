@@ -23,9 +23,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const RegisterContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RegisterComponent);
+const RegisterContainer = connect(mapStateToProps, mapDispatchToProps)(RegisterComponent);
 
 export default RegisterContainer;

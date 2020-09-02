@@ -27,6 +27,14 @@ export interface OrderBy {
   direction: 'asc' | 'desc';
 }
 
+export interface OdataValues {
+  top?: number;
+  skip?: number;
+  filters?: OdataFilter[] | undefined;
+  orderBy?: OrderBy[] | undefined;
+  count?: boolean;
+}
+
 const mapToOdataFilter = ({ name, operation: operand, value, dataType }: OdataFilter) => {
   switch (operand) {
     case 'contains': {
@@ -51,7 +59,7 @@ const mapToOdataFilter = ({ name, operation: operand, value, dataType }: OdataFi
 };
 
 const getOdataOrderBy = (orderBy: OrderBy[] | undefined) => {
-  const orderByPara = orderBy && orderBy.map(sort => `${sort.name} ${sort.direction}`).join(',');
+  const orderByPara = orderBy && orderBy.map((sort) => `${sort.name} ${sort.direction}`).join(',');
   return orderByPara;
 };
 
@@ -87,14 +95,6 @@ export const getOdataQueryObject = ({ top = 20, skip = 0, filters, orderBy, coun
 
   return queryObject;
 };
-
-export interface OdataValues {
-  top?: number;
-  skip?: number;
-  filters?: OdataFilter[] | undefined;
-  orderBy?: OrderBy[] | undefined;
-  count?: boolean;
-}
 
 export const useOdata = ({ top = 20, skip = 0, filters, orderBy, count = false }: OdataValues) => {
   const [state, setState] = useState<OdataValues>({ top, skip, filters, orderBy, count });

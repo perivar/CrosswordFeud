@@ -71,6 +71,7 @@ export function useEditableState<T>({ value, onValueChanged }: UseEditableStateA
 
   const setEditValue = useCallback((newValue: T) => {
     setEditValueRaw(newValue);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

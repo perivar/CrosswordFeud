@@ -79,7 +79,7 @@ function login(username: string, password: string) {
 
   return fetch(`${config.apiUrl}/api/Account/Login`, requestOptions)
     .then(handleResponse)
-    .then(user => {
+    .then((user) => {
       // store user details and jwt token in local storage to keep user logged in between page refreshes
       // localStorage.setItem('user', JSON.stringify(user));
       // update - don't use localStorage directly - rather use redux with localStorage

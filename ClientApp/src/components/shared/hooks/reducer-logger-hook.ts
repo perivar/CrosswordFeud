@@ -10,7 +10,7 @@ function withLogger(dispatch: any): any {
   };
 }
 
-export const useReducerWithLogger = (reducer: any, initialState: any, initializer?: undefined) => {
+export const useReducerWithLogger = (reducer: any, initialState: any, initializer?: undefined): any => {
   // What about previous state?
   // If we open handy React documentation we will find the answer to our question: useRef.
   // The object it returns won't be recreated after every render. It can be used similarly to class instance properties.

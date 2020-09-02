@@ -18,13 +18,6 @@ const checkIfLetterHasSeparator = (locations: any, letterIndex: number): string 
   return 'crossword__anagram-helper__cell';
 };
 
-export interface ICluePreviewProps {
-  letters: ILetter[];
-  entries: ICluePreview[];
-  hasShuffled: boolean;
-  clue: IClue;
-}
-
 export interface ILetter {
   value: string;
   entered: boolean;
@@ -39,6 +32,13 @@ export interface ICluePreview {
   number: number;
   value: string;
   solved: boolean;
+}
+
+export interface ICluePreviewProps {
+  letters: ILetter[];
+  entries: ICluePreview[];
+  hasShuffled: boolean;
+  clue: IClue;
 }
 
 class CluePreview extends Component<ICluePreviewProps> {

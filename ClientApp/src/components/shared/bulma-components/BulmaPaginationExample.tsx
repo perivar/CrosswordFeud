@@ -80,7 +80,7 @@ export default function BulmaPaginationExample() {
               value={activePage}
               min={1}
               max={numberOfPages}
-              onChange={event => setActivePage(Number(event.target.value))}
+              onChange={(event) => setActivePage(Number(event.target.value))}
             />
             {activePage}
           </div>
@@ -93,7 +93,7 @@ export default function BulmaPaginationExample() {
               value={numberOfRows}
               min={1}
               max={200}
-              onChange={event => setNumberOfRows(Number(event.target.value))}
+              onChange={(event) => setNumberOfRows(Number(event.target.value))}
             />
             {numberOfRows}
           </div>
@@ -106,7 +106,7 @@ export default function BulmaPaginationExample() {
               value={rowsPerPage}
               min={1}
               max={100}
-              onChange={event => setRowsPerPage(Number(event.target.value))}
+              onChange={(event) => setRowsPerPage(Number(event.target.value))}
             />
             {rowsPerPage}
           </div>
@@ -119,7 +119,7 @@ export default function BulmaPaginationExample() {
               value={maxButtons}
               min={1}
               max={10}
-              onChange={event => setMaxButtons(Number(event.target.value))}
+              onChange={(event) => setMaxButtons(Number(event.target.value))}
             />
             {maxButtons}
           </div>
@@ -174,7 +174,7 @@ export default function BulmaPaginationExample() {
       </div>
       <div>
         <ul>
-          {currentData.map(dataEntry => (
+          {currentData.map((dataEntry) => (
             <li key={dataEntry.toString()}>{dataEntry}</li>
           ))}
         </ul>

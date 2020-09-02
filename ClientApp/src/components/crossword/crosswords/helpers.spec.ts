@@ -211,7 +211,7 @@ describe('Helpers', () => {
       it('should set entries to not editable by default', () => {
         const grid = buildGrid(5, 6, [], []);
 
-        expect(grid.every(column => column.every(({ isEditable }) => isEditable === false))).toBe(true);
+        expect(grid.every((column) => column.every(({ isEditable }) => isEditable === false))).toBe(true);
       });
 
       it('should make cells that belong to an entry editable', () => {
@@ -408,7 +408,10 @@ describe('Helpers', () => {
 
   describe('cellsForClue', () => {
     it('should return all the cells for a single entry', () => {
-      expect(cellsForClue(entriesFixture, entryFixture)).toEqual([{ x: 2, y: 3 }, { x: 3, y: 3 }]);
+      expect(cellsForClue(entriesFixture, entryFixture)).toEqual([
+        { x: 2, y: 3 },
+        { x: 3, y: 3 }
+      ]);
     });
 
     it('should return all cells for a grouped entry', () => {
@@ -774,7 +777,13 @@ describe('Helpers', () => {
 
     // duplicate cells' - a cell which is used by more than one completed clue
     it('should return all cells for an ungrouped clue which does not intersect other answered clues', () => {
-      const expectedCells = [{ x: 0, y: 0 }, { x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }, { x: 0, y: 4 }];
+      const expectedCells = [
+        { x: 0, y: 0 },
+        { x: 0, y: 1 },
+        { x: 0, y: 2 },
+        { x: 0, y: 3 },
+        { x: 0, y: 4 }
+      ];
       expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, oneDownFixture)).toEqual(
         expectedCells
       );
@@ -782,7 +791,13 @@ describe('Helpers', () => {
 
     // F GHTS because 'RAILROAD' has been answered, because 'HEATHEN' hasnt
     it('should return all correct cells for an ungrouped clue which intersects an unanswered clue', () => {
-      const expectedCells = [{ x: 6, y: 3 }, { x: 8, y: 3 }, { x: 9, y: 3 }, { x: 10, y: 3 }, { x: 11, y: 3 }];
+      const expectedCells = [
+        { x: 6, y: 3 },
+        { x: 8, y: 3 },
+        { x: 9, y: 3 },
+        { x: 10, y: 3 },
+        { x: 11, y: 3 }
+      ];
       expect(getClearableCellsForClue(gridFixture, clueMapFixture, theEntriesFixture, fourAcrossFixture)).toEqual(
         expectedCells
       );

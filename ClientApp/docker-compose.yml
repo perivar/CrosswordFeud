@@ -1,4 +1,8 @@
-version: "3.7"
+# Note! Run the react client app (and not the surrounding dotnet framework)
+# docker-compose up -d --build
+# or only
+# docker-compose up -d
+version: '3.7'
 
 services:
   crosswordfeud:
@@ -8,9 +12,9 @@ services:
       dockerfile: Dockerfile
     restart: always
     expose:
-      - "3000"
+      - '3000'
     ports:
-      - "3000:3000"
+      - '3000:3000'
 
 # Remember to start the network before running this file:
 # $ docker network create crossword-net

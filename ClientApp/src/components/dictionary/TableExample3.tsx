@@ -179,7 +179,7 @@ const requestInterceptor = (request: any) => {
         token: access,
         refreshToken: refresh
       })
-      .then(response => {
+      .then((response) => {
         store.dispatch({ type: UserActionTypes.TOKEN_REFRESHED });
         const access = response.data.token;
         request.headers.Authorization = `${headerType} ${access}`;
@@ -273,11 +273,11 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         };
 
         axios(editParams)
-          .then(response => {
+          .then((response) => {
             // update the row
             setData(
               produce((draft: Draft<WordData[]>) => {
-                const index = draft.findIndex(w => w.wordId === renderProps.row.wordId);
+                const index = draft.findIndex((w) => w.wordId === renderProps.row.wordId);
                 if (index !== -1) {
                   draft[index] = response.data;
                 }
@@ -286,7 +286,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
             console.log('successfully updated row');
             console.log(response.data);
           })
-          .catch(error => {
+          .catch((error) => {
             setNotificationType('danger');
             setNotificationMessage(getErrorMessage(error));
             setNotificationDisplaying(true);
@@ -296,7 +296,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       return (
         <BulmaEditableTextField
           value={renderProps.value}
-          onValueChanged={value => handleValueChanged(renderProps, value)}
+          onValueChanged={(value) => handleValueChanged(renderProps, value)}
         />
       );
     };
@@ -367,7 +367,9 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
   const actionButtons: ActionButton[] = useMemo(() => {
     const renderDeleteButton = (renderProps: ActionButtonProps) => {
       const handleOnDeleteClick = () => {
-        const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+        const ids = Object.keys(renderProps.tableState.checkboxes).filter(
+          (id) => renderProps.tableState.checkboxes[id]
+        );
         console.log(`delete: ${ids}`);
 
         const deleteParams: AxiosRequestConfig = {
@@ -385,11 +387,11 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         };
 
         axios(deleteParams)
-          .then(response => {
+          .then((response) => {
             // remove the row(s)
             setData(
               produce((draft: Draft<WordData[]>) => {
-                const nonDeletedRows = draft.filter(element => !ids.includes(element.wordId.toString()));
+                const nonDeletedRows = draft.filter((element) => !ids.includes(element.wordId.toString()));
                 if (nonDeletedRows.length > 0) {
                   return nonDeletedRows;
                 }
@@ -399,7 +401,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
             console.log('successfully deleted row(s): ');
             console.log(response.data);
           })
-          .catch(error => {
+          .catch((error) => {
             setNotificationType('danger');
             setNotificationMessage(getErrorMessage(error));
             setNotificationDisplaying(true);
@@ -410,7 +412,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         label: 'Slett',
         confirmLabel: 'Bekreft sletting',
         key: 'deleteRows',
-        disabled: !Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id]),
+        disabled: !Object.keys(renderProps.tableState.checkboxes).some((id) => renderProps.tableState.checkboxes[id]),
         handleOnClick: handleOnDeleteClick
       });
 
@@ -419,7 +421,9 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
 
     const renderDisconnectButton = (renderProps: ActionButtonProps) => {
       const handleOnDisconnectClick = () => {
-        const ids = Object.keys(renderProps.tableState.checkboxes).filter(id => renderProps.tableState.checkboxes[id]);
+        const ids = Object.keys(renderProps.tableState.checkboxes).filter(
+          (id) => renderProps.tableState.checkboxes[id]
+        );
         console.log(`disconnect: ${ids}`);
       };
       const disconnectButton = BulmaConfirmButton({
@@ -427,7 +431,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         label: 'Koble fra',
         confirmLabel: 'Bekreft koble fra',
         key: 'disconnectRows',
-        disabled: !Object.keys(renderProps.tableState.checkboxes).some(id => renderProps.tableState.checkboxes[id]),
+        disabled: !Object.keys(renderProps.tableState.checkboxes).some((id) => renderProps.tableState.checkboxes[id]),
         handleOnClick: handleOnDisconnectClick
       });
 
@@ -631,7 +635,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
     sidePagination: 'server',
     sortOrder: 'desc',
     queryParams,
-    responseHandler: res => {
+    responseHandler: (res) => {
       return {
         total: res['@odata.count'],
         rows: res.value
@@ -646,7 +650,7 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
     searchText: 'Søk',
     elementsText: 'treff',
     renderNumberOfRows,
-    onLoadError: error => {
+    onLoadError: (error) => {
       setNotificationType('danger');
       setNotificationMessage(getErrorMessage(error));
       setNotificationDisplaying(true);
@@ -683,10 +687,10 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
             mandatory
             baseUrl={baseUrl}
             // headers={authHeader()}
-            queryHandler={word => {
+            queryHandler={(word) => {
               return `api/words/${encodeURIComponent(word)}`;
             }}
-            responseHandler={res => {
+            responseHandler={(res) => {
               return res.data;
             }}
             onChangeValue={handleChangeWordValue}

@@ -109,7 +109,7 @@ function computeVisiblePieces(activePage: number, config: Config): PaginatorPiec
   return visiblePieces;
 }
 
-export function usePagination(_config: ConfigArg) {
+export function usePagination(_config: ConfigArg): any {
   if (typeof _config !== 'object') {
     throw new TypeError(`usePagination(config): config must be an object. Go ${typeof _config} instead`);
   }
@@ -131,7 +131,7 @@ export function usePagination(_config: ConfigArg) {
   const hasPrevious = numberOfPages > 1 && activePage > 1;
   const hasNext = activePage < numberOfPages;
   const visiblePieces = computeVisiblePieces(activePage, config);
-  const goToPage = useCallback<State['goToPage']>(pageNumber => {
+  const goToPage = useCallback<State['goToPage']>((pageNumber) => {
     setActivePage(pageNumber);
   }, []);
 

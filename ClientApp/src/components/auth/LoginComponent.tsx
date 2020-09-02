@@ -20,22 +20,22 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
     };
   }
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  handleChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       ...prevState,
       [name]: value
     }));
   };
 
-  handleCheckboxChange = () => {
-    this.setState(prevState => ({
+  handleCheckboxChange = (): void => {
+    this.setState((prevState) => ({
       ...prevState,
       remember: !prevState.remember
     }));
   };
 
-  handleSubmit = (e: React.FormEvent) => {
+  handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
 
     this.setState({ submitted: true });
@@ -45,7 +45,7 @@ export default class LoginComponent extends React.Component<ILoginProps, ILoginS
     }
   };
 
-  render() {
+  render(): JSX.Element {
     const { loggingIn } = this.props;
     const { username, password, submitted, remember } = this.state;
     return (

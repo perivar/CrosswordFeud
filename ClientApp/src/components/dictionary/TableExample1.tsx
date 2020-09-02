@@ -28,7 +28,7 @@ const SelectInput: React.StatelessComponent<SelectInputComponentProps> = ({
     aria-label={`${checked ? 'Un-select' : 'Select'} row with id:${id}`}
     checked={checked}
     id={id}
-    onClick={e => {
+    onClick={(e) => {
       const { shiftKey } = e;
       e.stopPropagation();
       onClick(id, shiftKey, row);
@@ -42,7 +42,7 @@ const SelectAllInput: React.StatelessComponent<SelectAllInputComponentProps> = (
     type={selectType || 'checkbox'}
     aria-label={`${checked ? 'Un-select all' : 'Select all'}`}
     checked={checked}
-    onClick={e => {
+    onClick={(e) => {
       e.stopPropagation();
       onClick();
     }}
@@ -136,7 +136,7 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
               className="input is-small"
               ref={editInputRef}
               value={editValue}
-              onChange={event => setEditValue(event.target.value)}
+              onChange={(event) => setEditValue(event.target.value)}
               style={inputStyle}
             />
             <button type="button" className="icon is-right editable-clear is-small" onClick={onEditClear}>
@@ -339,7 +339,7 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
         columns={columns}
         // norwmal ref won't work since we need the wrapped instance
         // therefore use an arrow function to set the ref
-        ref={ref => {
+        ref={(ref) => {
           this.selectTable = ref;
         }}
         toggleSelection={this.toggleSelection}

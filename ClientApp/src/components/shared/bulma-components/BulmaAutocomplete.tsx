@@ -157,7 +157,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
       } else {
         // Filter our suggestions that don't contain the user's input
         filteredSuggestions = suggestions.filter(
-          suggestion => suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+          (suggestion) => suggestion.toLowerCase().indexOf(userInput.toLowerCase()) > -1
         );
       }
 

@@ -48,17 +48,17 @@ class Clue extends Component<IClueProps> {
   }
 }
 
+export interface IClueEntry {
+  entry: IClue;
+  hasAnswered: boolean;
+  isSelected: boolean;
+}
+
 export interface ICluesProps {
   focused: IClue;
   clues: IClueEntry[];
   setReturnPosition: (position: number) => void;
   focusFirstCellInClueById: (id: string) => void;
-}
-
-export interface IClueEntry {
-  entry: IClue;
-  hasAnswered: boolean;
-  isSelected: boolean;
 }
 
 export interface ICluesState {
@@ -94,7 +94,8 @@ class Clues extends Component<ICluesProps, ICluesState> {
         min: 'tablet'
         // max: 'leftCol',
       }) &&
-      (this.props.focused && (!prev.focused || prev.focused.id !== this.props.focused.id))
+      this.props.focused &&
+      (!prev.focused || prev.focused.id !== this.props.focused.id)
     ) {
       fastdom.measure(() => {
         this.scrollIntoView(this.props.focused);

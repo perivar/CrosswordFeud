@@ -26,7 +26,7 @@ const addMyEventListener = (
     node.addEventListener(
       name,
       function boundHandler(evt: Event) {
-        // @ts-ignore
+        // @ts-ignore: don't exist in all browsers
         handler.call(this, evt);
         node.removeEventListener(name, boundHandler);
       },

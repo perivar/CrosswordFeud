@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { NavMenu } from './NavMenu';
 
 export class Layout extends PureComponent<any, any> {
-  public render() {
+  public render(): JSX.Element {
     return (
       <>
         <section className="hero">

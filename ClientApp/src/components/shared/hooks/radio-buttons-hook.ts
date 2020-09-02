@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function useRadioButtons<T>(name: string, initialValue: T) {
+function useRadioButtons<T>(name: string, initialValue: T): any {
   const [value, setState] = useState<T>(initialValue);
 
   const handleChange = (e: any) => {

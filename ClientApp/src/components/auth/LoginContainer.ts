@@ -23,9 +23,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const LoginContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(LoginComponent);
+const LoginContainer = connect(mapStateToProps, mapDispatchToProps)(LoginComponent);
 
 export default LoginContainer;

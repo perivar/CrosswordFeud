@@ -9,7 +9,7 @@ export default class ForecastComponent extends Component<IForecastProps> {
   }
 
   public renderForecastsTable(forecasts: IForecast[]) {
-    const rows = forecasts.map(forecast => (
+    const rows = forecasts.map((forecast) => (
       <tr key={forecast.dateFormatted}>
         <td>{forecast.dateFormatted}</td>
         <td>{forecast.temperatureC}</td>

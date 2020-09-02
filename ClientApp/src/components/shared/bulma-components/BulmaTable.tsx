@@ -46,6 +46,23 @@ export interface SortableTableColumn {
   ascSortFunction?: (sortedData: SortableTableData, key: string) => SortableTableData;
 }
 
+export interface SortableTableState {
+  sortings: SortingType[];
+  isAllSelected: boolean;
+  checkboxes: SortableCheckboxMap;
+  filter: string;
+}
+
+export interface RenderProps {
+  uniqueRowId: string;
+  column: SortableTableColumn;
+  row: any;
+  value: any;
+  url?: string;
+  setUrl: Function;
+  setTableState: Dispatch<SetStateAction<SortableTableState>>;
+}
+
 export interface SortableTableIconInfo {
   iconStyle?: CSSProperties;
   iconDesc?: ReactNode;
@@ -120,13 +137,6 @@ export interface SortableTableProps extends SortableTableIconInfo {
   elementsText?: string;
   renderNumberOfRows?: (numberOfRows: number, tableState: SortableTableState) => React.ReactNode;
   notFound?: string;
-}
-
-export interface SortableTableState {
-  sortings: SortingType[];
-  isAllSelected: boolean;
-  checkboxes: SortableCheckboxMap;
-  filter: string;
 }
 
 interface SortableTableHeaderProps extends SortableTableIconInfo {
@@ -275,16 +285,6 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
     </thead>
   );
 };
-
-export interface RenderProps {
-  uniqueRowId: string;
-  column: SortableTableColumn;
-  row: any;
-  value: any;
-  url?: string;
-  setUrl: Function;
-  setTableState: Dispatch<SetStateAction<SortableTableState>>;
-}
 
 interface SortableTableRowProps {
   data: SortableTableData;
@@ -449,9 +449,9 @@ const filterData = (
     // Use .filter() to determine which items should be displayed
     // based on the search terms
     newList = currentList.filter((item: any) => {
-      return Object.keys(item).some(key => {
+      return Object.keys(item).some((key) => {
         // lookup columns with this key
-        const column = columns.find(a => a.key === key);
+        const column = columns.find((a) => a.key === key);
         // check if the column has searchable set to true true or undefined
         if (column && (column.searchable || column.searchable === undefined)) {
           // get value using key
@@ -805,7 +805,7 @@ const BulmaTable = (props: SortableTableProps) => {
       // console.log('useEffect() - initializing uniqueIdColumn');
 
       // see if one of the columns have specified an unique id key
-      const uniqueIdColumn = columns.find(a => a.uniqueId === true);
+      const uniqueIdColumn = columns.find((a) => a.uniqueId === true);
       if (uniqueIdColumn) {
         setUniqueIdKey(uniqueIdColumn.key);
       }
@@ -835,7 +835,7 @@ const BulmaTable = (props: SortableTableProps) => {
       // inline method to get full url
       const getFullUrl = () => {
         if (sidePagination === 'server') {
-          const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
+          const indexFound = tableState.sortings.findIndex((a) => a && a !== 'both');
           const index = indexFound !== -1 ? indexFound : 0; // default to first column
           const sort = columns[index].key;
           const order = indexFound !== -1 ? tableState.sortings[index] : sortOrder; // default to sortOrder
@@ -851,16 +851,13 @@ const BulmaTable = (props: SortableTableProps) => {
 
           // have to reduce to remove any elements that are undefined
           const queryString = Object.entries(queryObject)
-            .reduce(
-              (result, pair) => {
-                const [key, value] = pair;
-                if (value !== undefined && value !== null) {
-                  result.push(`${key}=${value}`);
-                }
-                return result;
-              },
-              [] as string[]
-            )
+            .reduce((result, pair) => {
+              const [key, value] = pair;
+              if (value !== undefined && value !== null) {
+                result.push(`${key}=${value}`);
+              }
+              return result;
+            }, [] as string[])
             .join('&');
           return `${url}?${queryString}`;
         }
@@ -1041,7 +1038,7 @@ const BulmaTable = (props: SortableTableProps) => {
             }
 
             // and update all checkboxes
-            Object.keys(draft.checkboxes).forEach(id => {
+            Object.keys(draft.checkboxes).forEach((id) => {
               draft.checkboxes[id] = draft.isAllSelected;
             });
           })
@@ -1062,7 +1059,7 @@ const BulmaTable = (props: SortableTableProps) => {
             }
 
             // check if all is selected
-            draft.isAllSelected = Object.keys(draft.checkboxes).every(id => draft.checkboxes[id]);
+            draft.isAllSelected = Object.keys(draft.checkboxes).every((id) => draft.checkboxes[id]);
           })
         );
       }
@@ -1125,7 +1122,7 @@ const BulmaTable = (props: SortableTableProps) => {
     renderShowing
   });
 
-  const indexFound = tableState.sortings.findIndex(a => a && a !== 'both');
+  const indexFound = tableState.sortings.findIndex((a) => a && a !== 'both');
   const index = indexFound !== -1 ? indexFound : 0; // default to first column
   const sort = columns[index].key;
   const order = indexFound !== -1 ? tableState.sortings[index] : sortOrder; // default to sortOrder

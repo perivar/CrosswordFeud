@@ -9,9 +9,6 @@ const mapDispatchToProps = () => {
   return {};
 };
 
-const HelpContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HelpComponent);
+const HelpContainer = connect(mapStateToProps, mapDispatchToProps)(HelpComponent);
 
 export default HelpContainer;

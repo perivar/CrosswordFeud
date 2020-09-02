@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export function useOutsideClick(ref: any, callback: Function) {
+export function useOutsideClick(ref: any, callback: Function): any {
   // React.RefObject<T> doesn't work because it's missing contains
   const handleClick = (event: MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target)) {

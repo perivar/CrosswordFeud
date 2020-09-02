@@ -89,18 +89,18 @@ const isLastCellInClue = (cell: IPosition, clue: IClue): boolean => {
 const getNextClueInGroup = (entries: IClue[], clue: IClue): IClue | undefined => {
   const newClueId = clue.group[clue.group.findIndex((id: string) => id === clue.id) + 1];
 
-  return entries.find(entry => entry.id === newClueId);
+  return entries.find((entry) => entry.id === newClueId);
 };
 
 const getPreviousClueInGroup = (entries: IClue[], clue: IClue): IClue | undefined => {
   const newClueId = clue.group[clue.group.findIndex((id: string) => id === clue.id) - 1];
 
-  return entries.find(entry => entry.id === newClueId);
+  return entries.find((entry) => entry.id === newClueId);
 };
 
 const getGroupEntriesForClue = (entries: IClue[], group: string[]): IClue[] =>
   group.reduce((acc: IClue[], clueId: string) => {
-    const entry = entries.find(e => e.id === clueId);
+    const entry = entries.find((e) => e.id === clueId);
 
     if (entry) {
       acc.push(entry);
@@ -229,8 +229,8 @@ const getClearableCellsForClue = (grid: IGrid, clueMap: IClueMap, entries: IClue
  * Builds the initial state of the grid given the number of rows, columns, and a list of clues.
  */
 const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: string[][]): IGrid => {
-  const grid = range(columns).map(x =>
-    range(rows).map(y => ({
+  const grid = range(columns).map((x) =>
+    range(rows).map((y) => ({
       isHighlighted: false,
       isEditable: false,
       isError: false,
@@ -258,7 +258,7 @@ const buildClueMap = (clues: IClue[]): IClueMap => {
   type ClueMapType = Record<string, any>;
   const map: ClueMapType = {};
 
-  clues.forEach(clue => {
+  clues.forEach((clue) => {
     cellsForEntry(clue).forEach((cell: IPosition) => {
       const key = clueMapKey(cell.x, cell.y);
 
@@ -291,7 +291,7 @@ const buildSeparatorMap = (clues: IClue[]): ISeparatorMap => {
 
   return clues
     .map((clue: IClue) =>
-      Object.keys(clue.separatorLocations).map(separatorStr => {
+      Object.keys(clue.separatorLocations).map((separatorStr) => {
         const separator = separatorStr as Separator;
         const locations = (clue.separatorLocations as SeparatorLocations)[separator];
 

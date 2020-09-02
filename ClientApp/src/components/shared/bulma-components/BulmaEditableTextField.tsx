@@ -81,7 +81,7 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
               className="input is-small"
               ref={editInputRef}
               value={editValue}
-              onChange={event => setEditValue(event.target.value)}
+              onChange={(event) => setEditValue(event.target.value)}
               style={inputStyle}
             />
             <button type="button" className="icon is-small is-right is-icon-button" onClick={onEditClear}>

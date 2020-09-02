@@ -33,7 +33,7 @@ const getPaginationClassName = (paginationPlacement: string) => {
   }
 };
 
-const BulmaPaginator = (props: IBulmaPaginatorProps) => {
+const BulmaPaginator = (props: IBulmaPaginatorProps): any => {
   // useWhyDidYouUpdate('BulmaPaginator', props);
   const {
     initialPage = 1,
@@ -110,7 +110,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
           type="button"
           className="pagination-previous pagination-button"
           aria-label="Previous"
-          onClick={event => handleClick(pageNumber, event)}
+          onClick={(event) => handleClick(pageNumber, event)}
           disabled={visiblePiece.isDisabled}>
           &laquo; {previousText}
         </button>
@@ -127,7 +127,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
           type="button"
           className="pagination-next pagination-button"
           aria-label="Next"
-          onClick={event => handleClick(pageNumber, event)}
+          onClick={(event) => handleClick(pageNumber, event)}
           disabled={visiblePiece.isDisabled}>
           {nextText} &raquo;
         </button>
@@ -136,8 +136,8 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
     return '';
   };
 
-  const previous = visiblePieces.find(e => e.type === 'previous');
-  const next = visiblePieces.find(e => e.type === 'next');
+  const previous = visiblePieces.find((e: any) => e.type === 'previous');
+  const next = visiblePieces.find((e: any) => e.type === 'next');
 
   const paginationClassName = getPaginationClassName(paginationPlacement);
 
@@ -151,7 +151,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
         {paginationPlacement !== 'inline' ? previousButton(previous) : ''}
         {paginationPlacement !== 'inline' ? nextButton(next) : ''}
         <ul className="pagination-list">
-          {visiblePieces.map((visiblePiece, index) => {
+          {visiblePieces.map((visiblePiece: any, index: number) => {
             const key = `${visiblePiece.type}-${index}`;
 
             if (visiblePiece.type === 'ellipsis') {
@@ -196,7 +196,7 @@ const BulmaPaginator = (props: IBulmaPaginatorProps) => {
                     type="button"
                     className={`pagination-link pagination-button ${className}`}
                     aria-label={`Goto page ${pageNumber}`}
-                    onClick={event => handleClick(pageNumber, event)}>
+                    onClick={(event) => handleClick(pageNumber, event)}>
                     {pageNumber}
                   </button>
                 </li>

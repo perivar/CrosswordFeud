@@ -32,9 +32,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const ForgottenPasswordContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ForgottenPasswordComponent);
+const ForgottenPasswordContainer = connect(mapStateToProps, mapDispatchToProps)(ForgottenPasswordComponent);
 
 export default ForgottenPasswordContainer;

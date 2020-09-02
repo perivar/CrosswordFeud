@@ -3,7 +3,7 @@ import React, { PureComponent } from 'react';
 export class Home extends PureComponent {
   static displayName = Home.name;
 
-  render() {
+  render(): JSX.Element {
     return (
       <div>
         <h1>Hello, world!</h1>

@@ -21,9 +21,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const StatusContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(StatusComponent);
+const StatusContainer = connect(mapStateToProps, mapDispatchToProps)(StatusComponent);
 
 export default StatusContainer;

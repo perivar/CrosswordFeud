@@ -14,7 +14,7 @@ export class Counter extends Component<{}, ILocalState> {
   }
 
   incrementCounter() {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       currentCount: prevState.currentCount + 1
     }));
   }

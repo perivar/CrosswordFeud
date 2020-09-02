@@ -35,7 +35,7 @@ export class NavMenu extends Component<{}, ILocalState> {
     //   }
     // }
 
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       active: !prevState.active
     }));
   };

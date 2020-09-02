@@ -33,9 +33,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const DictionaryContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(DictionaryComponent);
+const DictionaryContainer = connect(mapStateToProps, mapDispatchToProps)(DictionaryComponent);
 
 export default DictionaryContainer;

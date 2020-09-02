@@ -13,7 +13,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
     this.props.delete(username);
   };
 
-  render() {
+  render(): JSX.Element {
     const { logon, users } = this.props;
     return (
       <>
@@ -93,7 +93,7 @@ export default class HomeComponent extends React.Component<IHomeProps> {
                             <button
                               type="button"
                               className="button is-danger is-outlined"
-                              onClick={event => this.handleDeleteUser(user.username, event)}>
+                              onClick={(event) => this.handleDeleteUser(user.username, event)}>
                               <span className="icon is-small">
                                 <i className="fas fa-times" />
                               </span>

@@ -1,9 +1,14 @@
-version: '3.0'
- 
+# Note! Don't use this file if you only want the to run the react client app
+# instead enter the ClientApp directory and run
+# docker-compose up -d --build
+# or only
+# docker-compose up -d
+version: "3.0"
+
 services:
-   crosswordfeud:
-     image: perivar/crosswordfeud
-     build:
-       context: .
-     ports:
-       - "80:80"
+  crosswordfeud:
+    image: perivar/crosswordfeud
+    build:
+      context: .
+    ports:
+      - "80:80"

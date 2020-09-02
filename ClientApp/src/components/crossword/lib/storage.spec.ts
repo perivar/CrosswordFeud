@@ -127,7 +127,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
   });
 
   test(`${storageName} - get() with expired item`, () => {
-    IO.filter(item => item.options && item.options.expires).forEach(expired => {
+    IO.filter((item) => item.options && item.options.expires).forEach((expired) => {
       const { key } = expired;
 
       // set expired
@@ -143,7 +143,7 @@ const testStorage = (storageName: string, fn: IStorage) => {
   });
 
   test(`${storageName} - get() with non-expired item`, () => {
-    IO.filter(item => item.options && item.options.expires).forEach(expired => {
+    IO.filter((item) => item.options && item.options.expires).forEach((expired) => {
       const { key, data } = expired;
 
       // set non-expired

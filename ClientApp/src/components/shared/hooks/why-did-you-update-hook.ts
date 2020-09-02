@@ -19,7 +19,7 @@ function difference(newObject: any, baseObject: any) {
   });
 }
 
-export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
+export function useWhyDidYouUpdate(name: string, props: Record<string, any>): any {
   // Get a mutable ref object where we can store props ...
   // ... for comparison next time this hook runs.
   const latestProps = useRef(props);
@@ -38,7 +38,7 @@ export function useWhyDidYouUpdate(name: string, props: Record<string, any>) {
       const changesObj: Record<string, { from: any; to: any; isDeepEqual: boolean; difference: any }> = {};
 
       // Iterate through keys
-      allKeys.forEach(key => {
+      allKeys.forEach((key) => {
         // If previous is different from current
         if (latestProps.current[key] !== props[key]) {
           // Add to changesObj

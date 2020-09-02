@@ -20,7 +20,7 @@ const LetterBox = (props: ILetterBoxProps) => {
         id={`${id}`}
         name={`letter[${id}]`}
         maxLength={1}
-        ref={el => (letterBoxRefs.current[id] = el!)}
+        ref={(el) => (letterBoxRefs.current[id] = el!)}
         onKeyDown={handleKeyDown}
       />
     </p>
@@ -39,7 +39,7 @@ const isNullOrWhitespace = (input: any): boolean => {
 const getPatternString = (letterBoxRefs: HTMLInputElement[]): string => {
   let patternString = '';
 
-  letterBoxRefs.forEach(element => {
+  letterBoxRefs.forEach((element) => {
     const { value } = element;
     if (isNullOrWhitespace(value)) {
       patternString += '_';
@@ -127,7 +127,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
   );
 
   const handleLetterLess = () => {
-    setLetterCount(letterCount => {
+    setLetterCount((letterCount) => {
       const count = Math.max(letterCount - 1, 0);
       updateHiddenPatternField(count);
       return count;
@@ -135,7 +135,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
   };
 
   const handleLetterMore = () => {
-    setLetterCount(letterCount => {
+    setLetterCount((letterCount) => {
       const count = Math.min(letterCount + 1, MAX_LETTERS);
       updateHiddenPatternField(count);
       return count;
@@ -188,7 +188,7 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
 
   // create letterboxes array
   const letterBoxes: React.ReactNode[] = [];
-  range(letterCount).forEach(i => {
+  range(letterCount).forEach((i) => {
     letterBoxes.push(
       <LetterBox key={`letter[${i}]`} id={i} letterBoxRefs={letterBoxRefs} handleKeyDown={handleKeyDown} />
     );

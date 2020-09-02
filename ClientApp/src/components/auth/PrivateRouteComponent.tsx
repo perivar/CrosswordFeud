@@ -22,7 +22,7 @@ const PrivateRoute = (props: PrivateRouteProps) => {
   return (
     <Route
       {...rest}
-      render={routeProps =>
+      render={(routeProps) =>
         isSignedIn ? (
           <Component {...routeProps} />
         ) : (

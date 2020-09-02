@@ -13,7 +13,7 @@ function get() {
     return { type: CrosswordActionTypes.GET_REQUEST };
   }
   function success(data: any): CrosswordActions {
-    return { type: CrosswordActionTypes.GET_SUCCESS, data: data };
+    return { type: CrosswordActionTypes.GET_SUCCESS, data };
   }
   function failure(error: string): CrosswordActions {
     return { type: CrosswordActionTypes.GET_FAILURE, error };

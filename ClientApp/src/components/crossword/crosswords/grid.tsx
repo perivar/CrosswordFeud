@@ -110,7 +110,7 @@ export const Grid = (props: IGridProps): React.ReactNode => {
 
   const range = (n: number) => Array.from({ length: n }, (value, key) => key);
 
-  range(props.rows).forEach(y =>
+  range(props.rows).forEach((y) =>
     range(props.columns).forEach((x: number) => {
       const cellProps = props.cells[x][y] as ICell;
 

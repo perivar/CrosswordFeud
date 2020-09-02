@@ -59,7 +59,4 @@ const mapDispatchToProps = (dispatch: any) => {
   };
 };
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(CrosswordContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(CrosswordContainer);

@@ -58,12 +58,12 @@ function register(user: IUser) {
     dispatch(request(user));
 
     userService.register(user).then(
-      user => {
+      (user) => {
         dispatch(success(user));
         history.push('/login');
         dispatch(alertActions.success('Registration successfull'));
       },
-      error => {
+      (error) => {
         dispatch(failure(error.toString()));
         dispatch(alertActions.error(error.toString()));
       }
@@ -137,10 +137,10 @@ const refreshToken = (token: string, refreshToken: string) => (dispatch: any) =>
 
   return userService
     .refreshToken(token, refreshToken)
-    .then(tokens => {
+    .then((tokens) => {
       dispatch(success(tokens.token, tokens.refreshToken));
     })
-    .catch(error => {
+    .catch((error) => {
       dispatch(alertActions.error(error.toString()));
     });
 };

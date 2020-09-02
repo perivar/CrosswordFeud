@@ -402,7 +402,16 @@ const initialCrosswordState: ICrosswordContainerState = {
   error: ''
 };
 
-const configureStore = () => {
+export interface IStoreState {
+  alert: IAlertState;
+  authentication: IAuthState;
+  crossword: ICrosswordContainerState;
+  forecast: IForecastState;
+  registration: IRegisterState;
+  users: IUserState;
+}
+
+const configureStore = (): any => {
   // : Store<IStoreState>
   const rootReducer = combineReducers(reducers); // <IStoreState>
 
@@ -426,12 +435,3 @@ const configureStore = () => {
 };
 
 export default configureStore;
-
-export interface IStoreState {
-  alert: IAlertState;
-  authentication: IAuthState;
-  crossword: ICrosswordContainerState;
-  forecast: IForecastState;
-  registration: IRegisterState;
-  users: IUserState;
-}

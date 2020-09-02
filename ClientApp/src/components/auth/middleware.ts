@@ -27,7 +27,7 @@ export const jwt = (store: any) => (next: any) => (action: any) => {
             store.dispatch({ type: UserActionTypes.TOKEN_REFRESHED });
 
             // get the action before the last INVALID_TOKEN (the one which got denied because of token expiration)
-            const pos = buffer.map(e => e.type).indexOf('INVALID_TOKEN') - 1;
+            const pos = buffer.map((e) => e.type).indexOf('INVALID_TOKEN') - 1;
 
             // count back from the invalid token dispatch, and fire off the last dispatch again which was
             // a function. These are to be dispatched, and have the dispatch function passed through to them.

@@ -36,7 +36,7 @@ const compareInputs = (inputKeys: any, oldInputs: any, newInputs: any) => {
   });
 };
 
-export const useDependenciesDebugger = (inputs: any) => {
+export const useDependenciesDebugger = (inputs: any): any => {
   const oldInputsRef = useRef(inputs);
   const inputValuesArray = Object.values(inputs);
   const inputKeysArray = Object.keys(inputs);

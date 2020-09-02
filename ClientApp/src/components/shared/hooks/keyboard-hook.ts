@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export function useKeyboardEvent(key: string, callback: Function) {
+export function useKeyboardEvent(key: string, callback: Function): any {
   useEffect(() => {
     const downHandler = (event: KeyboardEvent) => {
       if (event.key === key) {

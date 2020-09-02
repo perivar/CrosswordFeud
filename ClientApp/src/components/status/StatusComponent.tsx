@@ -34,7 +34,7 @@ export default class StatusComponent extends PureComponent<any, ILocalState> {
 
     // listen to Broadcast events
     connection.on('Broadcast', (user, message) => {
-      this.setState(state => ({
+      this.setState((state) => ({
         messages: [...state.messages, { user, message }] // Append the messages to the state here
       }));
     });
@@ -42,7 +42,7 @@ export default class StatusComponent extends PureComponent<any, ILocalState> {
     connection
       .start()
       .then(() => connection.invoke('BroadcastAll', 'app', 'Started Connection'))
-      .catch(err => console.error(err.toString()));
+      .catch((err) => console.error(err.toString()));
   }
 
   componentWillUnmount() {
@@ -50,7 +50,7 @@ export default class StatusComponent extends PureComponent<any, ILocalState> {
   }
 
   handleSendStatus = () => {
-    this.state.connection!.invoke('SendStatus').catch(err => console.error(err.toString()));
+    this.state.connection!.invoke('SendStatus').catch((err) => console.error(err.toString()));
   };
 
   render() {

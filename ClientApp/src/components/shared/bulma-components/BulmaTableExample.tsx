@@ -85,11 +85,11 @@ export default function BulmaTableExample() {
 
   // create action buttons
   const handleOnDeleteClick = () => {
-    const ids = Object.keys(tableState.checkboxes).filter(id => tableState.checkboxes[id]);
+    const ids = Object.keys(tableState.checkboxes).filter((id) => tableState.checkboxes[id]);
     console.log(`delete: ${ids}`);
     setData(
       produce((draft: Draft<Data[]>) => {
-        return draft.filter(element => !ids.includes(element.id!.toString()));
+        return draft.filter((element) => !ids.includes(element.id!.toString()));
       })
     );
   };
@@ -99,7 +99,7 @@ export default function BulmaTableExample() {
     label: 'Delete',
     confirmLabel: 'Confirm delete',
     key: 'deleteRows',
-    disabled: !Object.keys(tableState.checkboxes).some(id => tableState.checkboxes[id]),
+    disabled: !Object.keys(tableState.checkboxes).some((id) => tableState.checkboxes[id]),
     handleOnClick: handleOnDeleteClick
   });
 
@@ -175,7 +175,7 @@ export default function BulmaTableExample() {
               value={maxButtons}
               min={1}
               max={10}
-              onChange={event => setMaxButtons(Number(event.target.value))}
+              onChange={(event) => setMaxButtons(Number(event.target.value))}
             />
             {maxButtons}
           </div>
@@ -222,7 +222,7 @@ export default function BulmaTableExample() {
               value={pageSize}
               min={5}
               max={30}
-              onChange={event => setPageSize(Number(event.target.value))}
+              onChange={(event) => setPageSize(Number(event.target.value))}
             />
             {pageSize}
           </div>

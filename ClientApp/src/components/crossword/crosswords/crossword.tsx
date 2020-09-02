@@ -39,18 +39,18 @@ import { keycodes } from './keycodes';
 // import mediator from '../lib/mediator';
 import { scrollTo } from '../lib/scroller';
 
-export interface ICrosswordProps {
-  data: ICrosswordData;
-  loadGrid: (id: string) => string[][];
-  onMove: (move: IMove) => void;
-  saveGrid: (id: string, entries: string[][]) => void;
-}
-
 export interface IMove {
   x: number;
   y: number;
   value: string;
   previousValue: string;
+}
+
+export interface ICrosswordProps {
+  data: ICrosswordData;
+  loadGrid: (id: string) => string[][];
+  onMove: (move: IMove) => void;
+  saveGrid: (id: string, entries: string[][]) => void;
 }
 
 export interface ICrosswordState {
@@ -240,7 +240,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   onClearAll(): void {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       grid: mapGrid(prevState.grid, (cell: ICell, gridX: number, gridY: number) => {
         const previousValue = cell.value;
         cell.value = '';
@@ -270,7 +270,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         clueInFocus
       );
 
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         grid: mapGrid(prevState.grid, (cell: any, gridX: number, gridY: number) => {
           if (cellsInFocus.some((c: any) => c.x === gridX && c.y === gridY)) {
             const previousValue = cell.value;
@@ -349,7 +349,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   setCellValue(x: number, y: number, value: string, triggerOnMoveCallback = true): void {
-    this.setState(prevState => ({
+    this.setState((prevState) => ({
       grid: mapGrid(prevState.grid, (cell: ICell, gridX: number, gridY: number) => {
         if (gridX === x && gridY === y) {
           const previousValue = cell.value;
@@ -580,7 +580,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     if (clues && clue) {
       this.focusHiddenInput(x, y);
 
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         grid: prevState.grid,
         cellInFocus: {
           x,
@@ -654,7 +654,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     const cells = cellsForEntry(entry);
 
     if (entry.solution) {
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         grid: mapGrid(prevState.grid, (cell: any, x: number, y: number) => {
           if (cells.some((c: IPosition) => c.x === x && c.y === y)) {
             const n = entry.direction === 'across' ? x - entry.position.x : y - entry.position.y;
@@ -687,7 +687,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         })
         .map((cellAndSolution: any) => cellAndSolution[0]);
 
-      this.setState(prevState => ({
+      this.setState((prevState) => ({
         grid: mapGrid(prevState.grid, (cell: any, gridX: number, gridY: number) => {
           if (badCells.some((bad: IPosition) => bad.x === gridX && bad.y === gridY)) {
             const previousValue = cell.value;

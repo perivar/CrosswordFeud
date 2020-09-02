@@ -2,7 +2,7 @@ import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 
 export default class HelpComponent extends PureComponent<any, any> {
-  render() {
+  render(): JSX.Element {
     return (
       <>
         <p className="subtitle has-text-grey has-text-centered">Hjelp?</p>

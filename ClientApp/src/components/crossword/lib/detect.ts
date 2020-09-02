@@ -59,11 +59,11 @@ let supportsPushState: boolean;
 // #?: Consider dropping support for vendor-specific implementations
 let pageVisibility =
   document.visibilityState ||
-  // @ts-ignore
+  // @ts-ignore: don't exist in all browsers
   document.webkitVisibilityState ||
-  // @ts-ignore
+  // @ts-ignore: don't exist in all browsers
   document.mozVisibilityState ||
-  // @ts-ignore
+  // @ts-ignore: don't exist in all browsers
   document.msVisibilityState ||
   'visible';
 
@@ -94,7 +94,7 @@ const updateBreakpoint = (breakpoint: IBreakPoint) => {
 // this function has a Breakpoint as context, so we can't use fat arrows
 const onMatchingBreakpoint = function onMatchingBreakpoint(mql: any) {
   if (mql && mql.matches) {
-    // @ts-ignore
+    // @ts-ignore: don't exist in all browsers
     updateBreakpoint(this);
   }
 };
@@ -185,7 +185,7 @@ const isAndroid = () => /Android/i.test(navigator.userAgent);
 
 const hasTouchScreen = () =>
   'ontouchstart' in window ||
-  // @ts-ignore
+  // @ts-ignore: don't exist in all browsers
   (window.DocumentTouch && document instanceof window.DocumentTouch);
 
 const hasPushStateSupport = () => {
@@ -220,7 +220,7 @@ const initPageVisibility = () => {
     if (e.type in evtMap) {
       pageVisibility = evtMap[e.type];
     } else {
-      // @ts-ignore
+      // @ts-ignore: don't exist in all browsers
       pageVisibility = window && window.hidden ? 'hidden' : 'visible';
     }
   };
@@ -229,13 +229,13 @@ const initPageVisibility = () => {
   if ('hidden' in document) {
     document.addEventListener('visibilitychange', onchange);
   } else if ('msHidden' in document) {
-    // @ts-ignore
+    // @ts-ignore: don't exist in all browsers
     document.addEventListener('msvisibilitychange', onchange);
   } else if ('onfocusin' in document) {
     // IE 9 and lower:
-    // @ts-ignore
+    // @ts-ignore: don't exist in all browsers
     window.onfocusout = onchange;
-    // @ts-ignore
+    // @ts-ignore: don't exist in all browsers
     window.onfocusin = onchange;
   } else {
     // All others:
@@ -248,13 +248,13 @@ const initPageVisibility = () => {
 
 const pageVisible = () => pageVisibility === 'visible';
 
-// @ts-ignore
+// @ts-ignore: don't exist in all browsers
 const isEnhanced = () => window.guardian.isEnhanced;
 
 const getReferrer = () => document.referrer || '';
 
 const getUserAgent = (() => {
-  // @ts-ignore
+  // @ts-ignore: don't exist in all browsers
   if (!navigator && !navigator.userAgent) {
     return '';
   }

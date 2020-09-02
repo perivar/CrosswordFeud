@@ -191,7 +191,9 @@ const isValidASPCoreIdentityPassword = (password: string): boolean => {
   // return true;
 };
 
-export default function ForgottenPasswordComponent(props: ForgottenPasswordProps & ForgottenPasswordDispatchProps) {
+export default function ForgottenPasswordComponent(
+  props: ForgottenPasswordProps & ForgottenPasswordDispatchProps
+): JSX.Element {
   // get apiUrl from config object
   const config = { apiUrl: process.env.REACT_APP_API };
 

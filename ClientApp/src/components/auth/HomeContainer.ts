@@ -25,9 +25,6 @@ const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>
   };
 };
 
-const HomeContainer = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(HomeComponent);
+const HomeContainer = connect(mapStateToProps, mapDispatchToProps)(HomeComponent);
 
 export default HomeContainer;
