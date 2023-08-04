@@ -117,7 +117,7 @@ const getUrlUsingTableState = (tableState: ExtendedTableState) => {
   let url = '';
   if (tableState.word) {
     if (tableState.pattern) {
-      url = `/odata/Words/Synonyms(Word='${tableState.word}', Pattern='${tableState.pattern}')`;
+      url = `/odata/Words/SynonymsPattern(Word='${tableState.word}', Pattern='${tableState.pattern}')`;
     } else {
       url = `/odata/Words/Synonyms(Word='${tableState.word}')`;
     }
