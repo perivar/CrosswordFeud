@@ -11,9 +11,9 @@ WORKDIR /app
 # RUN npm ci 
 
 # install and cache app dependencies
-COPY package.json .
-RUN npm install --silent
-COPY . .
+COPY package.json /app
+RUN yarn install # or RUN npm install
+COPY . /app
 
 # Build the app
 RUN npm run build
