@@ -33,14 +33,14 @@ const getPaginationClassName = (paginationPlacement: string) => {
   }
 };
 
-function BulmaPaginator(props: IBulmaPaginatorProps): any {
+function BulmaPaginator(props: IBulmaPaginatorProps): React.ReactNode {
   // useWhyDidYouUpdate('BulmaPaginator', props);
   const {
     initialPage = 1,
-    setInitialPage = () => {},
+    setInitialPage = () => undefined,
     numberOfRows,
     rowsPerPage = 10,
-    setRowsPerPage = () => {},
+    setRowsPerPage = () => undefined,
     maxButtons = 5,
     paginationPlacement = 'left',
     useGotoField = false,

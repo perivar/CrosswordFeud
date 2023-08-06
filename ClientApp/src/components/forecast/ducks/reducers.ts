@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 import { IForecast, IForecastState } from '../types';
 import * as types from './types';
 

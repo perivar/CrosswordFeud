@@ -29,6 +29,7 @@ const scrollTo = (offset: number, duration = 0, easeFn = 'easeOutQuad', containe
   }, duration);
 };
 
+// eslint-disable-next-line default-param-last
 const scrollToElement = (element: HTMLElement, duration = 0, easeFn: string, container: HTMLElement) => {
   const top = element.offsetTop;
   scrollTo(top, duration, easeFn, container);

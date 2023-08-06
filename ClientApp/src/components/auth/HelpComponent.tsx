@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React, { PureComponent } from 'react';
 import { Link } from 'react-router-dom';
 

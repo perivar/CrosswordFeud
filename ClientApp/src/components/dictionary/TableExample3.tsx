@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';

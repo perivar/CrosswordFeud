@@ -43,16 +43,15 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/ban-types': 'off', // this was too strict for the hooks
+
     '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
     '@typescript-eslint/no-empty-interface': 'warn',
     '@typescript-eslint/no-empty-function': 'warn',
 
-    'no-use-before-define': 'off', // this was too strict for the hooks
-    '@typescript-eslint/ban-types': 'off', // this was too strict for the hooks
-
     // allow underscore for unused vars
     '@typescript-eslint/no-unused-vars': [
-      'warn', // or "error"
+      'warn',
       {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
@@ -60,11 +59,28 @@ module.exports = {
       }
     ],
 
-    // note you must disable the base rule as it can report incorrect errors
-    camelcase: 'off',
-    // '@typescript-eslint/camelcase': ['error', { properties: 'never' }],
-    '@typescript-eslint/camelcase': 'off',
-    '@typescript-eslint/no-shadow': 'warn',
+    // Note: you must disable the base rule as it can report incorrect errors
+    '@typescript-eslint/no-shadow': [
+      'warn',
+      {
+        ignoreFunctionTypeParameterNameValueShadow: true,
+        ignoreTypeValueShadow: true
+      }
+    ],
+
+    // '@typescript-eslint/camelcase': 'off', // deprectated use naming-convention instead
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE', 'PascalCase']
+      },
+      {
+        selector: 'variable',
+        modifiers: ['destructured'],
+        format: null
+      }
+    ],
 
     /**
      * @description rules of eslint-plugin-react
@@ -76,29 +92,34 @@ module.exports = {
         extensions: ['.jsx', '.tsx']
       }
     ],
-    'react/jsx-no-bind': 'warn',
-    'react/jsx-no-duplicate-props': 'warn',
-    // 'react/jsx-one-expression-per-line': 'warn',
-    'react/jsx-pascal-case': 'warn',
-    // 'react/jsx-props-no-multi-spaces': 'warn',
+    'react/jsx-no-bind': [
+      'error',
+      {
+        allowArrowFunctions: true,
+        allowFunctions: true,
+        allowBind: true
+      }
+    ],
+    'react/no-typos': 'error',
+
     'react/jsx-props-no-spreading': 'off',
-    'react/sort-default-props': 'warn',
-    // 'react/jsx-tag-spacing': ['error', { 'beforeSelfClosing': 'always' }],
     'react/prop-types': 'off', // Is this incompatible with TS props type?
+    'react/destructuring-assignment': 'off',
+    'react/require-default-props': 'off',
+    'react/jsx-no-useless-fragment': 'off',
+
+    'react/jsx-no-duplicate-props': 'warn',
+    'react/jsx-pascal-case': 'warn',
+    'react/sort-default-props': 'warn',
     'react/no-find-dom-node': 'warn',
     'react/no-string-refs': 'warn',
     'react/no-unused-state': 'warn',
     'react/no-access-state-in-setstate': 'warn',
-    // 'react/no-multi-comp': 'warn',
-    'react/no-typos': 'error',
     'react/no-unsafe': 'warn',
     'react/no-unused-prop-types': 'warn',
-    'react/destructuring-assignment': 'off',
     'react/no-array-index-key': 'warn',
     'react/static-property-placement': ['warn', 'static public field'],
     'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],
-    'react/require-default-props': 'off',
-    'react/jsx-no-useless-fragment': 'off',
 
     /**
      * @description rules of eslint-plugin-react-hooks
@@ -109,14 +130,31 @@ module.exports = {
     /**
      * @description rules of eslint
      */
+    'spaced-comment': [
+      'error',
+      'always',
+      {
+        markers: ['/']
+      }
+    ],
+
+    // Note: you must disable the base rule as it can report incorrect errors
+    camelcase: 'off',
+    indent: 'off',
+    'no-shadow': 'off',
+    'no-empty-function': 'off',
+    'no-unused-vars': 'off',
+
     'no-underscore-dangle': 'off',
     'no-console': 'off',
     'no-nested-ternary': 'off',
     'no-return-assign': 'off',
-    'no-shadow': 'off',
+    'no-use-before-define': 'off', // this was too strict for the hooks
     'lines-between-class-members': 'off',
+
+    'default-param-last': 'warn',
     'prefer-const': 'warn',
-    'prefer-destructuring': 'warn',
+    'prefer-destructuring': ['warn', { object: true, array: false }],
     'no-dupe-class-members': 'warn',
     'no-else-return': 'warn',
     'no-unneeded-ternary': 'warn',
@@ -134,23 +172,15 @@ module.exports = {
     'class-methods-use-this': 'warn',
     'guard-for-in': 'warn',
     'default-case': 'warn',
-    'spaced-comment': [
-      'error',
-      'always',
-      {
-        markers: ['/']
-      }
-    ],
-    'default-param-last': 'off',
-    'no-unused-vars': 'off',
 
     /**
      * @description rules of eslint-import-resolver-typescript
      */
-    'import/no-cycle': 'off',
     'import/no-unresolved': 'error',
-    'import/prefer-default-export': 'off',
     'import/no-extraneous-dependencies': ['error', { devDependencies: ['**/*.spec.ts'] }],
+
+    'import/no-cycle': 'off',
+    'import/prefer-default-export': 'off',
 
     /**
      * @description rules of eslint-plugin-prettier

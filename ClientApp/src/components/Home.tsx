@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 import React, { PureComponent } from 'react';
 
 export class Home extends PureComponent {

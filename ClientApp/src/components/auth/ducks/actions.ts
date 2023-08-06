@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 // ducks/actions.ts
 // This is where you define your action creators.
 // All action creators must be functions that return an object with at least the type property.

@@ -1,3 +1,4 @@
+/* eslint-disable default-param-last */
 // ducks/reducers.ts
 // The reducer deals with updating the state.
 

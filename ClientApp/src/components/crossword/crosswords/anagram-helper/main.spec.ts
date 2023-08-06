@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import sortBy from 'lodash/sortBy';
 import { AnagramHelper } from './main';
 import { IClue, ICell } from '../../types';
