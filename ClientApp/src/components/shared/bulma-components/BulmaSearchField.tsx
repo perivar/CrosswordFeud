@@ -9,7 +9,7 @@ interface SearchFieldProps {
 }
 
 // BulmaSearchField
-const SearchField = (props: SearchFieldProps) => {
+function SearchField(props: SearchFieldProps) {
   const { type, label, placeholder, value, handleSubmit } = props;
 
   const searchInputRef: React.RefObject<HTMLInputElement> = React.createRef();
@@ -67,6 +67,6 @@ const SearchField = (props: SearchFieldProps) => {
       </div>
     </form>
   );
-};
+}
 
 export const BulmaSearchField = React.memo(SearchField);

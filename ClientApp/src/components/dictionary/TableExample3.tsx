@@ -2,9 +2,7 @@ import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import produce, { Draft } from 'immer';
 import axios, { AxiosRequestConfig } from 'axios';
 import '../shared/bulma-components/bulma-table.scss';
-// import { useSelector } from 'react-redux';
 import queryString from 'query-string';
-// import useReactRouter from '../shared/hooks/use-react-router';
 import jwtDecode from 'jwt-decode';
 import BulmaTable, {
   SortableTableState,
@@ -17,20 +15,16 @@ import BulmaTable, {
 } from '../shared/bulma-components/BulmaTable';
 import { BulmaEditableTextField } from '../shared/bulma-components/BulmaEditableTextField';
 import { OdataFilter, OrderBy, OdataValues, getOdataQueryObject } from '../shared/hooks/odata-hook';
-// import { IStoreState } from '../../state/store';
-// import { history } from '../../history';
 import { BulmaNotificationType, BulmaNotification } from '../shared/bulma-components/BulmaNotification';
 import { BulmaConfirmButton } from '../shared/bulma-components/BulmaConfirmButton';
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 import { BulmaAutocomplete } from '../shared/bulma-components/BulmaAutocomplete';
 import LetterBoxes from './LetterBoxes';
-import { DictionaryProps, DictionaryDispatchProps } from './DictionaryContainer';
-// import { ILogon } from '../auth/types';
+import { DictionaryProps } from './DictionaryContainer';
 import { IStoreState } from '../../state/store';
 import { store } from '../..';
 import { UserActionTypes } from '../auth/ducks/types';
 // import { useDependenciesDebugger } from '../shared/hooks/dependency-debugger-hook';
-// import { useDataApi } from '../shared/hooks/data-api-hook';
 
 interface WordData {
   wordId: number;
@@ -117,7 +111,7 @@ const getUrlUsingTableState = (tableState: ExtendedTableState) => {
   let url = '';
   if (tableState.word) {
     if (tableState.pattern) {
-      url = `/odata/Words/Synonyms(Word='${tableState.word}', Pattern='${tableState.pattern}')`;
+      url = `/odata/Words/SynonymsPattern(Word='${tableState.word}', Pattern='${tableState.pattern}')`;
     } else {
       url = `/odata/Words/Synonyms(Word='${tableState.word}')`;
     }
@@ -214,7 +208,7 @@ const responseInterceptorErrorHandler = (error: any) => {
 };
 
 // ------------------------------------------------
-export default function TableExample3(props: DictionaryProps & DictionaryDispatchProps) {
+export default function TableExample3(props: DictionaryProps) {
   const [notificationType, setNotificationType] = useState<BulmaNotificationType>('warning');
   const [notificationDisplaying, setNotificationDisplaying] = useState<boolean>(false);
   const [notificationMessage, setNotificationMessage] = useState<string>('');
@@ -240,15 +234,13 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       };
 
       return (
-        <>
-          <button
-            type="button"
-            className="button is-link is-outlined is-small"
-            value={renderProps.value}
-            onClick={() => handleSynonymSearch(renderProps)}>
-            {renderProps.value}
-          </button>
-        </>
+        <button
+          type="button"
+          className="button is-link is-outlined is-small"
+          value={renderProps.value}
+          onClick={() => handleSynonymSearch(renderProps)}>
+          {renderProps.value}
+        </button>
       );
     };
 
@@ -320,7 +312,6 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
       const date = `${dayString}/${monthString}/${year}`;
       return <>{date}</>;
     };
-    // renderDateFormat.displayName = 'DateFormat';
 
     return [
       {
@@ -333,32 +324,23 @@ export default function TableExample3(props: DictionaryProps & DictionaryDispatc
         header: 'Synonym',
         key: 'value',
         render: renderEditable
-        // dataStyle: { verticalAlign: 'middle' }
       },
       {
         header: 'Ant. Ord',
         key: 'numberOfWords'
-        // dataProps: { className: 'is-hidden-mobile' },
-        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Lengde',
         key: 'numberOfLetters'
-        // dataProps: { className: 'is-hidden-mobile' },
-        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Bruker',
         key: 'comment'
-        // dataProps: { className: 'is-hidden-mobile' },
-        // headerProps: { className: 'is-hidden-mobile' }
       },
       {
         header: 'Dato',
         key: 'createdDate',
         render: renderDateFormat
-        // dataProps: { className: 'is-hidden-mobile' },
-        // headerProps: { className: 'is-hidden-mobile' }
       }
     ];
   }, []);

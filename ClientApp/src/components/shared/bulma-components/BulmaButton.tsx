@@ -11,7 +11,7 @@ export interface BulmaButtonArguments {
   handleOnClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
-const Button = (props: BulmaButtonArguments) => {
+function Button(props: BulmaButtonArguments) {
   const { type, label, id, disabled = false, loading = false, handleOnClick } = props;
 
   return (
@@ -25,7 +25,7 @@ const Button = (props: BulmaButtonArguments) => {
       <span>{label}</span>
     </button>
   );
-};
+}
 
 // export const BulmaButton = React.memo(Button);
 export const BulmaButton = Button;

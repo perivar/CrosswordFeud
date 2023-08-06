@@ -2,14 +2,15 @@
 let supportsOptions = false;
 
 try {
-  const options = Object.defineProperty({}, 'passive', {
-    // eslint-disable-next-line getter-return
+  const options: AddEventListenerOptions = Object.defineProperty({}, 'passive', {
     get() {
       supportsOptions = true;
     }
   });
 
-  window.addEventListener('test', options, options);
+  const listener: EventListener = (_: Event) => undefined;
+
+  window.addEventListener('test', listener, options);
 } catch (e) {
   supportsOptions = false;
 }

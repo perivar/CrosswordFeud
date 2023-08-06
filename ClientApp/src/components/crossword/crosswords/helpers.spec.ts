@@ -105,8 +105,7 @@ const entriesFixture: IClue[] = [
     humanNumber: '2,10,23,21across',
     direction: 'down',
     length: 8,
-    clue:
-      'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
+    clue: 'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 3, y: 0 },
     separatorLocations: { ',': [4, 8] }
@@ -139,8 +138,7 @@ const groupFixture: IClue[] = [
     humanNumber: '2,10,23,21across',
     direction: 'down',
     length: 8,
-    clue:
-      'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
+    clue: 'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)',
     group: ['2-down', '10-across', '23-down', '21-across'],
     position: { x: 3, y: 0 },
     separatorLocations: { ',': [4, 8] }
@@ -352,8 +350,7 @@ describe('Helpers', () => {
           '-': []
         },
         direction: '',
-        clue:
-          'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)'
+        clue: 'Excuse me? Did some old people at any time cause our ruin? Thats a funny revolutionary line (4,4,3,6,4,4,3,2)'
       };
       const clue = stubClue({
         id: '10-across',

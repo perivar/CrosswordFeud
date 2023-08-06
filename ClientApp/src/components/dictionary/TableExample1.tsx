@@ -1,9 +1,9 @@
 import React, { Component, useEffect, useRef, SyntheticEvent, CSSProperties } from 'react';
 import ReactTable, { Column, RowInfo, CellInfo } from 'react-table';
 import selectTableHOC, {
-  SelectTableAdditionalProps,
   SelectAllInputComponentProps,
-  SelectInputComponentProps
+  SelectInputComponentProps,
+  SelectTableAdditionalProps
 } from 'react-table/lib/hoc/selectTable';
 
 import 'react-table/react-table.css';
@@ -16,39 +16,37 @@ import { getUniqueData } from './TableExampleData';
 
 const SelectTable = selectTableHOC(ReactTable);
 
-const SelectInput: React.StatelessComponent<SelectInputComponentProps> = ({
-  selectType,
-  onClick,
-  id,
-  checked,
-  row
-}) => (
-  <input
-    type={selectType || 'checkbox'}
-    aria-label={`${checked ? 'Un-select' : 'Select'} row with id:${id}`}
-    checked={checked}
-    id={id}
-    onClick={(e) => {
-      const { shiftKey } = e;
-      e.stopPropagation();
-      onClick(id, shiftKey, row);
-    }}
-    onChange={() => {}}
-  />
-);
+function SelectInput({ selectType, onClick, id, checked, row }: SelectInputComponentProps) {
+  return (
+    <input
+      type={selectType || 'checkbox'}
+      aria-label={`${checked ? 'Un-select' : 'Select'} row with id:${id}`}
+      checked={checked}
+      id={id}
+      onClick={(e) => {
+        const { shiftKey } = e;
+        e.stopPropagation();
+        onClick(id, shiftKey, row);
+      }}
+      onChange={undefined}
+    />
+  );
+}
 
-const SelectAllInput: React.StatelessComponent<SelectAllInputComponentProps> = ({ selectType, onClick, checked }) => (
-  <input
-    type={selectType || 'checkbox'}
-    aria-label={`${checked ? 'Un-select all' : 'Select all'}`}
-    checked={checked}
-    onClick={(e) => {
-      e.stopPropagation();
-      onClick();
-    }}
-    onChange={() => {}}
-  />
-);
+function SelectAllInput({ selectType, onClick, checked }: SelectAllInputComponentProps) {
+  return (
+    <input
+      type={selectType || 'checkbox'}
+      aria-label={`${checked ? 'Un-select all' : 'Select all'}`}
+      checked={checked}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
+      onChange={undefined}
+    />
+  );
+}
 
 const selectTableAdditionalProps: SelectTableAdditionalProps = {
   keyField: 'id',
@@ -58,18 +56,12 @@ const selectTableAdditionalProps: SelectTableAdditionalProps = {
   SelectAllInputComponent: SelectAllInput
 };
 
-const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<string>) => {
-  const {
-    onEditBegin,
-    onEditConfirm,
-    onEditCancel,
-    isEditing,
-    editValue,
-    setEditValue
-  }: EditableState<string> = useEditableState({
-    value,
-    onValueChanged
-  });
+function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<string>) {
+  const { onEditBegin, onEditConfirm, onEditCancel, isEditing, editValue, setEditValue }: EditableState<string> =
+    useEditableState({
+      value,
+      onValueChanged
+    });
 
   // creating the ref by passing initial value null
   // The type of our ref is an input element
@@ -164,7 +156,7 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
       {value || <i>Empty</i>}
     </a>
   );
-};
+}
 
 interface TableExample1Props {}
 
@@ -337,7 +329,7 @@ export default class TableExample1 extends Component<TableExample1Props, TableEx
         {...selectTableAdditionalProps}
         data={this.state.data}
         columns={columns}
-        // norwmal ref won't work since we need the wrapped instance
+        // normal ref won't work since we need the wrapped instance
         // therefore use an arrow function to set the ref
         ref={(ref) => {
           this.selectTable = ref;

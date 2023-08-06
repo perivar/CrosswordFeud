@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import * as signalR from '@aspnet/signalr';
+import * as signalR from '@microsoft/signalr';
 import { BulmaButton } from '../shared/bulma-components/BulmaButton';
 
 interface IMessage {

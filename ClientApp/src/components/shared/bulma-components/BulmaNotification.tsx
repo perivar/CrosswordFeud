@@ -11,7 +11,7 @@ interface NotificationProps {
 }
 
 // BulmaNotification
-const Notification = (props: NotificationProps) => {
+function Notification(props: NotificationProps) {
   const { type, visible, setVisible, message, handleClick } = props;
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -29,6 +29,6 @@ const Notification = (props: NotificationProps) => {
     );
   }
   return <div />;
-};
+}
 
 export const BulmaNotification = React.memo(Notification);

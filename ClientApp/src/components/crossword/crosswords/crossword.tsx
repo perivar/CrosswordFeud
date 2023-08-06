@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-class-component-methods */
 import '../scss/main.scss';
 import React, { Component } from 'react';
 import debounce from 'lodash/debounce';
@@ -22,10 +23,8 @@ import {
   cellsForEntry
 } from './helpers';
 
-import { saveGridState, loadGridState } from './persistence';
 import { IClue, IPosition, IGrid, ICell, Direction, IClueMap, ICrosswordData } from '../types';
 
-// import $ from '../lib/$';
 import { AnagramHelper } from './anagram-helper/main';
 import { Clues, IClueEntry } from './clues';
 import { Controls } from './controls';
@@ -33,10 +32,8 @@ import { Grid, IGridProps } from './grid';
 import { HiddenInput } from './hidden-input';
 import { addMyEventListener } from '../lib/events';
 import { classNames } from './classNames';
-// import { findDOMNode } from 'react-dom';
 import { isBreakpoint, isIOS } from '../lib/detect';
 import { keycodes } from './keycodes';
-// import mediator from '../lib/mediator';
 import { scrollTo } from '../lib/scroller';
 
 export interface IMove {
@@ -48,9 +45,9 @@ export interface IMove {
 
 export interface ICrosswordProps {
   data: ICrosswordData;
-  loadGrid: (id: string) => string[][];
-  onMove: (move: IMove) => void;
-  saveGrid: (id: string, entries: string[][]) => void;
+  loadGrid?: (id: string) => string[][];
+  onMove?: (move: IMove) => void;
+  saveGrid?: (id: string, entries: string[][]) => void;
 }
 
 export interface ICrosswordState {
@@ -75,8 +72,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   private returnPosition: number;
   private gridHeightIsSet: boolean;
 
-  static defaultProps: ICrosswordProps;
-
   constructor(props: ICrosswordProps) {
     super(props);
     const { dimensions } = this.props.data;
@@ -90,7 +85,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
         dimensions.rows,
         dimensions.cols,
         this.props.data.entries,
-        this.props.loadGrid(this.props.data.id)
+        this.props.loadGrid!(this.props.data.id)
       ),
       cellInFocus: undefined,
       directionOfEntry: undefined,
@@ -109,19 +104,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   }
 
   componentDidMount() {
-    // mediator.on(
-    //   'window:resize',
-    //   debounce(this.setGridHeight.bind(this), 200),
-    // );
-
-    // mediator.on(
-    //   'window:orientationchange',
-    //   debounce(this.setGridHeight.bind(this), 200),
-    // );
-
     const delayedSetGridCallback = debounce(this.setGridHeight.bind(this), 200);
-    // window.addEventListener('resize', delayedSetGridCallback);
-    // window.addEventListener('orientationchange', delayedSetGridCallback);
     addMyEventListener(window, 'resize', delayedSetGridCallback);
     addMyEventListener(window, 'orientationchange', delayedSetGridCallback);
 
@@ -143,37 +126,46 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  onKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
-    const cell = this.state.cellInFocus;
+  handleScroll(): void {
+    // Sticky clue
+    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
 
-    if (!event.metaKey && !event.ctrlKey && !event.altKey) {
-      if (event.keyCode === keycodes.backspace || event.keyCode === keycodes.delete) {
-        event.preventDefault();
-        if (cell) {
-          if (this.cellIsEmpty(cell.x, cell.y)) {
-            this.focusPrevious();
-          } else {
-            this.setCellValue(cell.x, cell.y, '');
-            this.saveGrid();
-          }
-        }
-      } else if (event.keyCode === keycodes.left) {
-        event.preventDefault();
-        this.moveFocus(-1, 0);
-      } else if (event.keyCode === keycodes.up) {
-        event.preventDefault();
-        this.moveFocus(0, -1);
-      } else if (event.keyCode === keycodes.right) {
-        event.preventDefault();
-        this.moveFocus(1, 0);
-      } else if (event.keyCode === keycodes.down) {
-        event.preventDefault();
-        this.moveFocus(0, 1);
-      }
+    if (!$stickyClueWrapper) {
+      return;
     }
+    const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
+
+    const $game = this.game.current as HTMLDivElement;
+    const gameOffsetTop = $game.offsetTop;
+    const gameOffsetHeight = $game.offsetHeight;
+
+    const { scrollY } = window;
+
+    fastdom.mutate(() => {
+      // Clear previous state
+      $stickyClueWrapper.removeAttribute('style');
+      $stickyClueWrapper.classList.remove('is-fixed');
+
+      const scrollYPastGame = scrollY - gameOffsetTop;
+
+      if (scrollYPastGame >= 0) {
+        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
+
+        if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
+          $stickyClueWrapper.setAttribute('style', `top: auto, bottom: 0px`);
+        } else if (isIOS()) {
+          // iOS doesn't support sticky things when the keyboard
+          // is open, so we use absolute positioning and
+          // programmatically update the value of top
+          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}px`);
+        } else {
+          $stickyClueWrapper.classList.add('is-fixed');
+        }
+      }
+    });
   }
 
-  // called when cell is selected (by click or programtically focused)
+  // called when cell is selected (by click or programmatically focused)
   onSelect(x: number, y: number): void {
     const { cellInFocus } = this.state;
     const clue = cluesFor(this.clueMap, x, y);
@@ -244,7 +236,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
       grid: mapGrid(prevState.grid, (cell: ICell, gridX: number, gridY: number) => {
         const previousValue = cell.value;
         cell.value = '';
-        this.props.onMove({
+        this.props.onMove!({
           x: gridX,
           y: gridY,
           value: '',
@@ -275,7 +267,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
           if (cellsInFocus.some((c: any) => c.x === gridX && c.y === gridY)) {
             const previousValue = cell.value;
             cell.value = '';
-            this.props.onMove({
+            this.props.onMove!({
               x: gridX,
               y: gridY,
               value: '',
@@ -305,16 +297,44 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     }
   }
 
-  // onClickHiddenInput(event: React.TouchEvent<HTMLInputElement>): void;
-  // onClickHiddenInput(event: React.MouseEvent<HTMLInputElement, MouseEvent>): void;
-  onClickHiddenInput(event: any): void {
+  onKeyDown(event: React.KeyboardEvent<HTMLInputElement>): void {
+    const cell = this.state.cellInFocus;
+
+    if (!event.metaKey && !event.ctrlKey && !event.altKey) {
+      if (event.keyCode === keycodes.backspace || event.keyCode === keycodes.delete) {
+        event.preventDefault();
+        if (cell) {
+          if (this.cellIsEmpty(cell.x, cell.y)) {
+            this.focusPrevious();
+          } else {
+            this.setCellValue(cell.x, cell.y, '');
+            this.saveGrid();
+          }
+        }
+      } else if (event.keyCode === keycodes.left) {
+        event.preventDefault();
+        this.moveFocus(-1, 0);
+      } else if (event.keyCode === keycodes.up) {
+        event.preventDefault();
+        this.moveFocus(0, -1);
+      } else if (event.keyCode === keycodes.right) {
+        event.preventDefault();
+        this.moveFocus(1, 0);
+      } else if (event.keyCode === keycodes.down) {
+        event.preventDefault();
+        this.moveFocus(0, 1);
+      }
+    }
+  }
+
+  onClickHiddenInput(event: React.TouchEvent<HTMLInputElement> | React.MouseEvent<HTMLInputElement, MouseEvent>): void {
     const focused = this.state.cellInFocus;
 
     if (focused) {
       this.onSelect(focused.x, focused.y);
     }
 
-    // We need to handle touch seperately as touching an input on iPhone does not fire the
+    // We need to handle touch separately as touching an input on iPhone does not fire the
     // click event - listen for a touchStart and preventDefault to avoid calling onSelect twice on
     // devices that fire click AND touch events. The click event doesn't fire only when the input is already focused
     if (event.type === 'touchstart') {
@@ -357,7 +377,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
           cell.isError = false;
 
           if (triggerOnMoveCallback) {
-            this.props.onMove({
+            this.props.onMove!({
               x,
               y,
               value,
@@ -377,51 +397,6 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   setReturnPosition(position: number): void {
     this.returnPosition = position;
-  }
-
-  handleScroll(): void {
-    // Sticky clue
-    const $stickyClueWrapper = this.stickyClueWrapper.current as HTMLDivElement;
-
-    if (!$stickyClueWrapper) {
-      return;
-    }
-    const stickyClueWrapperOffsetHeight = $stickyClueWrapper.offsetHeight;
-
-    const $game = this.game.current as HTMLDivElement;
-    const gameOffsetTop = $game.offsetTop;
-    const gameOffsetHeight = $game.offsetHeight;
-
-    // const $grid = this.grid.current as React.ReactNode;
-    // const gridOffsetTop = $grid.offsetTop;
-    // const gridOffsetHeight = $grid.offsetHeight;
-
-    const { scrollY } = window;
-
-    fastdom.mutate(() => {
-      // Clear previous state
-      $stickyClueWrapper.removeAttribute('style');
-      $stickyClueWrapper.classList.remove('is-fixed');
-
-      const scrollYPastGame = scrollY - gameOffsetTop;
-
-      if (scrollYPastGame >= 0) {
-        // const gridOffsetBottom = gridOffsetTop + gridOffsetHeight;
-        const gameOffsetBottom = gameOffsetTop + gameOffsetHeight;
-
-        if (scrollY > gameOffsetBottom - stickyClueWrapperOffsetHeight) {
-          // if (scrollY > gridOffsetBottom - stickyClueWrapperOffsetHeight) {
-          $stickyClueWrapper.setAttribute('style', `top: auto, bottom: 0px`);
-        } else if (isIOS()) {
-          // iOS doesn't support sticky things when the keyboard
-          // is open, so we use absolute positioning and
-          // programatically update the value of top
-          $stickyClueWrapper.setAttribute('style', `top: ${scrollYPastGame}px`);
-        } else {
-          $stickyClueWrapper.classList.add('is-fixed');
-        }
-      }
-    });
   }
 
   updateGrid(gridState: any) {
@@ -444,7 +419,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     return !this.getCellValue(x, y);
   }
 
-  goToReturnPosition(event: React.FocusEvent<HTMLInputElement>): void {
+  goToReturnPosition(_event: React.FocusEvent<HTMLInputElement>): void {
     if (
       isBreakpoint({
         max: 'mobile'
@@ -660,7 +635,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
             const n = entry.direction === 'across' ? x - entry.position.x : y - entry.position.y;
             const previousValue = cell.value;
             cell.value = entry.solution[n];
-            this.props.onMove({
+            this.props.onMove!({
               x,
               y,
               value: cell.value,
@@ -692,7 +667,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
           if (badCells.some((bad: IPosition) => bad.x === gridX && bad.y === gridY)) {
             const previousValue = cell.value;
             cell.value = '';
-            this.props.onMove({
+            this.props.onMove!({
               x: gridX,
               y: gridY,
               value: '',
@@ -737,7 +712,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
 
   saveGrid(): void {
     const entries = this.state.grid.map((row: any) => row.map((cell: ICell) => cell.value));
-    this.props.saveGrid(this.props.data.id, entries);
+    this.props.saveGrid!(this.props.data.id, entries);
   }
 
   render() {
@@ -804,25 +779,5 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     );
   }
 }
-
-Crossword.defaultProps = {
-  data: {
-    id: '',
-    number: 0,
-    name: '',
-    creator: { name: '', webUrl: '' },
-    date: 0,
-    entries: [], // or new Array<IClue>()
-    solutionAvailable: false,
-    dateSolutionAvailable: 0,
-    dimensions: { rows: 0, cols: 0 },
-    crosswordType: 'quick',
-    pdf: '',
-    instructions: ''
-  }, // move: IMove
-  loadGrid: (id: string) => loadGridState(id),
-  onMove: () => {},
-  saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid)
-};
 
 export default Crossword;

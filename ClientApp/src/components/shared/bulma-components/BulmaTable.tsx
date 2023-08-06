@@ -155,7 +155,7 @@ interface SortableTableHeaderItemProps extends SortableTableIconInfo {
 }
 
 // SortableTableHeaderItem
-const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
+function SortableTableHeaderItem(props: SortableTableHeaderItemProps) {
   // useWhyDidYouUpdate('SortableTableHeaderItem', props);
   const { column, setTableState, index, sorting, iconStyle, iconDesc, iconAsc, iconBoth } = props;
   // console.log(`render header :: ${column.key}`);
@@ -224,12 +224,12 @@ const SortableTableHeaderItem = (props: SortableTableHeaderItemProps) => {
       {sortIcon}
     </th>
   );
-};
+}
 
 const MemoizedSortableTableHeaderItem = React.memo(SortableTableHeaderItem);
 
 // SortableTableHeader
-const SortableTableHeader = (props: SortableTableHeaderProps) => {
+function SortableTableHeader(props: SortableTableHeaderProps) {
   // useWhyDidYouUpdate('SortableTableHeader', props);
   const {
     columns,
@@ -284,7 +284,7 @@ const SortableTableHeader = (props: SortableTableHeaderProps) => {
       </tr>
     </thead>
   );
-};
+}
 
 interface SortableTableRowProps {
   data: SortableTableData;
@@ -299,19 +299,10 @@ interface SortableTableRowProps {
 }
 
 // SortableTableRow
-const SortableTableRow = (props: SortableTableRowProps) => {
+function SortableTableRow(props: SortableTableRowProps) {
   // useWhyDidYouUpdate('SortableTableRow', props);
-  const {
-    data,
-    columns,
-    uniqueIdKey,
-    isSelected,
-    url,
-    setUrl,
-    setTableState,
-    handleCheckboxChange,
-    isSelectable
-  } = props;
+  const { data, columns, uniqueIdKey, isSelected, url, setUrl, setTableState, handleCheckboxChange, isSelectable } =
+    props;
 
   // console.log(`render row :: ${data[uniqueIdKey]}`);
 
@@ -358,7 +349,7 @@ const SortableTableRow = (props: SortableTableRowProps) => {
       {tds}
     </tr>
   );
-};
+}
 
 interface SortableTableBodyProps {
   columns: SortableTableColumn[];
@@ -377,7 +368,7 @@ interface SortableTableBodyProps {
 const MemoizedSortableTableRow = React.memo(SortableTableRow);
 
 // SortableTableBody
-const SortableTableBody = (props: SortableTableBodyProps) => {
+function SortableTableBody(props: SortableTableBodyProps) {
   // useWhyDidYouUpdate('SortableTableBody', props);
   const {
     columns,
@@ -424,7 +415,7 @@ const SortableTableBody = (props: SortableTableBodyProps) => {
       )}
     </tbody>
   );
-};
+}
 
 // filter
 const filterData = (
@@ -498,7 +489,7 @@ interface SortableTableTopBarProps {
 }
 
 // SortableTableSearchBar
-const SortableTableTopBar = (props: SortableTableTopBarProps) => {
+function SortableTableTopBar(props: SortableTableTopBarProps) {
   const {
     numberOfRows,
     tableState,
@@ -524,44 +515,42 @@ const SortableTableTopBar = (props: SortableTableTopBarProps) => {
   const actionInfo: ActionButtonProps = { tableState, setTableState, url, setUrl };
 
   return (
-    <>
-      <nav className="level">
-        <div className="level-left">
-          <div className="level-item">
-            <div className="buttons is-centered">
-              {actionButtons &&
-                actionButtons.map((actionButton: ActionButton) => (
-                  <div key={actionButton.key}>{actionButton.render && actionButton.render(actionInfo)}</div>
-                ))}
-            </div>
-          </div>
-          <div className="level-item">
-            {renderNumberOfRows ? (
-              renderNumberOfRows(numberOfRows, tableState)
-            ) : (
-              <p>
-                <strong>{numberOfRows}</strong> {elementsText}
-              </p>
-            )}
+    <nav className="level">
+      <div className="level-left">
+        <div className="level-item">
+          <div className="buttons is-centered">
+            {actionButtons &&
+              actionButtons.map((actionButton: ActionButton) => (
+                <div key={actionButton.key}>{actionButton.render && actionButton.render(actionInfo)}</div>
+              ))}
           </div>
         </div>
-        <div className="level-right">
-          <div className="level-item">
-            {search && (
-              <BulmaSearchField
-                type="addon"
-                label={searchText}
-                value={tableState.filter}
-                placeholder={findInText}
-                handleSubmit={handleSearchSubmit}
-              />
-            )}
-          </div>
+        <div className="level-item">
+          {renderNumberOfRows ? (
+            renderNumberOfRows(numberOfRows, tableState)
+          ) : (
+            <p>
+              <strong>{numberOfRows}</strong> {elementsText}
+            </p>
+          )}
         </div>
-      </nav>
-    </>
+      </div>
+      <div className="level-right">
+        <div className="level-item">
+          {search && (
+            <BulmaSearchField
+              type="addon"
+              label={searchText}
+              value={tableState.filter}
+              placeholder={findInText}
+              handleSubmit={handleSearchSubmit}
+            />
+          )}
+        </div>
+      </div>
+    </nav>
   );
-};
+}
 
 // sort methods
 const parseFloatable = (value: any): boolean => {
@@ -651,8 +640,8 @@ const nextSortingState = (state: SortingType): SortingType => {
     case 'desc':
       next = 'asc';
       break;
-    default:
     case 'asc':
+    default:
       next = 'both';
       break;
   }
@@ -724,7 +713,7 @@ const axiosInstance: AxiosInstance = axios.create({});
 // }
 
 // BulmaTable
-const BulmaTable = (props: SortableTableProps) => {
+function BulmaTable(props: SortableTableProps) {
   // useWhyDidYouUpdate('BulmaTable', props);
   const {
     columns,
@@ -788,7 +777,12 @@ const BulmaTable = (props: SortableTableProps) => {
   // instead of using the callback in the data api hook we can use the useEffect hook to monitor the response object
   const [url, setUrl] = useState(initialUrl);
   if (initialBaseUrl) axiosInstance.defaults.baseURL = initialBaseUrl;
-  const { response, error, isLoading, setUrl: fetchData } = useDataApi({
+  const {
+    response,
+    error,
+    isLoading,
+    setUrl: fetchData
+  } = useDataApi({
     // isError
     axios: axiosInstance
   });
@@ -1209,6 +1203,6 @@ const BulmaTable = (props: SortableTableProps) => {
       {pagination && bulmaPaginator}
     </>
   );
-};
+}
 
 export default BulmaTable;

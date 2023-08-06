@@ -7,7 +7,7 @@ interface PrivateRouteProps extends RouteProps {
   component: any;
 }
 
-const PrivateRoute = (props: PrivateRouteProps) => {
+function PrivateRoute(props: PrivateRouteProps) {
   const { component: Component, ...rest } = props;
   // const isSignedIn = !!localStorage.getItem('user');
 
@@ -36,6 +36,6 @@ const PrivateRoute = (props: PrivateRouteProps) => {
       }
     />
   );
-};
+}
 
 export default PrivateRoute;

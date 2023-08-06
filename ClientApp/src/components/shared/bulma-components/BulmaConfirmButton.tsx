@@ -18,7 +18,7 @@ export interface BulmaConfirmButtonArguments {
 
 const TIMEOUT = 2000;
 
-const ConfirmButton = (props: BulmaConfirmButtonArguments) => {
+function ConfirmButton(props: BulmaConfirmButtonArguments) {
   const { type, label, confirmLabel, key, disabled = false, loading = false, handleOnClick } = props;
 
   const [confirming, setConfirming] = useState<boolean>();
@@ -56,7 +56,7 @@ const ConfirmButton = (props: BulmaConfirmButtonArguments) => {
       <span>{localLabel}</span>
     </button>
   );
-};
+}
 
 // export const BulmaConfirmButton = React.memo(ConfirmButton);
 export const BulmaConfirmButton = ConfirmButton;

@@ -26,7 +26,7 @@ function handleResponse(response: any) {
     const data = text && JSON.parse(text);
     if (!response.ok) {
       if (response.status === 401) {
-        window.location.reload(true);
+        window.location.reload();
       }
 
       // extract error message and convert to sring
@@ -48,7 +48,6 @@ function get() {
     headers: authHeader()
   };
 
-  // return fetch("http://localhost:8000/api/crosswordguardian", requestOptions).then(handleResponse);
   return fetch(`${config.apiUrl}/api/crosswordguardian`, requestOptions).then(handleResponse);
 }
 

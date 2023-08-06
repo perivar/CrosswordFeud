@@ -49,7 +49,7 @@ class Storage implements IStorage {
 
   getItem(key: string): any {
     if (!this.available) {
-      return;
+      return null;
     }
 
     let data;
@@ -83,7 +83,7 @@ class Storage implements IStorage {
 
   setItem(key: string, value: any, options: any = {}): boolean | void {
     if (!this.available) {
-      return;
+      return undefined;
     }
 
     return this.storage.setItem(
@@ -97,11 +97,11 @@ class Storage implements IStorage {
 
   setIfNotExists(key: string, value: any, options: any = {}): boolean | void {
     if (!this.available) {
-      return;
+      return undefined;
     }
 
     if (this.storage.getItem(key) !== null) {
-      return;
+      return undefined;
     }
 
     return this.storage.setItem(
@@ -117,12 +117,14 @@ class Storage implements IStorage {
     if (this.available) {
       return this.storage.getItem(key);
     }
+    return undefined;
   }
 
   removeItem(key: string): void {
     if (this.available) {
       return this.storage.removeItem(key);
     }
+    return undefined;
   }
 }
 

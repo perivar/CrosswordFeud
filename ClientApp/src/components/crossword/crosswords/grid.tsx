@@ -98,7 +98,7 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
   return <></>;
 };
 
-export const Grid = (props: IGridProps): React.ReactNode => {
+export function Grid(props: IGridProps): React.ReactNode {
   const getSeparators = (x: number, y: number): ISeparatorDescription => props.separators[clueMapKey(x, y)];
 
   const handleSelect = (x: number, y: number): void => props.crossword.onSelect(x, y);
@@ -153,4 +153,4 @@ export const Grid = (props: IGridProps): React.ReactNode => {
       <g className="crossword__grid__separators">{separators}</g>
     </svg>
   );
-};
+}

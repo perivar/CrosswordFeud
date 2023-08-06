@@ -1,6 +1,4 @@
 import { connect } from 'react-redux';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
 import { RouteComponentProps } from 'react-router-dom';
 import ForgottenPasswordComponent from './ForgottenPasswordComponent';
 import { IStoreState } from '../../state/store';
@@ -23,10 +21,8 @@ const mapStateToProps = (state: IStoreState, ownProps: ForgottenPasswordProps): 
   };
 };
 
-export interface ForgottenPasswordDispatchProps {}
-
 // inject methods *and* dispatch
-const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>): ForgottenPasswordDispatchProps => {
+const mapDispatchToProps = () => {
   return {
     // dispatch
   };

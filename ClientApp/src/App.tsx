@@ -33,7 +33,7 @@ import StatusContainer from './components/status/StatusContainer';
 //   whyDidYouRender(React);
 // }
 
-const TestPage = ({ match, location }: { match: any; location: any }) => {
+function TestPage({ match, location }: { match: any; location: any }) {
   return (
     <>
       <p>
@@ -46,7 +46,7 @@ const TestPage = ({ match, location }: { match: any; location: any }) => {
       </p>
     </>
   );
-};
+}
 
 class App extends Component<any, any> {
   constructor(props: any) {

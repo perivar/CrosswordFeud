@@ -1,7 +1,3 @@
-interface IDictionary {
-  [key: string]: any;
-}
-
 export interface Data {
   id?: number;
   firstName: string;

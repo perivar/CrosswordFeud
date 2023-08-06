@@ -3,35 +3,15 @@
 
 import { UserActionTypes, UserActions } from './types';
 import { IAuthState, IUserState, ILogon, IRegisterState, IUser } from '../types';
-// import { IStoreState } from '../../../state/store';
-// import { store } from '../../..';
 
-// const user = JSON.parse(localStorage.getItem('user') || '{}') as ILogon;
-
-// get redux store
-// const theStore: IStoreState = store.getState();
-
-const initialAuthState: IAuthState =
-  // Object.keys(theStore.authentication.logon).length !== 0
-  //   ? {
-  //       loggingIn: false,
-  //       loggedIn: true,
-  //       logon: theStore.authentication.logon,
-  //       logonUserName: theStore.authentication.logon.user ? theStore.authentication.logon.user.username : '',
-  //       token: theStore.authentication.logon.token,
-  //       refreshToken: theStore.authentication.logon.refreshToken,
-  //       tokenIsValid: false,
-  //       pendingRefreshingToken: null
-  //     }
-  //   :
-  {
-    loggingIn: false,
-    loggedIn: false,
-    logon: {} as ILogon,
-    logonUserName: '',
-    tokenIsValid: false,
-    pendingRefreshingToken: null
-  };
+const initialAuthState: IAuthState = {
+  loggingIn: false,
+  loggedIn: false,
+  logon: {} as ILogon,
+  logonUserName: '',
+  tokenIsValid: false,
+  pendingRefreshingToken: null
+};
 
 const authenticationReducer = function authentication(state = initialAuthState, action: UserActions): IAuthState {
   switch (action.type) {
@@ -102,7 +82,6 @@ const authenticationReducer = function authentication(state = initialAuthState, 
 };
 
 const initialRegisterState: IRegisterState = {
-  // user: Object.keys(theStore.authentication.logon).length !== 0 ? theStore.authentication.logon.user : ({} as IUser),
   user: {} as IUser,
   submitted: false
 };

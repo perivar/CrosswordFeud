@@ -54,8 +54,9 @@
   "backtix.placeholders": {
     "active": true,
     "text": "Add placeholder."
-},
-"editor.codeActionsOnSave": {
-	"source.fixAll.eslint": true
-}
+  },
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "dotnet.defaultSolution": "CrosswordFeud.sln"
 }

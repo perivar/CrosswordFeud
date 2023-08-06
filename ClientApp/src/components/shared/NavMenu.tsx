@@ -58,94 +58,92 @@ export class NavMenu extends Component<{}, ILocalState> {
   public render() {
     const { active } = this.state;
     return (
-      <>
-        <nav className="navbar has-shadow">
-          <div className="container">
-            <div className="navbar-brand">
-              <NavLink className="navbar-item" to="/" onClick={this.handleNavBurgerClose}>
-                <h4 className="title is-4">CrosswordFeud</h4>
-              </NavLink>
-              <button
-                type="button"
-                className={`navbar-burger button is-white ${active && 'is-active'}`}
-                aria-label="menu"
-                aria-expanded="false"
-                data-target="navbarBasic"
-                onClick={this.handleNavBurgerToggle}
-                // ref={this.hamburger}
-              >
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-              </button>
-            </div>
-
-            <div
-              id="navbarBasic"
-              className={`navbar-menu ${active && 'is-active'}`}
-              // ref={this.menu}
+      <nav className="navbar has-shadow">
+        <div className="container">
+          <div className="navbar-brand">
+            <NavLink className="navbar-item" to="/" onClick={this.handleNavBurgerClose}>
+              <h4 className="title is-4">CrosswordFeud</h4>
+            </NavLink>
+            <button
+              type="button"
+              className={`navbar-burger button is-white ${active && 'is-active'}`}
+              aria-label="menu"
+              aria-expanded="false"
+              data-target="navbarBasic"
+              onClick={this.handleNavBurgerToggle}
+              // ref={this.hamburger}
             >
-              <div className="navbar-start">
-                <NavLink
-                  className="navbar-item is-tab"
-                  to="/dictionary"
-                  activeClassName="is-active"
-                  onClick={this.handleNavBurgerClose}>
-                  Dictionary
-                </NavLink>
-                {/* <NavLink
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+              <span aria-hidden="true" />
+            </button>
+          </div>
+
+          <div
+            id="navbarBasic"
+            className={`navbar-menu ${active && 'is-active'}`}
+            // ref={this.menu}
+          >
+            <div className="navbar-start">
+              <NavLink
+                className="navbar-item is-tab"
+                to="/dictionary"
+                activeClassName="is-active"
+                onClick={this.handleNavBurgerClose}>
+                Dictionary
+              </NavLink>
+              {/* <NavLink
                   className="navbar-item is-tab"
                   to="/counter"
                   activeClassName="is-active"
                   onClick={this.handleNavBurgerClose}>
                   Counter
                 </NavLink> */}
-                <NavLink
-                  className="navbar-item is-tab"
-                  to="/crossword"
-                  activeClassName="is-active"
-                  onClick={this.handleNavBurgerClose}>
-                  Crossword
-                </NavLink>
-                <NavLink
-                  className="navbar-item is-tab"
-                  to="/status"
-                  activeClassName="is-active"
-                  onClick={this.handleNavBurgerClose}>
-                  Status
-                </NavLink>
-                {/* <NavLink
+              <NavLink
+                className="navbar-item is-tab"
+                to="/crossword"
+                activeClassName="is-active"
+                onClick={this.handleNavBurgerClose}>
+                Crossword
+              </NavLink>
+              <NavLink
+                className="navbar-item is-tab"
+                to="/status"
+                activeClassName="is-active"
+                onClick={this.handleNavBurgerClose}>
+                Status
+              </NavLink>
+              {/* <NavLink
                   className="navbar-item is-tab"
                   to="/forecast"
                   activeClassName="is-active"
                   onClick={this.handleNavBurgerClose}>
                   Forecast
                 </NavLink> */}
-              </div>
-              <div className="navbar-end">
-                <div className="navbar-item">
-                  <div className="buttons">
-                    <NavLink
-                      className="button is-info"
-                      to="/register"
-                      activeClassName="is-active"
-                      onClick={this.handleNavBurgerClose}>
-                      <strong>Sign up</strong>
-                    </NavLink>
-                    <NavLink
-                      className="button is-light"
-                      to="/login"
-                      activeClassName="is-active"
-                      onClick={this.handleNavBurgerClose}>
-                      Login
-                    </NavLink>
-                  </div>
+            </div>
+            <div className="navbar-end">
+              <div className="navbar-item">
+                <div className="buttons">
+                  <NavLink
+                    className="button is-info"
+                    to="/register"
+                    activeClassName="is-active"
+                    onClick={this.handleNavBurgerClose}>
+                    <strong>Sign up</strong>
+                  </NavLink>
+                  <NavLink
+                    className="button is-light"
+                    to="/login"
+                    activeClassName="is-active"
+                    onClick={this.handleNavBurgerClose}>
+                    Login
+                  </NavLink>
                 </div>
               </div>
             </div>
           </div>
-        </nav>
-      </>
+        </div>
+      </nav>
     );
   }
 }

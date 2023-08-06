@@ -3,18 +3,12 @@ import { useEditableState, UseEditableStateArguments, EditableState } from '../h
 import { useKeyboardEvent } from '../hooks/keyboard-hook';
 import { useOutsideClick } from '../hooks/outside-click-hook';
 
-const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<string>) => {
-  const {
-    onEditBegin,
-    onEditConfirm,
-    onEditCancel,
-    isEditing,
-    editValue,
-    setEditValue
-  }: EditableState<string> = useEditableState({
-    value,
-    onValueChanged
-  });
+function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<string>) {
+  const { onEditBegin, onEditConfirm, onEditCancel, isEditing, editValue, setEditValue }: EditableState<string> =
+    useEditableState({
+      value,
+      onValueChanged
+    });
 
   // creating the ref by passing initial value null
   // The type of our ref is an input element
@@ -109,6 +103,6 @@ const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<
       {value || <i>Empty</i>}
     </a>
   );
-};
+}
 
 export const BulmaEditableTextField = EditableTextField;

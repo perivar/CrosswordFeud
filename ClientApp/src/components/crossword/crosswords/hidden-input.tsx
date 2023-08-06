@@ -25,6 +25,13 @@ class HiddenInput extends Component<IHiddenInputProps, IHiddenInputState> {
     this.input = React.createRef();
   }
 
+  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
+    this.props.crossword.insertCharacter(event.target.value);
+    this.setState({
+      value: ''
+    });
+  }
+
   onClick(event: React.MouseEvent<HTMLInputElement, MouseEvent>) {
     this.props.crossword.onClickHiddenInput(event);
   }
@@ -47,13 +54,6 @@ class HiddenInput extends Component<IHiddenInputProps, IHiddenInputState> {
 
   touchStart(event: React.TouchEvent<HTMLInputElement>) {
     this.props.crossword.onClickHiddenInput(event);
-  }
-
-  handleChange(event: React.ChangeEvent<HTMLInputElement>) {
-    this.props.crossword.insertCharacter(event.target.value);
-    this.setState({
-      value: ''
-    });
   }
 
   render() {

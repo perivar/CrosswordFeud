@@ -1,15 +1,13 @@
 module.exports = {
   parser: '@typescript-eslint/parser', // Specifies the ESLint parser
   extends: [
-    'airbnb-typescript-prettier',
     'eslint:recommended',
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
     'plugin:jsx-a11y/recommended',
     'plugin:import/typescript', // extends the recommended import with typescript import/resolver support for .ts and .tsx
     'plugin:@typescript-eslint/recommended', // Uses the recommended rules from the @typescript-eslint/eslint-plugin
     'plugin:prettier/recommended', // Enables eslint-plugin-prettier and eslint-config-prettier. This will display prettier errors as ESLint errors. Make sure this is always the last configuration in the extends array.
-    'prettier/@typescript-eslint',
-    'prettier/react'
+    'prettier'
   ],
   parserOptions: {
     // ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
@@ -44,18 +42,29 @@ module.exports = {
     '@typescript-eslint/explicit-member-accessibility': 'off', // ok with implicit public
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/no-use-before-define': 'off',
-		'@typescript-eslint/ban-ts-ignore': 'off',
-		'@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
+    '@typescript-eslint/ban-ts-ignore': 'off',
+    '@typescript-eslint/ban-ts-comment': ['warn', { 'ts-ignore': 'allow-with-description' }],
     '@typescript-eslint/no-empty-interface': 'warn',
     '@typescript-eslint/no-empty-function': 'warn',
 
-		"no-use-before-define": 'off', // this was too strict for the hooks
-		"@typescript-eslint/ban-types": 'off', // this was too strict for the hooks
+    'no-use-before-define': 'off', // this was too strict for the hooks
+    '@typescript-eslint/ban-types': 'off', // this was too strict for the hooks
+
+    // allow underscore for unused vars
+    '@typescript-eslint/no-unused-vars': [
+      'warn', // or "error"
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_'
+      }
+    ],
 
     // note you must disable the base rule as it can report incorrect errors
     camelcase: 'off',
-		// '@typescript-eslint/camelcase': ['error', { properties: 'never' }],
-		'@typescript-eslint/camelcase': 'off',
+    // '@typescript-eslint/camelcase': ['error', { properties: 'never' }],
+    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-shadow': 'warn',
 
     /**
      * @description rules of eslint-plugin-react
@@ -73,7 +82,7 @@ module.exports = {
     'react/jsx-pascal-case': 'warn',
     // 'react/jsx-props-no-multi-spaces': 'warn',
     'react/jsx-props-no-spreading': 'off',
-    'react/jsx-sort-default-props': 'warn',
+    'react/sort-default-props': 'warn',
     // 'react/jsx-tag-spacing': ['error', { 'beforeSelfClosing': 'always' }],
     'react/prop-types': 'off', // Is this incompatible with TS props type?
     'react/no-find-dom-node': 'warn',
@@ -85,11 +94,11 @@ module.exports = {
     'react/no-unsafe': 'warn',
     'react/no-unused-prop-types': 'warn',
     'react/destructuring-assignment': 'off',
-    'react/no-access-state-in-setstate': 'warn',
     'react/no-array-index-key': 'warn',
     'react/static-property-placement': ['warn', 'static public field'],
     'react/prefer-stateless-function': ['warn', { ignorePureComponents: true }],
-		'react/require-default-props': 'warn',
+    'react/require-default-props': 'off',
+    'react/jsx-no-useless-fragment': 'off',
 
     /**
      * @description rules of eslint-plugin-react-hooks
@@ -132,6 +141,8 @@ module.exports = {
         markers: ['/']
       }
     ],
+    'default-param-last': 'off',
+    'no-unused-vars': 'off',
 
     /**
      * @description rules of eslint-import-resolver-typescript
@@ -172,16 +183,16 @@ module.exports = {
   },
   settings: {
     react: {
-			version: 'detect' 	// Tells eslint-plugin-react to automatically detect the version of React to use
-													// React version. "detect" automatically picks the version you have installed.
-                           // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
-                           // default to latest and warns if missing
-                           // It will default to "detect" in the future
-		},
-		'import/resolver': {
-      node: {
-        extensions: ['.mjs', '.js', '.json', '.ts', '.tsx'],
-      },
+      version: 'detect' // Tells eslint-plugin-react to automatically detect the version of React to use
+      // React version. "detect" automatically picks the version you have installed.
+      // You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
+      // default to latest and warns if missing
+      // It will default to "detect" in the future
     },
+    'import/resolver': {
+      node: {
+        extensions: ['.mjs', '.js', '.json', '.ts', '.tsx']
+      }
+    }
   }
 };

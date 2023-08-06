@@ -149,7 +149,7 @@ export default function BulmaTableExample() {
     onUncheckAll: () => {
       console.log('onUncheckAll');
     },
-    onLoadSuccess: (data: any, totalCount: number) => {
+    onLoadSuccess: (_: any, totalCount: number) => {
       console.log(`onLoadSuccess: ${totalCount}`);
     },
     onLoadError: (error: any) => {

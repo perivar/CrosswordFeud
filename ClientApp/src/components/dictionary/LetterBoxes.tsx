@@ -6,7 +6,7 @@ interface ILetterBoxProps {
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const LetterBox = (props: ILetterBoxProps) => {
+function LetterBox(props: ILetterBoxProps) {
   const { id, letterBoxRefs, handleKeyDown } = props;
 
   return (
@@ -25,7 +25,7 @@ const LetterBox = (props: ILetterBoxProps) => {
       />
     </p>
   );
-};
+}
 
 // some useful methods
 const range = (n: number) => Array.from({ length: n }, (value, key) => key);
@@ -57,7 +57,7 @@ interface LetterBoxesArguments {
 }
 
 const MAX_LETTERS = 30;
-const LetterBoxes = (props: LetterBoxesArguments) => {
+function LetterBoxes(props: LetterBoxesArguments) {
   const { value, onChangeValue } = props;
 
   const [letterCount, setLetterCount] = useState<number>(value ? value.length : 0); // 0 means not showing letter boxes, but a dropdown to select letter count
@@ -241,6 +241,6 @@ const LetterBoxes = (props: LetterBoxesArguments) => {
       )}
     </>
   );
-};
+}
 
 export default LetterBoxes;

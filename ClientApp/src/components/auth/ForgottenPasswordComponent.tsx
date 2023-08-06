@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useDataApi } from '../shared/hooks/data-api-hook';
 import { BulmaInputField } from '../shared/bulma-components/BulmaInputField';
 import { BulmaSubmitButton } from '../shared/bulma-components/BulmaSubmitButton';
-import { ForgottenPasswordProps, ForgottenPasswordDispatchProps } from './ForgottenPasswordContainer';
+import { ForgottenPasswordProps } from './ForgottenPasswordContainer';
 import { history } from '../../history';
 import { ASPCoreIdentityErrors } from './types';
 // import { useReducerWithLogger } from '../shared/hooks/reducer-logger-hook';
@@ -191,9 +191,7 @@ const isValidASPCoreIdentityPassword = (password: string): boolean => {
   // return true;
 };
 
-export default function ForgottenPasswordComponent(
-  props: ForgottenPasswordProps & ForgottenPasswordDispatchProps
-): JSX.Element {
+export default function ForgottenPasswordComponent(props: ForgottenPasswordProps): JSX.Element {
   // get apiUrl from config object
   const config = { apiUrl: process.env.REACT_APP_API };
 
@@ -336,20 +334,18 @@ export default function ForgottenPasswordComponent(
   };
 
   const usernameSegment = (
-    <>
-      <BulmaInputField
-        label="Brukernavn"
-        type="text"
-        name="username"
-        placeholder="feks. ola@nordmann.no"
-        required
-        requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
-        value={state.username}
-        submitted={state.submitted}
-        handleChange={handleUsernameChange}
-        icon={<i className="fas fa-user" />}
-      />
-    </>
+    <BulmaInputField
+      label="Brukernavn"
+      type="text"
+      name="username"
+      placeholder="feks. ola@nordmann.no"
+      required
+      requiredMessage="Gyldig brukernavn (e-post adresse) er påkrevd"
+      value={state.username}
+      submitted={state.submitted}
+      handleChange={handleUsernameChange}
+      icon={<i className="fas fa-user" />}
+    />
   );
 
   const passwordSegment = (
@@ -385,18 +381,16 @@ export default function ForgottenPasswordComponent(
   );
 
   const formSegment = (
-    <>
-      <form noValidate className="box" onSubmit={handleSubmit}>
-        <div className="field has-text-centered">
-          <i className="fa fa-lock fa-3x" />
-        </div>
+    <form noValidate className="box" onSubmit={handleSubmit}>
+      <div className="field has-text-centered">
+        <i className="fa fa-lock fa-3x" />
+      </div>
 
-        {usernameSegment}
-        {state.hasTokenParameter ? passwordSegment : <></>}
+      {usernameSegment}
+      {state.hasTokenParameter ? passwordSegment : <></>}
 
-        <BulmaSubmitButton text="Oppdater passord" loading={isLoadingToken} />
-      </form>
-    </>
+      <BulmaSubmitButton text="Oppdater passord" loading={isLoadingToken} />
+    </form>
   );
 
   return (

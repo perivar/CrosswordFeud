@@ -193,7 +193,8 @@ const hasPushStateSupport = () => {
     return supportsPushState;
   }
 
-  if (window.history && window.history.pushState) {
+  if (window.history) {
+    // TODO: we assume that we have pushState support (window.history.pushState)
     supportsPushState = true;
     // Android stock browser lies about its HistoryAPI support.
     if (window.navigator.userAgent.match(/Android/i)) {

@@ -22,7 +22,7 @@ export default function useRouter<
 
   // If the react-router Context is not a parent Component,
   const context: RouteComponentProps<P, C, S> = useContext<RouteComponentProps<P, C, S>>(
-    (__RouterContext as AnyContext) as Context<RouteComponentProps<P, C, S>>
+    __RouterContext as AnyContext as Context<RouteComponentProps<P, C, S>>
   );
   if (!context) {
     throw MISSING_CONTEXT_ERROR;

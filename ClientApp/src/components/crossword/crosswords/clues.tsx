@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 import React, { Component } from 'react';
 import { findDOMNode } from 'react-dom';
 import fastdom from 'fastdom';

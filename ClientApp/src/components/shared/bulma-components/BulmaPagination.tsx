@@ -33,7 +33,7 @@ const getPaginationClassName = (paginationPlacement: string) => {
   }
 };
 
-const BulmaPaginator = (props: IBulmaPaginatorProps): any => {
+function BulmaPaginator(props: IBulmaPaginatorProps): any {
   // useWhyDidYouUpdate('BulmaPaginator', props);
   const {
     initialPage = 1,
@@ -262,6 +262,6 @@ const BulmaPaginator = (props: IBulmaPaginatorProps): any => {
       </div>
     </>
   );
-};
+}
 
 export default BulmaPaginator;

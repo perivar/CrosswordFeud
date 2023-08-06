@@ -47,7 +47,7 @@ interface BulmaAutocompleteArguments {
 // make a new axios instance, so that we don’t pollute the global axios object
 const axiosInstance: AxiosInstance = axios.create({});
 
-const Autocomplete = (props: BulmaAutocompleteArguments) => {
+function Autocomplete(props: BulmaAutocompleteArguments) {
   const {
     id,
     notFound,
@@ -80,7 +80,12 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
     axiosInstance.interceptors.response.use(responseInterceptor, responseInterceptorErrorHandler);
   }
 
-  const { response, error, isLoading, setUrl: fetchData } = useDataApi({
+  const {
+    response,
+    error,
+    isLoading,
+    setUrl: fetchData
+  } = useDataApi({
     // isError
     axios: axiosInstance
   });
@@ -332,7 +337,7 @@ const Autocomplete = (props: BulmaAutocompleteArguments) => {
       </div>
     </div>
   );
-};
+}
 
 export const BulmaAutocomplete = memo(Autocomplete);
 // export const BulmaAutocomplete = Autocomplete;

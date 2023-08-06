@@ -13,7 +13,7 @@ export interface BulmaInputFieldArguments {
   icon?: ReactNode;
 }
 
-const InputField = ({
+function InputField({
   label,
   type,
   name,
@@ -24,41 +24,39 @@ const InputField = ({
   value,
   handleChange,
   icon
-}: BulmaInputFieldArguments) => {
+}: BulmaInputFieldArguments) {
   if (icon === undefined) {
     icon = <i className="fas fa-smile" />;
   }
   return (
-    <>
-      <div className="field">
-        <label className="label" htmlFor={name}>
-          {label}
-        </label>
-        <div className={`control has-icons-left ${required && submitted && !value ? ' has-icons-right' : ' '}`}>
-          <input
-            type={type} // text, email or password
-            className={`input ${required && submitted && !value ? ' is-danger' : ' '}`}
-            name={name}
-            id={name}
-            value={value}
-            onChange={handleChange}
-            placeholder={placeholder}
-            // required
-          />
-          <span className="icon is-small is-left">{icon}</span>
-          {required && submitted && !value ? (
-            <span className="icon is-small is-right">
-              <i className="fas fa-exclamation-triangle" />
-            </span>
-          ) : (
-            ''
-          )}
-        </div>
-        {required && submitted && !value ? <p className="help is-danger">{requiredMessage}</p> : ''}
+    <div className="field">
+      <label className="label" htmlFor={name}>
+        {label}
+      </label>
+      <div className={`control has-icons-left ${required && submitted && !value ? ' has-icons-right' : ' '}`}>
+        <input
+          type={type} // text, email or password
+          className={`input ${required && submitted && !value ? ' is-danger' : ' '}`}
+          name={name}
+          id={name}
+          value={value}
+          onChange={handleChange}
+          placeholder={placeholder}
+          // required
+        />
+        <span className="icon is-small is-left">{icon}</span>
+        {required && submitted && !value ? (
+          <span className="icon is-small is-right">
+            <i className="fas fa-exclamation-triangle" />
+          </span>
+        ) : (
+          ''
+        )}
       </div>
-    </>
+      {required && submitted && !value ? <p className="help is-danger">{requiredMessage}</p> : ''}
+    </div>
   );
-};
+}
 
 function areEqual(prevProps: BulmaInputFieldArguments, nextProps: BulmaInputFieldArguments) {
   // console.log(`

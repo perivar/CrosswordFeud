@@ -118,7 +118,7 @@ export const useDataApi = ({
           callbackHandler(null, response);
           dispatch({ type: actions.success, payload: response });
         }
-      } catch (error) {
+      } catch (error: any) {
         // check that this error is not because we cancelled it ourselves				}
         if (!unmounted) {
           if (defaultAxios.isCancel(error)) {

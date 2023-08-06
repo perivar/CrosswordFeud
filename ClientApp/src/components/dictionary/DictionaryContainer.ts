@@ -1,11 +1,8 @@
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
-import { ThunkDispatch } from 'redux-thunk';
-import { AnyAction } from 'redux';
 import { IStoreState } from '../../state/store';
 import { IAuthState } from '../auth/types';
 import DictionaryComponent from './DictionaryComponent';
-// import DictionaryComponent2 from './DictionaryComponent2';
 
 export interface DictionaryRouterProps {
   word: string; // This one is coming from the router
@@ -24,10 +21,8 @@ const mapStateToProps = (state: IStoreState, ownProps: DictionaryProps): Diction
   };
 };
 
-export interface DictionaryDispatchProps {}
-
 // inject methods *and* dispatch
-const mapDispatchToProps = (dispatch: ThunkDispatch<IStoreState, any, AnyAction>): DictionaryDispatchProps => {
+const mapDispatchToProps = () => {
   return {
     // dispatch
   };
