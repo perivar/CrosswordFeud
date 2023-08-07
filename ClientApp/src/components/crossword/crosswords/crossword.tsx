@@ -72,7 +72,25 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
   private returnPosition: number;
   private gridHeightIsSet: boolean;
 
-  static defaultProps: ICrosswordProps;
+  static defaultProps: ICrosswordProps = {
+    data: {
+      id: '',
+      number: 0,
+      name: '',
+      creator: { name: '', webUrl: '' },
+      date: 0,
+      entries: new Array<IClue>(),
+      solutionAvailable: false,
+      dateSolutionAvailable: 0,
+      dimensions: { rows: 0, cols: 0 },
+      crosswordType: 'quick',
+      pdf: '',
+      instructions: ''
+    },
+    loadGrid: (id: string) => loadGridState(id),
+    onMove: () => undefined,
+    saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid)
+  };
 
   constructor(props: ICrosswordProps) {
     super(props);
@@ -441,7 +459,7 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     return !this.getCellValue(x, y);
   }
 
-  goToReturnPosition(event: React.FocusEvent<HTMLInputElement>): void {
+  goToReturnPosition(_event: React.FocusEvent<HTMLInputElement>): void {
     if (
       isBreakpoint({
         max: 'mobile'
@@ -801,25 +819,5 @@ class Crossword extends Component<ICrosswordProps, ICrosswordState> {
     );
   }
 }
-
-Crossword.defaultProps = {
-  data: {
-    id: '',
-    number: 0,
-    name: '',
-    creator: { name: '', webUrl: '' },
-    date: 0,
-    entries: [], // or new Array<IClue>()
-    solutionAvailable: false,
-    dateSolutionAvailable: 0,
-    dimensions: { rows: 0, cols: 0 },
-    crosswordType: 'quick',
-    pdf: '',
-    instructions: ''
-  },
-  loadGrid: (id: string) => loadGridState(id),
-  onMove: () => {},
-  saveGrid: (id: string, grid: string[][]) => saveGridState(id, grid)
-};
 
 export default Crossword;

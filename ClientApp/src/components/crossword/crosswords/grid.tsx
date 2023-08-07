@@ -46,7 +46,7 @@ const createWordSeparator = (x: number, y: number, direction: Direction): React.
       />
     );
   }
-  return <></>;
+  return undefined;
 };
 
 // IPosition in-between this and previous cells
@@ -83,7 +83,7 @@ const createHyphenSeparator = (x: number, y: number, direction: Direction): Reac
       />
     );
   }
-  return <></>;
+  return undefined;
 };
 
 const createSeparator = (x: number, y: number, separatorDescription: ISeparatorDescription): React.ReactNode => {
@@ -95,7 +95,7 @@ const createSeparator = (x: number, y: number, separatorDescription: ISeparatorD
       return createHyphenSeparator(x, y, separatorDescription.direction);
     }
   }
-  return <></>;
+  return undefined;
 };
 
 export function Grid(props: IGridProps): React.ReactNode {

@@ -18,41 +18,6 @@ import {
   ICell
 } from '../types';
 
-// const flattenDeep = (arr: any): any => Array.isArray(arr)
-//   ? arr.reduce((a, b) => a.concat(flattenDeep(b)), [])
-//   : [arr];
-
-/**
- * @param <_p> Return a list integers of zero until <_p> value.
- * @param <_t> Return a list integers of <_t> until <_p> value.
- * @param <_s> Return a list integers of <_t> until <_p> with steps <_s> value.
- * @return Return a array list
- */
-// function range(_p: number, _t?: number, _s?: number): number[] {
-//   let start: number = (_t) ? _p : 0;
-//   let stop: number = (_t) ? _t : _p;
-//   let step: number = (_s) ? _s : 1;
-
-//   let t: number[] = [];
-//   for (let i = start; i < stop; i = i + step) {
-//     t.push(i);
-//   }
-
-//   return t;
-// }
-
-// function uniqBy(array: any, keyToBeUnique: any) {
-//   return Object.values(array.reduce((tmp: any, x: any) => {
-//     // You already get a value
-//     if (tmp[x[keyToBeUnique]]) return tmp;
-
-//     // You never envcountered this key
-//     tmp[x[keyToBeUnique]] = x;
-
-//     return tmp;
-//   }, {}));
-// }
-
 const isAcross = (clue: IClue): boolean => clue.direction === 'across';
 
 const getLastCellInClue = (clue: IClue): IPosition => {
@@ -249,7 +214,6 @@ const buildGrid = (rows: number, columns: number, entries: IClue[], savedState: 
     });
   });
 
-  // $FlowFixMe
   return grid;
 };
 

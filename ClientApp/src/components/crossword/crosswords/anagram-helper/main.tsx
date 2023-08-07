@@ -4,7 +4,7 @@ import { ReactComponent as Close } from '../../svgs/close.svg';
 
 import { cellsForClue, getAnagramClueData } from '../helpers';
 import { ClueInput } from './clue-input';
-import { CluePreview, ICluePreview } from './clue-preview';
+import { CluePreview, ICluePreview, ILetter } from './clue-preview';
 import { Ring } from './ring';
 import Crossword from '../crossword';
 import { IClue, IGrid, IPosition, ICell } from '../../types';
@@ -18,13 +18,18 @@ export interface IAnagramHelperProps {
 }
 
 export interface IAnagramHelperState {
-  letters: any;
+  letters: ILetter[];
   clueInput: string;
   showInput: boolean;
 }
 
 class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> {
-  static defaultProps: IAnagramHelperProps;
+  static defaultProps: IAnagramHelperProps = {
+    close: null,
+    entries: new Array<IClue>(),
+    focusedEntry: null,
+    grid: new Array<ICell[]>()
+  };
 
   constructor(props: IAnagramHelperProps) {
     super(props);
@@ -53,10 +58,10 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
    * shuffle it.
    *
    */
-  shuffleWord(word: string, entries: any) {
+  public static shuffleWord(word: string, entries: ILetter[]) {
     const wordEntries = entries
-      .map((entry: any) => entry.value.toLowerCase())
-      .filter((entry: any) => word.includes(entry))
+      .map((entry: ILetter) => entry.value.toLowerCase())
+      .filter((entry: string) => word.includes(entry))
       .filter(Boolean)
       .sort();
 
@@ -66,7 +71,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
         .split('')
         .sort()
         .reduce(
-          (acc: any, letter: any) => {
+          (acc: { letters: ILetter[]; entries: string[] }, letter: string) => {
             const [head, ...tail] = acc.entries;
             const entered = head === letter.toLowerCase();
 
@@ -89,7 +94,7 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
   shuffle() {
     if (this.canShuffle()) {
       this.setState((prevState) => ({
-        letters: this.shuffleWord(prevState.clueInput, this.entries()),
+        letters: AnagramHelper.shuffleWord(prevState.clueInput, this.entries()),
         showInput: false
       }));
     }
@@ -166,12 +171,5 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     );
   }
 }
-
-AnagramHelper.defaultProps = {
-  entries: new Array<IClue>(),
-  grid: new Array<ICell[]>(),
-  close: null,
-  focusedEntry: null
-};
 
 export { AnagramHelper };

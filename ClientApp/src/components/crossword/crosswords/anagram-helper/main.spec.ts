@@ -12,7 +12,7 @@ jest.mock('react', () => ({
 
 jest.mock('react-dom', () => ({
   findDOMNode: () => ({
-    focus: () => {}
+    focus: () => undefined
   })
 }));
 
@@ -69,7 +69,7 @@ describe('Anagram Helper', () => {
 
     TestCases.forEach((testCase: ITestCase) => {
       const entries = testCase.entries.map((e: string) => ({ value: e }));
-      const result = new AnagramHelper(AnagramHelper.defaultProps).shuffleWord(testCase.word, entries);
+      const result = AnagramHelper.shuffleWord(testCase.word, entries);
 
       expect(sortBy(result, sort)).toEqual(sortBy(testCase.expected, sort));
     });

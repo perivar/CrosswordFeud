@@ -1,4 +1,5 @@
 import React, { PureComponent } from 'react';
+import { ILetter } from './clue-preview';
 
 const round = (x: number) => Math.round(x * 100) / 100;
 /**
@@ -18,7 +19,7 @@ const getPosition = (angle: number, i: number) => {
 };
 
 export interface IRingProps {
-  letters: any;
+  letters: ILetter[];
 }
 
 class Ring extends PureComponent<IRingProps> {
@@ -27,7 +28,7 @@ class Ring extends PureComponent<IRingProps> {
 
     return (
       <div className="crossword__anagram-helper-shuffler">
-        {this.props.letters.map((letter: any, i: number) => (
+        {this.props.letters.map((letter: ILetter, i: number) => (
           <div
             className={`crossword__anagram-helper-shuffler__letter ${letter.entered ? 'entered' : ''}`}
             style={getPosition(angle, i)}

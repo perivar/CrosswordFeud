@@ -20,7 +20,7 @@ const checkIfLetterHasSeparator = (locations: any, letterIndex: number): string 
 
 export interface ILetter {
   value: string;
-  entered: boolean;
+  entered?: boolean;
 }
 
 export interface ICluePreview {
