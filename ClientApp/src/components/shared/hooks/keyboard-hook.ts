@@ -15,5 +15,5 @@ export function useKeyboardEvent(key: string, callback: Function): any {
     return () => {
       window.removeEventListener('keydown', downHandler);
     };
-  }, [callback, key]); // Empty array ensures that effect is only run on mount and unmount
+  }, [callback, key]);
 }

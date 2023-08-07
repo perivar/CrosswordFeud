@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, SyntheticEvent, CSSProperties } from 'react';
 import { useEditableState, UseEditableStateArguments, EditableState } from '../hooks/editable-hook';
 import { useKeyboardEvent } from '../hooks/keyboard-hook';
-import { useOutsideClick } from '../hooks/outside-click-hook';
+import { useOnClickOutside } from 'usehooks-ts';
 
-function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<string>) {
+const EditableTextField = ({ value, onValueChanged }: UseEditableStateArguments<string>) => {
   const { onEditBegin, onEditConfirm, onEditCancel, isEditing, editValue, setEditValue }: EditableState<string> =
     useEditableState({
       value,
@@ -22,7 +22,7 @@ function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<
     if (editInputRef.current) {
       editInputRef.current.focus();
     }
-  });
+  }, []);
 
   // add handlers for escape and return keys
   const cancelEditHandler = () => {
@@ -44,7 +44,7 @@ function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<
   const editWrapperRef = useRef<HTMLDivElement>(null);
 
   // add handler for clicking outside the input
-  useOutsideClick(editWrapperRef, () => {
+  useOnClickOutside(editWrapperRef, () => {
     if (isEditing) {
       onEditCancel();
     }
@@ -103,6 +103,6 @@ function EditableTextField({ value, onValueChanged }: UseEditableStateArguments<
       {value || <i>Empty</i>}
     </a>
   );
-}
+};
 
 export const BulmaEditableTextField = EditableTextField;

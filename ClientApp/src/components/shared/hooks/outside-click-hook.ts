@@ -14,5 +14,6 @@ export function useOutsideClick(ref: any, callback: Function): any {
     return () => {
       document.removeEventListener('click', handleClick);
     };
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 }
