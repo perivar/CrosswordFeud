@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import sortBy from 'lodash/sortBy';
 import { AnagramHelper } from './main';
-import { IClue, ICell } from '../../types';
 
 // used by AnagramHelper
 jest.mock('../../svgs/close.svg', () => 'Close');
@@ -70,12 +69,7 @@ describe('Anagram Helper', () => {
 
     TestCases.forEach((testCase: ITestCase) => {
       const entries = testCase.entries.map((e: string) => ({ value: e }));
-      const result = new AnagramHelper({
-        entries: new Array<IClue>(),
-        grid: new Array<ICell[]>(),
-        close: null,
-        focusedEntry: null
-      }).shuffleWord(testCase.word, entries);
+      const result = new AnagramHelper(AnagramHelper.defaultProps).shuffleWord(testCase.word, entries);
 
       expect(sortBy(result, sort)).toEqual(sortBy(testCase.expected, sort));
     });

@@ -1,4 +1,3 @@
-/* eslint-disable class-methods-use-this */
 import React, { Component } from 'react';
 import shuffle from 'lodash/shuffle';
 import { ReactComponent as Close } from '../../svgs/close.svg';
@@ -8,14 +7,7 @@ import { ClueInput } from './clue-input';
 import { CluePreview, ICluePreview } from './clue-preview';
 import { Ring } from './ring';
 import Crossword from '../crossword';
-import { IClue, IGrid, IPosition } from '../../types';
-
-// function shuffle(array: any) {
-//   for (let i = array.length - 1; i > 0; i--) {
-//     const j = Math.floor(Math.random() * (i + 1));
-//     [array[i], array[j]] = [array[j], array[i]];
-//   }
-// }
+import { IClue, IGrid, IPosition, ICell } from '../../types';
 
 export interface IAnagramHelperProps {
   entries: IClue[];
@@ -32,6 +24,8 @@ export interface IAnagramHelperState {
 }
 
 class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> {
+  static defaultProps: IAnagramHelperProps;
+
   constructor(props: IAnagramHelperProps) {
     super(props);
 
@@ -172,5 +166,12 @@ class AnagramHelper extends Component<IAnagramHelperProps, IAnagramHelperState> 
     );
   }
 }
+
+AnagramHelper.defaultProps = {
+  entries: new Array<IClue>(),
+  grid: new Array<ICell[]>(),
+  close: null,
+  focusedEntry: null
+};
 
 export { AnagramHelper };
